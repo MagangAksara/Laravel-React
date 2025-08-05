@@ -1,0 +1,356 @@
+Berikut adalah **gambaran awal struktur database (ERD)** untuk proyek **e-commerce penyewaan mobil** berbasis Laravel + React:
+
+---
+
+## ✅ ENTITAS UTAMA
+
+### 1. **Users**
+
+Penyewa, Admin, atau Pemilik Mobil (Role via Spatie)
+
+| Kolom         | Tipe      | Keterangan           |
+| ------------- | --------- | -------------------- |
+| id            | bigint    | Primary Key          |
+| name          | string    | Nama pengguna        |
+| email         | string    | Email unik           |
+| password      | string    | Password terenkripsi |
+| phone\_number | string    | Nomor telepon        |
+| address       | text      | Alamat lengkap       |
+| created\_at   | timestamp |                      |
+| updated\_at   | timestamp |                      |
+
+---
+
+### 2. **Roles & Permissions** (Spatie Package)
+
+Spatie akan membuat tabel ini secara otomatis:
+
+* `roles` (admin, user, pemilik)
+* `permissions` (create, edit, delete, sewa)
+* `model_has_roles`, `model_has_permissions`, `role_has_permissions`
+
+---
+
+### 3. **Cars** (Mobil yang disewakan)
+
+| Kolom           | Tipe      | Keterangan                      |
+| --------------- | --------- | ------------------------------- |
+| id              | bigint    | Primary Key                     |
+| user\_id        | foreignId | Pemilik mobil (relasi ke users) |
+| name            | string    | Nama mobil                      |
+| brand           | string    | Merek                           |
+| plate\_number   | string    | Nomor plat                      |
+| price\_per\_day | decimal   | Harga sewa per hari             |
+| description     | text      | Deskripsi mobil                 |
+| image           | string    | Path ke gambar mobil            |
+| is\_available   | boolean   | Tersedia untuk disewa?          |
+| created\_at     | timestamp |                                 |
+| updated\_at     | timestamp |                                 |
+
+---
+
+### 4. **Rentals** (Transaksi Penyewaan)
+
+| Kolom        | Tipe      | Keterangan                           |
+| ------------ | --------- | ------------------------------------ |
+| id           | bigint    | Primary Key                          |
+| user\_id     | foreignId | Penyewa                              |
+| car\_id      | foreignId | Mobil yang disewa                    |
+| start\_date  | date      | Tanggal mulai sewa                   |
+| end\_date    | date      | Tanggal akhir sewa                   |
+| total\_price | decimal   | Total harga = durasi \* harga harian |
+| status       | enum      | pending, paid, canceled, finished    |
+| payment\_id  | string    | ID dari Xendit (Invoice ID)          |
+| created\_at  | timestamp |                                      |
+| updated\_at  | timestamp |                                      |
+
+---
+
+### 5. **Payments** (Riwayat Pembayaran)
+
+| Kolom               | Tipe      | Keterangan                     |
+| ------------------- | --------- | ------------------------------ |
+| id                  | bigint    | Primary Key                    |
+| rental\_id          | foreignId | Transaksi sewa                 |
+| payment\_method     | string    | eWallet, QRIS, Bank, Kartu     |
+| xendit\_invoice\_id | string    | ID invoice dari Xendit         |
+| status              | enum      | pending, paid, expired         |
+| paid\_at            | timestamp | Waktu pembayaran (jika sukses) |
+| created\_at         | timestamp |                                |
+| updated\_at         | timestamp |                                |
+
+---
+
+### 6. **Reviews** (Ulasan mobil)
+
+| Kolom       | Tipe      | Keterangan          |
+| ----------- | --------- | ------------------- |
+| id          | bigint    | Primary Key         |
+| rental\_id  | foreignId | Relasi ke penyewaan |
+| user\_id    | foreignId | Si penyewa          |
+| rating      | tinyint   | Skor 1-5            |
+| comment     | text      | Isi ulasan          |
+| created\_at | timestamp |                     |
+| updated\_at | timestamp |                     |
+
+---
+
+## 🧩 RELASI ANTAR TABEL
+
+* **User hasMany Cars** (pemilik mobil)
+* **User hasMany Rentals** (penyewa)
+* **Car belongsTo User**
+* **Rental belongsTo User & Car**
+* **Rental hasOne Payment**
+* **Rental hasOne Review**
+* **Spatie** akan membuat relasi user dengan role & permission.
+
+---
+
+## 📝 CATATAN TAMBAHAN
+
+* Gunakan `enum` untuk kolom status (`rental.status` dan `payment.status`)
+* Gunakan fitur soft delete jika ingin menyimpan data yang dihapus
+
+---
+
+Jika kamu mau, aku bisa bantu:
+
+* Buatkan migration lengkap (Laravel)
+* Buat seed dummy datanya
+* Atau buat diagram visual ERD-nya
+
+Mau mulai dari mana?
+
+
+Berikut adalah **gambaran lengkap struktur database (ERD + tabel Spatie)** untuk **aplikasi e-commerce jasa penyewaan mobil** menggunakan **Laravel 12**, **Spatie Permission**, dan integrasi Xendit:
+
+---
+
+## 🧾 DAFTAR TABEL INTI
+
+### 1. **users**
+
+```sql
+id             BIGINT (PK)
+name           VARCHAR
+email          VARCHAR (UNIQUE)
+password       VARCHAR
+phone_number   VARCHAR
+address        TEXT
+email_verified_at TIMESTAMP (nullable)
+remember_token VARCHAR (nullable)
+created_at     TIMESTAMP
+updated_at     TIMESTAMP
+```
+
+---
+
+### 2. **cars**
+
+(Mobil yang disewakan)
+
+```sql
+id             BIGINT (PK)
+user_id        BIGINT (FK → users.id)
+name           VARCHAR
+brand          VARCHAR
+plate_number   VARCHAR (UNIQUE)
+price_per_day  DECIMAL
+description    TEXT
+image          VARCHAR
+is_available   BOOLEAN
+created_at     TIMESTAMP
+updated_at     TIMESTAMP
+```
+
+---
+
+### 3. **rentals**
+
+(Transaksi penyewaan)
+
+```sql
+id             BIGINT (PK)
+user_id        BIGINT (FK → users.id)
+car_id         BIGINT (FK → cars.id)
+start_date     DATE
+end_date       DATE
+total_price    DECIMAL
+status         ENUM('pending', 'paid', 'canceled', 'finished')
+payment_id     VARCHAR (nullable)  -- dari Xendit
+created_at     TIMESTAMP
+updated_at     TIMESTAMP
+```
+
+---
+
+### 4. **payments**
+
+(Detail pembayaran terhubung ke Xendit)
+
+```sql
+id                BIGINT (PK)
+rental_id         BIGINT (FK → rentals.id)
+payment_method    VARCHAR
+xendit_invoice_id VARCHAR
+status            ENUM('pending', 'paid', 'expired')
+paid_at           TIMESTAMP (nullable)
+created_at        TIMESTAMP
+updated_at        TIMESTAMP
+```
+
+---
+
+### 5. **reviews**
+
+(Ulasan penyewa terhadap mobil)
+
+```sql
+id             BIGINT (PK)
+rental_id      BIGINT (FK → rentals.id)
+user_id        BIGINT (FK → users.id)
+rating         TINYINT CHECK (rating BETWEEN 1 AND 5)
+comment        TEXT
+created_at     TIMESTAMP
+updated_at     TIMESTAMP
+```
+
+---
+
+## 🔐 TABEL-TABEL DARI SPATIE PERMISSION
+
+Saat kamu menginstall dan migrate Spatie, ia akan otomatis membuat:
+
+---
+
+### 6. **roles**
+
+```sql
+id          BIGINT (PK)
+name        VARCHAR
+guard_name  VARCHAR
+created_at  TIMESTAMP
+updated_at  TIMESTAMP
+```
+
+Contoh isi:
+
+* name: `admin`, `customer`, `owner`
+
+---
+
+### 7. **permissions**
+
+```sql
+id          BIGINT (PK)
+name        VARCHAR
+guard_name  VARCHAR
+created_at  TIMESTAMP
+updated_at  TIMESTAMP
+```
+
+Contoh isi:
+
+* name: `create cars`, `edit cars`, `delete rentals`, `view payments`
+
+---
+
+### 8. **model\_has\_roles**
+
+(Menghubungkan `users` dengan `roles`)
+
+```sql
+role_id     BIGINT (FK → roles.id)
+model_type  VARCHAR DEFAULT 'App\Models\User'
+model_id    BIGINT (FK → users.id)
+PRIMARY KEY (role_id, model_id, model_type)
+```
+
+---
+
+### 9. **model\_has\_permissions**
+
+(Menghubungkan `users` dengan `permissions` secara langsung)
+
+```sql
+permission_id BIGINT (FK → permissions.id)
+model_type    VARCHAR DEFAULT 'App\Models\User'
+model_id      BIGINT (FK → users.id)
+PRIMARY KEY (permission_id, model_id, model_type)
+```
+
+---
+
+### 10. **role\_has\_permissions**
+
+(Menghubungkan `roles` dengan `permissions`)
+
+```sql
+permission_id BIGINT (FK → permissions.id)
+role_id       BIGINT (FK → roles.id)
+PRIMARY KEY (permission_id, role_id)
+```
+
+---
+
+## 📈 RELASI ANTAR TABEL
+
+```plaintext
+users
+ ├── hasMany → cars
+ ├── hasMany → rentals
+ └── hasOne/Many → roles (via Spatie)
+
+cars
+ ├── belongsTo → users (pemilik)
+ └── hasMany → rentals
+
+rentals
+ ├── belongsTo → users (penyewa)
+ ├── belongsTo → cars
+ ├── hasOne → payments
+ └── hasOne → reviews
+
+payments
+ └── belongsTo → rentals
+
+reviews
+ ├── belongsTo → users
+ └── belongsTo → rentals
+
+Spatie tables:
+ users ⇄ model_has_roles ⇄ roles ⇄ role_has_permissions ⇄ permissions
+ users ⇄ model_has_permissions ⇄ permissions
+```
+
+---
+
+## 🎁 CONTOH ROLE & PERMISSION SUGESTI
+
+### Roles:
+
+* `admin`
+* `customer`
+* `owner`
+
+### Permissions:
+
+* `create cars`
+* `edit cars`
+* `delete cars`
+* `rent cars`
+* `pay rental`
+* `review cars`
+* `manage users`
+* `view all rentals`
+
+---
+
+Kalau kamu mau, saya bisa bantu buatkan:
+
+* Semua **migration** Laravel-nya
+* Seeder untuk dummy role/user
+* Skema **diagram ERD** visual
+
+Ingin saya bantu dari bagian mana dulu? (migration, seeder, atau ERD?)
