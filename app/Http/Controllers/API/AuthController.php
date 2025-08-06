@@ -18,24 +18,15 @@ class AuthController extends Controller
             'name'         => 'required|string|max:255',
             'email'        => 'required|email|unique:users,email',
             'password'     => 'required|min:6|confirmed',
-            'phone_number' => 'nullable|string',
-            'address'      => 'nullable|string',
         ]);
 
         $user = User::create([
             'name'         => $validated['name'],
             'email'        => $validated['email'],
             'password'     => bcrypt($validated['password']),
-            'phone_number' => $validated['phone_number'] ?? null,
-            'address'      => $validated['address'] ?? null,
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
-
-        // return response()->json([
-        //     'user'  => $user,
-        //     'token' => $token,
-        // ]);
 
         return response()->json(['user' => $user, 'message' => 'Registered successfully.'], 201);
     }
@@ -56,10 +47,7 @@ class AuthController extends Controller
         $user = Auth::user();
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'user'  => $user,
-            'token' => $token,
-        ]);
+        return response()->json(['user'  => $user,'token' => $token, 'message' => 'Login berhasil.'], 200);
     }
 
     public function profile(Request $request)
@@ -72,5 +60,50 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Logout berhasil.']);
+    }
+
+    public function update(Request $request)
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name'         => 'sometimes|string|max:255',
+            'email'        => 'sometimes|email|unique:users,email,' . $user->id,
+            'phone_number' => 'nullable|string',
+            'address'      => 'nullable|string',
+        ]);
+
+        $user->update($validated);
+
+        return response()->json(['user' => $user, 'message' => 'Profile updated successfully.']);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $validated = $request->validate([
+            'current_password' => 'required',
+            'new_password'     => 'required|min:6|confirmed',
+        ]);
+
+        $user = $request->user();
+
+        if (!Hash::check($validated['current_password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['Current password is incorrect.']
+            ]);
+        }
+
+        $user->password = bcrypt($validated['new_password']);
+        $user->save();
+
+        return response()->json(['message' => 'Password changed successfully.']);
+    }
+
+    public function destroy(Request $request)
+    {
+        $user = $request->user();
+        $user->delete();
+
+        return response()->json(['message' => 'Akun berhasil dihapus.']);
     }
 }
