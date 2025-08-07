@@ -20,19 +20,21 @@ Route::middleware(['throttle:api'])->group(function () {
     });
 
     // role admin
-    Route::middleware(['auth:sanctum, role:admin'])->group(function () {
+    Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
         route::get('/showCars', [CarController::class, 'showAll']);
         route::get('/showCars/{id}', [CarController::class, 'showByID']);
         route::post('/addCar', [CarController::class, 'store']);
+        route::post('/updateCar/{car}', [CarController::class, 'update']);
+        route::post('/deleteCar/{car}', [CarController::class, 'destroy']);
     });
-
+    
     // role owner
-    Route::middleware(['auth:sanctum, role:owner'])->group(function () {
-        
+    Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
+
     });
     
     // role customer
-    Route::middleware(['auth:sanctum, role:customer'])->group(function () {
+    Route::middleware(['auth:sanctum', 'role:customer'])->group(function () {
         
     });
 

@@ -58,7 +58,12 @@ class AuthController extends Controller
         $user = Auth::user();
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json(['user'  => $user,'token' => $token, 'message' => 'Login berhasil.'], 200);
+        return response()->json([
+            'user'  => $user,
+            'token' => $token, 
+            'role' => $user->getRoleNames()->first(),
+            'message' => 'Login berhasil.',
+        ], 200);
     }
 
     public function profile(Request $request)
