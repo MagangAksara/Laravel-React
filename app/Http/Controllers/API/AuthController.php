@@ -18,17 +18,28 @@ class AuthController extends Controller
             'name'         => 'required|string|max:255',
             'email'        => 'required|email|unique:users,email',
             'password'     => 'required|min:6|confirmed',
+            'role'         => 'required|in:admin,customer,owner',
         ]);
 
         $user = User::create([
             'name'         => $validated['name'],
             'email'        => $validated['email'],
+            'email_verified_at' => now(),
             'password'     => bcrypt($validated['password']),
         ]);
 
+        // pengaturan role
+        $user->assignRole($validated['role']);
+
+        // Generate token for the user
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json(['user' => $user, 'message' => 'Registered successfully.'], 201);
+        return response()->json([
+            'user' => $user, 
+            'token' => $token,
+            'role' => $validated['role'],
+            'message' => 'Registered successfully.',
+        ], 201);
     }
 
     public function login(Request $request)
@@ -55,13 +66,6 @@ class AuthController extends Controller
         return response()->json($request->user());
     }
 
-    public function logout(Request $request)
-    {
-        $request->user()->currentAccessToken()->delete();
-
-        return response()->json(['message' => 'Logout berhasil.']);
-    }
-
     public function update(Request $request)
     {
         $user = $request->user();
@@ -78,6 +82,7 @@ class AuthController extends Controller
         return response()->json(['user' => $user, 'message' => 'Profile updated successfully.']);
     }
 
+    // optimalkan dengan pengecekan OTP yang dikirim pada email
     public function changePassword(Request $request)
     {
         $validated = $request->validate([
@@ -97,6 +102,13 @@ class AuthController extends Controller
         $user->save();
 
         return response()->json(['message' => 'Password changed successfully.']);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json(['message' => 'Logout berhasil.']);
     }
 
     public function destroy(Request $request)

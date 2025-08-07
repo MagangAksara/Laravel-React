@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('password');
             // masuk dalam profile bukan di register
             $table->string('phone_number')->nullable();
-            $table->string('address')->nullable();
+            // opsi tambahan jika role owner
+            $table->boolean('is_driver')->default(false); // false karena tidak semua owner adalah driver, dan tidak semua user adalah owner
             $table->rememberToken();
             $table->timestamps();
         });

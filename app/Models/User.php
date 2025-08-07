@@ -50,6 +50,7 @@ class User extends Authenticatable
         ];
     }
 
+    // Relationships
     public function cars()
     {
         return $this->hasMany(Car::class);
@@ -60,8 +61,9 @@ class User extends Authenticatable
         return $this->hasMany(Rental::class);
     }
 
-    public function roles()
+    public function reviews()
     {
-        return $this->belongsToMany(Role::class);
+        return $this->hasMany(Review::class);
     }
 }
+

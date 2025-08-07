@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('brand'); // e.g., Toyota, Honda
             $table->string('model')->nullable(); // e.g., Corolla, Civic
             // description
+            $table->text('car_image')->nullable(); // URL or path to the car image
             $table->string('plate_number')->unique();
             $table->string('color')->nullable(); // e.g., Red, Blue
             $table->string('type')->nullable(); // e.g., G for sedan, SUV, MPV

@@ -29,4 +29,9 @@ class Rental extends Model
     {
         return $this->hasOne(Payment::class);
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }
