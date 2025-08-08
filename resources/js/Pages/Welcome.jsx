@@ -1,4 +1,5 @@
 import React from "react";
+import { Head, Link } from '@inertiajs/react';
 
 const Welcome = () => {
   return (
@@ -13,15 +14,19 @@ const Welcome = () => {
           <a href="#" className="hover:text-blue-600">rent car</a>
         </div>
         <div className="flex gap-4">
-          <button className="px-4 py-2 border border-blue-600 rounded-full text-blue-600 hover:bg-blue-600 hover:text-white">login</button>
-          <button className="px-4 py-2 bg-blue-600 rounded-full text-white hover:bg-blue-700">register</button>
+          <Link href="/login">
+            <button className="px-4 py-2 border border-blue-600 rounded-full text-blue-600 hover:bg-blue-600 hover:text-white">login</button>
+          </Link>
+          <Link href="/register">
+            <button className="px-4 py-2 bg-blue-600 rounded-full text-white hover:bg-blue-700">register</button>
+          </Link>
         </div>
       </nav>
 
-      {/* Hero */}
+      {/* Hero */}}
       <section className="relative bg-gray-100">
         <img
-          src="https://source.unsplash.com/1600x600/?luxury-car"
+          src="https://i.pinimg.com/736x/32/ef/3e/32ef3e2ce15db067e704c43d1bcb4475.jpg"
           alt="Hero Car"
           className="w-full object-cover h-[500px]"
         />
@@ -41,7 +46,7 @@ const Welcome = () => {
       {/* About Us */}
       <section className="flex flex-col md:flex-row items-center gap-8 p-12 bg-white">
         <img
-          src="https://source.unsplash.com/600x400/?business-team"
+          src="https://i.pinimg.com/1200x/5b/4c/3b/5b4c3b419c8eecbedd2b5f351e9b7c1b.jpg"
           alt="About Us"
           className="rounded-xl shadow-md w-full md:w-1/2 object-cover"
         />

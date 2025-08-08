@@ -7,11 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Payment extends Model
 {
     protected $fillable = [
-        'user_id',
-        'amount',
+        'rental_id',
+        'external_id',
+        'xendit_payment_id',
+        'payer_email',
         'payment_method',
         'status',
-        'transaction_id',
+        'checkout_link',
+        'paid_at',
+        'description',
     ];
 
     public function rental()

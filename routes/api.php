@@ -1,7 +1,9 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CarController;
+use App\Http\Controllers\API\PaymentController;
 
 Route::middleware(['throttle:api'])->group(function () {
     // akses tanpa login
@@ -13,7 +15,7 @@ Route::middleware(['throttle:api'])->group(function () {
 
     // role all
     Route::middleware('auth:sanctum')->group(function () {
-        // user profile and logout routes
+        // user profile and logout Routes
         Route::get('/profile', [AuthController::class, 'profile']);
         Route::post('/update', [AuthController::class, 'update']);
         Route::post('/logout', [AuthController::class, 'logout']);
@@ -21,11 +23,14 @@ Route::middleware(['throttle:api'])->group(function () {
 
     // role admin
     Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-        route::get('/showCars', [CarController::class, 'showAll']);
-        route::get('/showCars/{id}', [CarController::class, 'showByID']);
-        route::post('/addCar', [CarController::class, 'store']);
-        route::post('/updateCar/{car}', [CarController::class, 'update']);
-        route::post('/deleteCar/{car}', [CarController::class, 'destroy']);
+        Route::get('/showCars', [CarController::class, 'showAll']);
+        Route::get('/showCars/{id}', [CarController::class, 'showByID']);
+        Route::post('/addCar', [CarController::class, 'store']);
+        Route::post('/updateCar/{car}', [CarController::class, 'update']);
+        Route::post('/deleteCar/{car}', [CarController::class, 'destroy']);
+
+        Route::get('/showPayments', [PaymentController::class, 'index']);
+        Route::post('/createPayment', [PaymentController::class, 'store']);
     });
     
     // role owner
