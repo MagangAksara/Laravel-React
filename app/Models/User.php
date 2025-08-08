@@ -22,9 +22,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'email_verified_at',
         'password',
         'phone_number',
-        'address',
+        // 'address',
+        'is_driver',
     ];
 
     /**
@@ -51,6 +53,11 @@ class User extends Authenticatable
     }
 
     // Relationships
+    public function address()
+    {
+        return $this->hasOne(UserAddress::class);
+    }
+
     public function cars()
     {
         return $this->hasMany(Car::class);
