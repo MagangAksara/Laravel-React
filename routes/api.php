@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CarController;
+use App\Http\Controllers\API\RentalController;
 use App\Http\Controllers\API\PaymentController;
 
 Route::middleware(['throttle:api'])->group(function () {
@@ -23,12 +24,17 @@ Route::middleware(['throttle:api'])->group(function () {
 
     // role admin
     Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-        Route::get('/showCars', [CarController::class, 'showAll']);
-        Route::get('/showCars/{id}', [CarController::class, 'showByID']);
-        Route::post('/addCar', [CarController::class, 'store']);
-        Route::post('/updateCar/{car}', [CarController::class, 'update']);
-        Route::post('/deleteCar/{car}', [CarController::class, 'destroy']);
+        // Cars
+        Route::get('/car', [CarController::class, 'showAll']);
+        Route::get('/car/show/{id}', [CarController::class, 'showByID']);
+        Route::post('/car/add', [CarController::class, 'store']);
+        Route::post('/car/update/{car}', [CarController::class, 'update']);
+        Route::post('/car/delete/{car}', [CarController::class, 'destroy']);
 
+        // Rentals
+        Route::get('/rental', [RentalController::class, 'show']);
+
+        // Payments
         Route::get('/payment', [PaymentController::class, 'showPayments']);
         Route::post('/payment/create', [PaymentController::class, 'store']);
         Route::post('/payment/notification', [PaymentController::class, 'notification']);

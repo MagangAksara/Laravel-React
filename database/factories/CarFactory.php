@@ -23,7 +23,7 @@ class CarFactory extends Factory
             'user_id' => User::role('owner')->inRandomOrder()->first()?->id,
             'brand' => $this->faker->randomElement(['Toyota', 'Honda', 'Suzuki', 'Daihatsu', 'Mitsubishi']),
             'model' => $this->faker->word(),
-            'car_image' => $this->faker->imageUrl(640, 480, 'transport'),
+            'car_image' => 'https://picsum.photos/640/480?random=' . fake()->unique()->numberBetween(1, 1000),
             'plate_number' => strtoupper($this->faker->bothify('?? #### ??')),
             'color' => $this->faker->safeColorName(),
             'type' => $this->faker->randomElement(['SUV', 'Sedan', 'MPV', 'Hatchback']),

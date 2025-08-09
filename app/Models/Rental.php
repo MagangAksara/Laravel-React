@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @mixin IdeHelperRental
+ */
 class Rental extends Model
 {
     protected $fillable = [
