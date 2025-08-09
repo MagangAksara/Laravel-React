@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 
 use Xendit\Xendit;
 use Xendit\Configuration;
+use Xendit\XenditSdkException;
 use Xendit\invoice\InvoiceApi;
 use Xendit\Invoice\CreateInvoiceRequest;
 
@@ -62,7 +63,7 @@ class PaymentController extends Controller
                 'data' => $payment,
                 'checkout_link' => $result->getInvoiceUrl(),
             ], 201);
-        } catch (\Xendit\XenditSdkException $e) {
+        } catch (XenditSdkException $e) {
             Log::error($e->getMessage());
             // Log::error($e->getResponseBody()); // Removed due to undefined method
             return response()->json([
@@ -70,5 +71,72 @@ class PaymentController extends Controller
                 'details' => $e->getMessage(),
             ], 400);
         }
+    }
+
+    public function notification(Request $request)
+    {
+        $result = $this->apiInstance->getInvoices(null, $request->external_id);
+
+        // get data dari DB
+        $payment = Payment::where('external_id', $request->external_id)->first();
+
+        if (!$payment) {
+            return response()->json(['message' => 'Payment tidak ditemukan'], 404);
+        }
+
+        if ($payment->status == 'settled') {
+            return response()->json('Payment telah diproses');
+        }
+
+        // update status
+        $payment->status = strtolower($result[0]['status']);
+
+        // update paid_at jika ada dari Xendit
+        if (!empty($result[0]['paid_at'])) {
+            $payment->paid_at = $result[0]['paid_at'];
+        }
+
+        // simpan perubahan
+        $payment->save();
+
+        return response()->json([
+            'message' => 'Payment status updated successfully',
+            'updated_payment' => [
+                'id' => $payment->id,
+                'external_id' => $payment->external_id,
+                'status' => $payment->status,
+                'paid' => $payment->status === 'settled' || $payment->status === 'paid',
+                'paid_at' => $payment->paid_at,
+                'description' => $payment->description,
+                'payer_email' => $payment->payer_email,
+                'checkout_link' => $payment->checkout_link,
+            ]
+        ]);
+    
+
+        // $data = $request->all();
+        // Log::info('Payment notification received', $data);
+
+        // if (isset($data['id']) && isset($data['status'])) {
+        //     $payment = Payment::where('xendit_payment_id', $data['id'])->first();
+
+        //     if ($payment) {
+        //         $payment->status = $data['status'];
+        //         if ($data['status'] === 'PAID') {
+        //             $payment->paid_at = now();
+        //         }
+        //         $payment->save();
+
+        //         return response()->json(['message' => 'Payment status updated successfully'], 200);
+        //     }
+        // }
+
+        // return response()->json(['error' => 'Invalid notification data'], 400);
+    }
+
+    public function showPayments()
+    {
+        $payments = Payment::all();
+        return response()->json($payments);
     }
 }

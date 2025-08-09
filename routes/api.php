@@ -29,8 +29,9 @@ Route::middleware(['throttle:api'])->group(function () {
         Route::post('/updateCar/{car}', [CarController::class, 'update']);
         Route::post('/deleteCar/{car}', [CarController::class, 'destroy']);
 
-        Route::get('/showPayments', [PaymentController::class, 'index']);
-        Route::post('/createPayment', [PaymentController::class, 'store']);
+        Route::get('/payment', [PaymentController::class, 'showPayments']);
+        Route::post('/payment/create', [PaymentController::class, 'store']);
+        Route::post('/payment/notification', [PaymentController::class, 'notification']);
     });
     
     // role owner
