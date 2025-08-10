@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+
 use App\Models\User;
+
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,21 +33,21 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => 'required|in:admin,customer,owner',
+            'role'     => 'required|in:admin,customer,owner',
         ]);
 
         $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'name'              => $validated['name'],
+            'email'             => $validated['email'],
+            'password'          => Hash::make($validated['password']),
+            'email_verified_at' => now(), // Diadaptasi dari kode API Anda
         ]);
 
         // atur role
         $user->assignRole($validated['role']);
-        
 
         event(new Registered($user));
 

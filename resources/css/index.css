@@ -1,0 +1,156 @@
+/* TABLE OF CONTENT 
+1. Tailwind CSS
+2. Reset CSS
+3. CSS Variable
+4. Fonts CSS
+*/
+
+/* Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --white_a700: #fdfcfd;
+        --indigo_400: #4d8eb7;
+        --indigo_800_7f: #373e837f;
+        --black_900_3f: #0000003f;
+        --white_a700_01: #ffffff;
+        --blue_gray_800: #223f51;
+        --black_900_19: #00000019;
+        --black_900: #000000;
+        --gray_900: #122121;
+        --blue_gray_900: #303231;
+        --blue_gray_800_01: #334b5a;
+        --blue_gray_600: #376583;
+        --gray_400: #b7b5b1;
+        --white_a700_b2: #ffffffb2;
+        --black_900_7f: #0000007f;
+
+        --radius-xs: 14px;
+
+        --space-xs: 14px;
+    }
+    [type="text"],
+    input:where(:not([type])),
+    [type="email"],
+    [type="url"],
+    [type="password"],
+    [type="number"],
+    [type="date"],
+    [type="datetime-local"],
+    [type="month"],
+    [type="search"],
+    [type="tel"],
+    [type="time"],
+    [type="week"],
+    [multiple],
+    textarea,
+    select {
+        appearance: none;
+        background-color: transparent;
+        border-color: unset;
+        border-width: 0;
+        border-radius: unset;
+        padding: unset;
+        font-size: unset;
+        line-height: unset;
+    }
+    [type="text"]:focus,
+    [type="email"]:focus,
+    [type="url"]:focus,
+    [type="password"]:focus,
+    [type="number"]:focus,
+    [type="date"]:focus,
+    [type="search"]:focus,
+    [multiple]:focus,
+    textarea:focus,
+    select:focus {
+        --tw-ring-color: transparent;
+        border-color: transparent;
+    }
+    [type="radio"]:focus,
+    [type="checkbox"]:focus {
+        --tw-ring-color: transparent;
+    }
+}
+
+/* 2. Reset CSS */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Playfair Display;
+}
+
+* {
+  box-sizing: border-box;
+  line-height: normal;
+  font-family: inherit;
+  margin: unset;
+}
+
+a {
+  text-decoration: none;
+  display: block;
+}
+
+ul {
+  margin: 0;
+  margin-inline: unset !important;
+  padding: 0;
+  list-style: none;
+}
+
+/* 3. CSS Variable */
+:root {
+    --white_a700: #fdfcfd;
+    --indigo_400: #4d8eb7;
+    --indigo_800_7f: #373e837f;
+    --black_900_3f: #0000003f;
+    --white_a700_01: #ffffff;
+    --blue_gray_800: #223f51;
+    --black_900_19: #00000019;
+    --black_900: #000000;
+    --gray_900: #122121;
+    --blue_gray_900: #303231;
+    --blue_gray_800_01: #334b5a;
+    --blue_gray_600: #376583;
+    --gray_400: #b7b5b1;
+    --white_a700_b2: #ffffffb2;
+    --black_900_7f: #0000007f;
+
+    --radius-xs: 14px;
+
+    --space-xs: 14px;
+}
+
+/* 4. Fonts CSS */
+@font-face {
+    font-display: swap;
+  font-style: normal;
+  src: url("/public/fonts/PlayfairDisplayBold.ttf");
+  font-family: "Playfair Display";
+  font-weight: 700;
+}
+@font-face {
+  font-display: swap;
+  font-style: normal;
+  src: url("/public/fonts/QuicksandMedium.ttf");
+  font-family: "Quicksand";
+  font-weight: 500;
+}
+@font-face {
+  font-display: swap;
+  font-style: normal;
+  src: url("/public/fonts/QuicksandSemiBold.ttf");
+  font-family: "Quicksand";
+  font-weight: 600;
+}
+@font-face {
+  font-display: swap;
+  font-style: normal;
+  src: url("/public/fonts/PlayfairDisplaySemiBold.ttf");
+  font-family: "Playfair Display";
+  font-weight: 600;
+}

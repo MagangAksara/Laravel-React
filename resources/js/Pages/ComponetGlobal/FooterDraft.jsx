@@ -4,7 +4,7 @@ import { Link } from "@inertiajs/react";
 export default function FooterDraft() {
     return (
       <footer
-        className="bg-gray-900 text-white p-8 mt-12"
+        className="bg-gray-900 text-white"
         style={{
           backgroundImage: "url('https://images.unsplash.com/photo-1516211230282-08ff4c531afa?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
           backgroundSize: "cover",
@@ -13,7 +13,7 @@ export default function FooterDraft() {
       >
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 bg-gray-900 bg-opacity-80 rounded-lg p-6">
         <div>
-        <div className="text-[32px] font-semibold text-2xl font-bold text-blue-400 mb-4">
+        <div className="text-[32px] text-2xl font-bold text-blue-400 mb-4">
             <span style={{ color: "#FDFCFD" }}>Easy</span>
             <span style={{ color: "#4e8eb8" }}>Ride</span>
           </div>

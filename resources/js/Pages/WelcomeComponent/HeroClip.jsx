@@ -1,101 +1,93 @@
 // HeroClip.jsx
 import React, { useId } from "react";
 
-/**
- * HeroClip
- * - imageUrl: string (url gambar)
- * - height: tailwind height class (default "h-[500px]")
- *
- * Catatan:
- * - Komponen ini meng-embed SVG dengan viewBox 1935x921 (sesuai path yang kamu kasih).
- * - Gambar akan di-scale dengan preserveAspectRatio="xMidYMid slice" (mirip object-cover).
- */
-export default function HeroClip({ imageUrl, height = "h-[650px]" }) {
-  const id = useId(); // unik untuk clip + filter
-  const clipId = `clip-${id}`;
-  const filterId = `filter-${id}`;
-
+  export default function HeroClip({ imageUrl }) {
   const img =
     imageUrl ??
-    "https://images.unsplash.com/photo-1656685299734-52a0bb4425aa?q=80&w=1032&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+    "https://images.unsplash.com/photo-1656685299734-52a0bb4425aa?q=80&w=1032&auto=format&fit=crop&ixlib=rb-4.1.0";
 
   return (
-    <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen bg-white">
-      <div className={`w-full ${height}`}>
-        <svg
-          className="w-full h-full"
-          viewBox="0 0 1935 921"
-          preserveAspectRatio="xMidYMid slice"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <defs>
-            {/* Drop shadow filter */}
-            <filter
-              id={filterId}
-              x="0"
-              y="0"
-              width="1935"
-              height="921"
-              filterUnits="userSpaceOnUse"
-              colorInterpolationFilters="sRGB"
-            >
-              <feFlood floodOpacity="0" result="BackgroundImageFix" />
-              <feColorMatrix
-                in="SourceAlpha"
-                type="matrix"
-                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                result="hardAlpha"
-              />
-              <feOffset dy="4" />
-              <feGaussianBlur stdDeviation="50" />
-              <feComposite in2="hardAlpha" operator="out" />
-              <feColorMatrix
-                type="matrix"
-                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"
-              />
-              <feBlend
-                mode="normal"
-                in2="BackgroundImageFix"
-                result="effect1_dropShadow"
-              />
-              <feBlend
-                mode="normal"
-                in="SourceGraphic"
-                in2="effect1_dropShadow"
-                result="shape"
-              />
-            </filter>
+    <section id="hero" className="relative w-full" style={{ height: "580px" }}>
+      {/* Bentuk utama */}
+      {/* <div className="relative"> */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ 
+            backgroundImage: `url(${img})`,
+          }}
+        />
+        <div
+          className="absolute bottom-0 left-0 h-full"
+          style={{
+            width: "55%",
+            height: "15%",
+            boxShadow: "20px 20px 20px rgba(0,0,0,0.15)",
+            background: "transparent",
+            pointerEvents: "none" // biar gak menghalangi interaksi
+          }}
+        />
+      {/* </div> */}
 
-            {/* ClipPath */}
-            <clipPath id={clipId} clipPathUnits="userSpaceOnUse">
-              <path d="M1835 625H1073C1061.95 625 1053 633.954 1053 645V817H100V96H1835V625Z" />
-            </clipPath>
-          </defs>
+      {/* Bentuk kedua mengatur  */}
+      {/* <div
+        className="absolute bottom-0 left-0 bg-cover bg-center"
+        style={{ 
+          backgroundImage: `url(${img})`, 
+          width: "55%",
+          height: "15%",
+          borderBottomRightRadius: "20px",
+        }}
+      /> */}
 
-          {/* Background with filter */}
-          <g filter={`url(#${filterId})`}>
-            <rect
-              x="0"
-              y="0"
-              width="1935"
-              height="921"
-              fill="#D9D9D9"
-              clipPath={`url(#${clipId})`}
-            />
-          </g>
-
-          {/* Main image */}
-          <image
-            href={img}
-            x="0"
-            y="0"
-            width="1935"
-            height="921"
-            preserveAspectRatio="xMidYMid slice"
-            clipPath={`url(#${clipId})`}
-          />
-        </svg>
+      {/* Konten di atas gambar */}
+      <div className="absolute inset-0 flex flex-col justify-center items-start px-12 bg-black/40">
+        <h1 className="text-5xl md:text-6xl font-bold text-white">
+          <span className="text-blue-400">Ride</span> your journey
+        </h1>
+        <p className="text-white text-lg mt-4 max-w-xl">
+          Find your ride, book it now, and start your journey in comfort today.
+        </p>
+        <button className="mt-8 px-6 py-3 bg-blue-600 rounded-full text-white text-lg hover:bg-blue-700">
+          Choose your car →
+        </button>
       </div>
+
+      {/* Bentuk penutup putih di sudut bawah kiri */}
+      <div
+        className="absolute bottom-0 right-0 p-0 m-0"
+        style={{
+          width: "45%",
+          height: "15%",
+          background: "white", // untuk menhapus efek garis tepi yang muncul akibat inset di box shadow
+          borderTopLeftRadius: "20px",
+          boxShadow: "inset 12px 12px 20px rgba(0,0,0,0.15)"
+        }}
+      />
+      {/* <div
+        className="absolute bottom-0 right-0 bg-white"
+        style={{
+          width: "45%",
+          height: "15%",
+          borderTopLeftRadius: "20px",
+          borderBottomLeftRadius: "-20px",
+          background: `
+          //   linear-gradient(to right, rgba(0,0,0,0.10), transparent 10%),
+          //   linear-gradient(to bottom, rgba(0,0,0,0.15), transparent 20%),
+          //   white
+          // `,
+          backgroundBlendMode: "multiply",
+
+          // Mask untuk bentuk “S” di sudut kiri
+          WebkitMaskImage: `
+            radial-gradient(circle at top left, black 20px, transparent 21px),
+            radial-gradient(circle at bottom left, black 21px)
+          `,
+          WebkitMaskRepeat: "no-repeat",
+          WebkitMaskSize: "100% 100%",
+          WebkitMaskComposite: "source-over",
+          maskComposite: "intersect" // untuk browser yang mendukung
+        }}
+      /> */}
     </section>
   );
 }

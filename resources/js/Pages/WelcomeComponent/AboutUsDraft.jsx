@@ -3,7 +3,7 @@ import React from "react";
 
 export default function AboutUsDraft() {
     return (
-        <section className="flex flex-col gap-8 p-12 bg-white items-center" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <section id="about-us" className="flex flex-col gap-8 p-12 bg-white items-center" style={{ fontFamily: "'Playfair Display', serif" }}>
             <h2 className="text-[32px] font-semibold mt-10 mb-3 text-center">About Us</h2>
             <div className="flex flex-col md:flex-row items-center gap-8 bg-white">
                 <img
