@@ -79,7 +79,7 @@ export default function NavbarDraft() {
                         Login
                     </button>
                 </Link>
-                <Link href="/register">
+                <Link href="/choose-role">
                     <button className="px-3 py-1.5 bg-blue-500 border border-red-600 rounded-full text-red-600 text-sm hover:bg-red-600 hover:text-white">
                         Register
                     </button>

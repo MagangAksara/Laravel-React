@@ -129,28 +129,28 @@ ul {
 @font-face {
     font-display: swap;
   font-style: normal;
-  src: url("/public/fonts/PlayfairDisplayBold.ttf");
+  src: url("/public/fonts/playfair/PlayfairDisplay-Bold.ttf");
   font-family: "Playfair Display";
   font-weight: 700;
 }
 @font-face {
   font-display: swap;
   font-style: normal;
-  src: url("/public/fonts/QuicksandMedium.ttf");
+  src: url("/public/fonts/quicksand/Quicksand-Medium.ttf");
   font-family: "Quicksand";
   font-weight: 500;
 }
 @font-face {
   font-display: swap;
   font-style: normal;
-  src: url("/public/fonts/QuicksandSemiBold.ttf");
+  src: url("/public/fonts/quicksand/Quicksand-SemiBold.ttf");
   font-family: "Quicksand";
   font-weight: 600;
 }
 @font-face {
   font-display: swap;
   font-style: normal;
-  src: url("/public/fonts/PlayfairDisplaySemiBold.ttf");
+  src: url("/public/fonts/playfair/PlayfairDisplay-SemiBold.ttf");
   font-family: "Playfair Display";
   font-weight: 600;
 }

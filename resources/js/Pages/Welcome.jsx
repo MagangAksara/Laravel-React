@@ -9,25 +9,29 @@ import FooterDraft from "./ComponetGlobal/FooterDraft.jsx";
 
 const Welcome = ({ cars }) => {
   return (
-    <div className="font-sans text-gray-800">
- 
-      {/* Navbar */}
-      <NavbarDraft/>
+    <>
+      <Head title="Welcome" />
 
-      {/* Hero */}
-      <HeroClip/>
-      {/* <HeroClip_D/> */}
+      <div className="font-sans text-gray-800">
+  
+        {/* Navbar */}
+        <NavbarDraft/>
 
-      {/* About Us */}
-      <AboutUsDraft/>
+        {/* Hero */}
+        <HeroClip/>
+        {/* <HeroClip_D/> */}
 
-      {/* Choose your car */}
-      <CarsDraft cars={cars}/>
+        {/* About Us */}
+        <AboutUsDraft/>
 
-      {/* Footer */}
-      <FooterDraft/>
+        {/* Choose your car */}
+        <CarsDraft cars={cars}/>
 
-    </div>
+        {/* Footer */}
+        <FooterDraft/>
+
+      </div>
+    </>
   );
 };
 

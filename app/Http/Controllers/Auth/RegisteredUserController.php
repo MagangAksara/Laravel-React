@@ -20,9 +20,12 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): Response
+    public function create(string $role = 'customer'): Response
     {
-        return Inertia::render('Auth/Register');
+        // return Inertia::render('Auth/Register');
+        return Inertia::render('Auth/Register', [
+            'role' => $role,
+        ]);
     }
 
     /**

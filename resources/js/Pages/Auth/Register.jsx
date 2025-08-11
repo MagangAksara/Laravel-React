@@ -1,139 +1,89 @@
 import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/Components/ui/select';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { FloatingLabelInput } from '@/assets/FloatingLabelInput';
+import { FloatingLabelPassword } from '@/assets/FloatingLabelPassword';
 
 export default function Register() {
+     const { role } = usePage().props; 
+
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         email: '',
         password: '',
         password_confirmation: '',
-        role: 'customer',
+        role: role || 'customer', // default kalau tidak ada
     });
 
+    // const submit = (e) => {
+    //     e.preventDefault();
+    //     post(route('register'), {
+    //         onFinish: () => reset('password', 'password_confirmation'),
+    //     });
+    // };
     const submit = (e) => {
         e.preventDefault();
-
-        post(route('register'), {
+        post(route("register", { 
+            role,
             onFinish: () => reset('password', 'password_confirmation'),
-        });
+        })); // Kirim role ke route
     };
 
     return (
         <GuestLayout>
             <Head title="Register" />
-
+            <header className='flex flex-col items-center text-white text-2xl p-3 font-semibold'>
+                <h1>Register</h1>
+            </header>
             <form onSubmit={submit}>
                 <div>
-                    <InputLabel htmlFor="name" value="Name" />
-
-                    <TextInput
+                    <FloatingLabelInput
                         id="name"
-                        name="name"
+                        label="Name"
                         value={data.name}
-                        className="mt-1 block w-full"
-                        autoComplete="name"
-                        isFocused={true}
                         onChange={(e) => setData('name', e.target.value)}
-                        required
                     />
-
                     <InputError message={errors.name} className="mt-2" />
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="email" value="Email" />
-
-                    <TextInput
+                    <FloatingLabelInput
                         id="email"
+                        label="Email"
                         type="email"
-                        name="email"
                         value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
                         onChange={(e) => setData('email', e.target.value)}
-                        required
                     />
-
                     <InputError message={errors.email} className="mt-2" />
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
-                    <TextInput
+                    <FloatingLabelPassword
                         id="password"
-                        type="password"
-                        name="password"
+                        label="Password"
                         value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) => setData('password', e.target.value)}
-                        required
+                        onChange={(e) => setData("password", e.target.value)}
                     />
-
                     <InputError message={errors.password} className="mt-2" />
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel
-                        htmlFor="password_confirmation"
-                        value="Confirm Password"
-                    />
-
-                    <TextInput
+                    <FloatingLabelPassword
                         id="password_confirmation"
-                        type="password"
-                        name="password_confirmation"
+                        label="password_confirmation"
                         value={data.password_confirmation}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) =>
-                            setData('password_confirmation', e.target.value)
-                        }
-                        required
+                        onChange={(e) => setData("password_confirmation", e.target.value)}
                     />
-
-                    <InputError
-                        message={errors.password_confirmation}
-                        className="mt-2"
-                    />
+                    <InputError message={errors.password_confirmation} className="mt-2" />
                 </div>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="role" value="Register as" />
-                    <Select
-                        name="role"
-                        value={data.role}
-                        onValueChange={(value) => setData('role', value)}
-                        required
-                    >
-                        <SelectTrigger id="role" className="w-full mt-1">
-                            <SelectValue placeholder="Select a role" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="customer">Customer</SelectItem>
-                            <SelectItem value="owner">Owner</SelectItem>
-                            {/* <SelectItem value="admin">Admin</SelectItem> */}
-                        </SelectContent>
-                    </Select>
-                    <InputError message={errors.role} className="mt-2" />
-                </div>
+                <input type="hidden" name="role" value={data.role} />
 
                 <div className="mt-4 flex items-center justify-end">
                     <Link
                         href={route('login')}
-                        className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        className="rounded-md text-sm text-gray-600 underline hover:text-gray-900"
                     >
                         Already registered?
                     </Link>

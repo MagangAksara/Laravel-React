@@ -1,0 +1,6 @@
+client:733 [vite] connecting...
+client:827 [vite] connected.
+chunk-NXESFFTV.js?v=1c93c8c1:21609 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+index.js:1 content loaded
+index.a4962feb.js:3 Content Script: Initializing
+:8000/public/fonts/PlayfairDisplaySemiBold.ttf:1  GET http://127.0.0.1:8000/public/fonts/PlayfairDisplaySemiBold.ttf net::ERR_ABORTED 404 (Not Found)
