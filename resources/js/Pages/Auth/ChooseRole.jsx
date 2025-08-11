@@ -43,7 +43,7 @@ export function ChooseRole() {
                 </div>
 
                 <Link
-                    href={selectedRole ? route('register.with.role', selectedRole) : '#'}
+                    href={selectedRole ? route('register', selectedRole) : '#'}
                     className={`mt-6 px-6 py-2 rounded bg-blue-500 text-white transition-colors duration-300 ${
                         !selectedRole ? 'opacity-50 cursor-not-allowed' : 'hover:bg-orange-400 hover:text-black'
                     }`}
