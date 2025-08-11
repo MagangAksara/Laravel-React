@@ -5,6 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Str;
 use App\Models\User;
 
 /**
@@ -20,6 +21,7 @@ class CarFactory extends Factory
     public function definition(): array
     {
         return [
+            // 'user_id' => User::role('owner')->inRandomOrder()->first()?->Str::uuid(),
             'user_id' => User::role('owner')->inRandomOrder()->first()?->id,
             'brand' => $this->faker->randomElement(['Toyota', 'Honda', 'Suzuki', 'Daihatsu', 'Mitsubishi']),
             'model' => $this->faker->word(),
