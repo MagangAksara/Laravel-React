@@ -16,6 +16,7 @@ export function FloatingLabelPassword({ id, label, value, onChange }) {
         value={value}
         onChange={onChange}
         placeholder=""
+        autoComplete="off"
         className={`peer w-full border-0 border-b-2 border-gray-400 bg-transparent text-white placeholder-transparent focus:outline-none focus:border-blue-500`}
       />
 

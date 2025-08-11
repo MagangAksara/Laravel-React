@@ -61,7 +61,7 @@ export default function Login({ status, canResetPassword }) {
                     <InputError message={errors.password} className="mt-2" />
                 </div>
 
-                <div className="relative mt-4 ml-10 w-[80%]">
+                {/* <div className="relative mt-4 ml-10 w-[80%]">
                     <label className="flex items-center">
                         <Checkbox
                             name="remember"
@@ -74,32 +74,32 @@ export default function Login({ status, canResetPassword }) {
                             Remember me
                         </span>
                     </label>
-                </div>
+                </div> */}
 
                 <div className='flex flex-col items-center'>
                     <div className="mt-4 flex items-center justify-end">
                         {canResetPassword && (
                             <Link
                                 href={route('password.request')}
-                                className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                className="rounded-md text-sm text-blue-400 underline hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
                                 Forgot your password?
                             </Link>
                         )}
 
-                        <PrimaryButton className="ms-4" disabled={processing}>
+                        <PrimaryButton className="ms-4 bg-blue-400" disabled={processing}>
                             Log in
                         </PrimaryButton>
                     </div>
-                    <div className="mt-4 flex items-center justify-end">
-                        Don’t have an account yet?
+                    <div className="mt-4 flex items-center justify-end text-white">
+                        Don’t have an account yet?&nbsp;
                         <Link
                             href={route('chooseRole')}
-                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            className="rounded-md text-sm text-blue-400 underline hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                         >
-                            &nbsp;Register &nbsp;
+                            Register
                         </Link>
-                        now.
+                        &nbsp;now.
                     </div>
                 </div>
             </form>

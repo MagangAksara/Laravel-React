@@ -75,12 +75,22 @@ export default function NavbarDraft() {
             </div>
             <div className="flex gap-3">
                 <Link href="/login">
-                    <button className="px-3 py-1.5 bg-white border border-blue-600 rounded-full text-blue-600 text-sm hover:bg-blue-600 hover:text-white">
+                    <button 
+                        className="flex-1 px-3 py-1.5 bg-blue-600 border border-yellow-300 rounded-full text-white text-sm hover:bg-yellow-300 hover:text-black"
+                        style={{
+                            fontFamily:"quicksand"
+                        }}
+                    >
                         Login
                     </button>
                 </Link>
                 <Link href="/choose-role">
-                    <button className="px-3 py-1.5 bg-blue-500 border border-red-600 rounded-full text-red-600 text-sm hover:bg-red-600 hover:text-white">
+                    <button 
+                        className="flex-1 px-3 py-1.5 bg-white border border-blue-600 rounded-full text-black text-sm hover:bg-blue-600 hover:text-white"
+                        style={{
+                            fontFamily:"quicksand"
+                        }}
+                    >
                         Register
                     </button>
                 </Link>
