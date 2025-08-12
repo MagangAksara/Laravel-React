@@ -15,8 +15,8 @@ export default function PageHeader() {
 
   return (
     <h2 className="text-l font-semibold leading-tight text-gray-800 flex items-center gap-2">
-      <Link href="/" className="text-blue-500 hover:underline">
-        Home
+      <Link href="/dashboard" className="text-blue-500 hover:underline">
+        @
       </Link>
       <span className="text-gray-400">{'>'}</span>
       <span className="text-gray-800">{formatTitle(currentPath)}</span>

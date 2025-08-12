@@ -48,5 +48,33 @@ Route::middleware('auth')->get('/dashboard', function () {
     abort(403);
 })->name('dashboard');
 
+Route::get('/booking/{id}', function () {
+    return Inertia::render('Customer/Booking', [
+        // Data ini nanti bisa diganti dari database
+        'car' => [
+            'brand' => 'Toyota',
+            'model' => 'Yaris G GR-Sport',
+            'duration' => '2 day',
+            'price_per_day' => 250000,
+            'total_price' => 500000,
+            'driver_fee' => 200000,
+            'pickup_fee' => 30000,
+            'return_fee' => 30000,
+            'total_payment' => 760000,
+        ],
+        'pickup_location' => [
+            'name' => 'Amelia Putri Safani',
+            'phone' => '08962642xxxxx',
+            'address' => 'Jl. Panglima Sudirman No.12, Karangploso, Malang'
+        ],
+        'return_location' => [
+            'name' => 'Amelia Putri Safani',
+            'phone' => '08962642xxxxx',
+            'address' => 'Jl. Panglima Sudirman No.12, Karangploso, Malang'
+        ],
+        'payment_method' => 'Mandiri'
+    ]);
+})->name('booking');
+
 
 require __DIR__.'/auth.php';

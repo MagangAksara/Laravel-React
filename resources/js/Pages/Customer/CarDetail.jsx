@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { MapPin, Star } from "lucide-react";
-import { Head, usePage } from "@inertiajs/react";
+import { Head, Link, usePage } from "@inertiajs/react";
 import Navbar from "@/Pages/ComponetGlobal/Navbar";
 import PageHeader from "@/Pages/ComponetGlobal/PageHeader";
 
@@ -110,9 +110,11 @@ export default function CarDetail() {
               <div className="mt-4">{renderTabContent()}</div>
 
               {/* Tombol Sewa */}
-              <button className="mt-6 px-6 py-3 bg-blue-500 text-white rounded-full hover:bg-blue-600">
-                Rent Now
-              </button>
+              <Link href={`/booking/${car.id}`}>
+                <button className="mt-6 px-6 py-3 bg-blue-500 text-white rounded-full hover:bg-blue-600">
+                  Rent Now
+                </button>
+              </Link>
             </div>
           </div>
 

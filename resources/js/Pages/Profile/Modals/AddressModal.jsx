@@ -1,3 +1,5 @@
+import { Input } from '@/Components/ui/input';
+import { Textarea } from '@/Components/ui/textarea';
 import { useForm } from '@inertiajs/react';
 
 export default function AddressModal({ show, onClose, address = null }) {
@@ -31,69 +33,73 @@ export default function AddressModal({ show, onClose, address = null }) {
                 </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-3">
-                    <input
+                    <Input
                         type="text"
                         placeholder="Name"
                         value={data.name}
                         onChange={(e) => setData('name', e.target.value)}
                         className="w-full border rounded p-2"
                     />
-                    <input
+                    <Input
                         type="text"
                         placeholder="Number Phone"
                         value={data.number_phone}
                         onChange={(e) => setData('number_phone', e.target.value)}
                         className="w-full border rounded p-2"
                     />
-                    <input
-                        type="text"
-                        placeholder="Province"
-                        value={data.province}
-                        onChange={(e) => setData('province', e.target.value)}
-                        className="w-full border rounded p-2"
-                    />
-                    <input
-                        type="text"
-                        placeholder="City / Regency"
-                        value={data.city}
-                        onChange={(e) => setData('city', e.target.value)}
-                        className="w-full border rounded p-2"
-                    />
-                    <input
-                        type="text"
-                        placeholder="District"
-                        value={data.district}
-                        onChange={(e) => setData('district', e.target.value)}
-                        className="w-full border rounded p-2"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Postal Code"
-                        value={data.postal_code}
-                        onChange={(e) => setData('postal_code', e.target.value)}
-                        className="w-full border rounded p-2"
-                    />
-                    <input
+                    <div className='justify-between flex gap-2'>
+                        <Input
+                            type="text"
+                            placeholder="Province"
+                            value={data.province}
+                            onChange={(e) => setData('province', e.target.value)}
+                            className="w-full border rounded p-2"
+                            />
+                        <Input
+                            type="text"
+                            placeholder="City / Regency"
+                            value={data.city}
+                            onChange={(e) => setData('city', e.target.value)}
+                            className="w-full border rounded p-2"
+                        />
+                    </div>
+                    <div className='justify-between flex gap-2'>
+                        <Input
+                            type="text"
+                            placeholder="District"
+                            value={data.district}
+                            onChange={(e) => setData('district', e.target.value)}
+                            className="w-full border rounded p-2"
+                        />
+                        <Input
+                            type="text"
+                            placeholder="Postal Code"
+                            value={data.postal_code}
+                            onChange={(e) => setData('postal_code', e.target.value)}
+                            className="w-full border rounded p-2"
+                        />
+                    </div>
+                    <Textarea
                         type="text"
                         placeholder="Full Address"
                         value={data.full_address}
                         onChange={(e) => setData('full_address', e.target.value)}
                         className="w-full border rounded p-2"
                     />
-                    <input
+                    {/* <Textarea
                         type="text"
                         placeholder="Other Details"
                         value={data.other_details}
                         onChange={(e) => setData('other_details', e.target.value)}
                         className="w-full border rounded p-2"
-                    />
+                    /> */}
 
                     {/* Map Preview Placeholder */}
                     <div className="w-full h-32 bg-gray-100 flex items-center justify-center text-gray-400 border rounded">
                         Map Preview
                     </div>
 
-                    <div className="flex justify-between mt-4">
+                    <div className="flex justify-end gap-2 mt-4">
                         <button
                             type="submit"
                             disabled={processing}

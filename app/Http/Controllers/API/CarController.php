@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 use App\Models\Car;
+use Illuminate\Validation\ValidationException;
 
 class CarController extends Controller
 {

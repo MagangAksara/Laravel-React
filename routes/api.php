@@ -36,7 +36,7 @@ Route::middleware(['throttle:api'])->group(function () {
 
         // Payments
         Route::get('/payment', [PaymentController::class, 'showPayments']);
-        Route::post('/payment/create', [PaymentController::class, 'store']);
+        Route::post('/payment/create', [PaymentController::class, 'store'])->name('payment.create');
         Route::post('/payment/notification', [PaymentController::class, 'notification']);
     });
     
