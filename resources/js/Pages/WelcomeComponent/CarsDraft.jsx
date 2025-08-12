@@ -33,8 +33,12 @@ export default function CarsDraft({ cars }) {
                             <h3 className="font-semibold text-lg">
                                 {car.brand} {car.model}
                             </h3>
-                            <p className="text-gray-600">
-                                Rp.{parseInt(car.price).toLocaleString("id-ID")}/day
+                            <p className="text-xl font-semibold text-gray-700 mt-1">
+                                {new Intl.NumberFormat('id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR',
+                                    minimumFractionDigits: 0
+                                }).format(car.price)}/day
                             </p>
                             <div className="flex gap-4 text-sm text-gray-700">
                                 <span>⚙️ {car.type_transmisi || "Unknown"}</span>

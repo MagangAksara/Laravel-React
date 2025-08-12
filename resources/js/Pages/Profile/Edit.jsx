@@ -1,39 +1,59 @@
+import { useState } from 'react'; // ✅ Tambahkan ini
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import DeleteUserForm from './Partials/DeleteUserForm';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
-import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
+import UpdateProfileInformation from './Partials/UpdateProfileInformationForm';
+import UpdateAddressInformation from './Partials/UpdateAddressInformation';
+import Navbar from '../ComponetGlobal/Navbar';
+import PageHeader from '../ComponetGlobal/PageHeader';
+import TabsProfile from '@/assets/TabsProfile'; // ✅ Pastikan path sesuai lokasi file Tabs
 
 export default function Edit({ mustVerifyEmail, status }) {
+    const [activeTab, setActiveTab] = useState('profile'); // ✅ useState sudah aman
+
+    const tabs = [
+        { id: 'profile', label: 'Profile' },
+        { id: 'address', label: 'Address' },
+    ];
+
     return (
-        <AuthenticatedLayout
-            header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Profile
-                </h2>
-            }
-        >
-            <Head title="Profile" />
+        <>
+            <Navbar header={<PageHeader />}>
+                <Head title="Profile" />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
-                        <UpdateProfileInformationForm
-                            mustVerifyEmail={mustVerifyEmail}
-                            status={status}
-                            className="max-w-xl"
-                        />
-                    </div>
+                <div className="py-12">
+                    <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
+                        <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
+                            {/* Tabs */}
+                            <TabsProfile tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
-                        <UpdatePasswordForm className="max-w-xl" />
-                    </div>
+                            {/* Tab Content */}
+                            <div className="mt-6">
+                                {activeTab === 'profile' && (
+                                    <UpdateProfileInformation
+                                        mustVerifyEmail={mustVerifyEmail}
+                                        status={status}
+                                    />
+                                )}
 
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
-                        <DeleteUserForm className="max-w-xl" />
+                                {activeTab === 'address' && (
+                                    <UpdateAddressInformation />
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Optional: Password & Delete Section */}
+                        {/* <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
+                            <UpdatePasswordForm className="max-w-xl" />
+                        </div> */}
+
+                        <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
+                            <DeleteUserForm className="max-w-xl" />
+                        </div>
                     </div>
                 </div>
-            </div>
-        </AuthenticatedLayout>
+            </Navbar>
+        </>
     );
 }
