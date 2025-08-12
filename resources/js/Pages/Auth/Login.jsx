@@ -5,6 +5,7 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
+import { Button } from '@/Components/ui/button';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 
@@ -51,14 +52,25 @@ export default function Login({ status, canResetPassword }) {
                 </div>
 
                 <div>
-                    <FloatingLabelPassword
-                        id="password"
-                        label="Password"
-                        value={data.password}
-                        onChange={(e) => setData("password", e.target.value)}
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
+                    {/* <div> */}
+                        <FloatingLabelPassword
+                            id="password"
+                            label="Password"
+                            value={data.password}
+                            onChange={(e) => setData("password", e.target.value)}
+                        />
+                        <InputError message={errors.password} className="mt-2" />
+                    {/* </div>
+                    <div> */}
+                        {canResetPassword && (
+                            <Link
+                                href={route('password.request')}
+                                className="flex justify-end mr-10 rounded-md text-sm text-blue-400 underline hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            >
+                                Forgot your password?
+                            </Link>
+                        )}
+                    {/* </div> */}
                 </div>
 
                 {/* <div className="relative mt-4 ml-10 w-[80%]">
@@ -78,18 +90,18 @@ export default function Login({ status, canResetPassword }) {
 
                 <div className='flex flex-col items-center'>
                     <div className="mt-4 flex items-center justify-end">
-                        {canResetPassword && (
+                        {/* {canResetPassword && (
                             <Link
                                 href={route('password.request')}
                                 className="rounded-md text-sm text-blue-400 underline hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
                                 Forgot your password?
                             </Link>
-                        )}
+                        )} */}
 
-                        <PrimaryButton className="ms-4 bg-blue-400" disabled={processing}>
+                        <Button className=" bg-blue-400" disabled={processing}>
                             Log in
-                        </PrimaryButton>
+                        </Button>
                     </div>
                     <div className="mt-4 flex items-center justify-end text-white">
                         Don’t have an account yet?&nbsp;

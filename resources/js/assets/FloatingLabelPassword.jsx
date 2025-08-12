@@ -9,7 +9,7 @@ export function FloatingLabelPassword({ id, label, value, onChange }) {
   const hasValue = value && value.length > 0
 
   return (
-    <div className="relative w-[80%] mx-auto mt-8 mb-8">
+    <div className="relative w-[80%] mx-auto mt-8">
       <Input
         id={id}
         type={showPassword ? "text" : "password"}

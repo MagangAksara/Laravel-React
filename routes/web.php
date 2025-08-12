@@ -33,14 +33,30 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
     // Route::middleware('role:customer')->group(function () {
-    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    // Route::get('/dashboard-customer', [DashboardController::class, 'index'])->name('dashboard.customer');
     Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
 });
-    
-Route::middleware(['auth','role:owner'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('Owner/Dashboard');
-    })->name('dashboard');
-});
+
+// Route::middleware(['auth','role:owner'])->group(function () {
+    // Route::get('/dashboard-owner', [DashboardController::class, 'indexOwner'])->name('dashboard.owner');
+    // Route::get('dashboard', function () {
+    //     return Inertia::render('Owner/Dashboard');
+    // })->name('dashboard.owner');
+// });
+
+Route::middleware('auth')->get('/dashboard', function () {
+    $user = Auth::user();
+
+    if ($user->hasRole('owner')) {
+        return app(DashboardController::class)->indexOwner();
+    }
+
+    if ($user->hasRole('customer')) {
+        return app(DashboardController::class)->indexCustomer();
+    }
+
+    abort(403);
+})->name('dashboard');
+
 
 require __DIR__.'/auth.php';

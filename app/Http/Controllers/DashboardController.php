@@ -8,7 +8,7 @@ use App\Models\Car;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function indexCustomer()
     {
         $cars = Car::all()->map(function ($car) {
             return [
@@ -26,5 +26,9 @@ class DashboardController extends Controller
         return Inertia::render('Customer/Dashboard', [
             'cars' => $cars,
         ]);
+    }
+    public function indexOwner()
+    {
+        return Inertia::render('Owner/Dashboard');
     }
 }
