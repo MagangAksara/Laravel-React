@@ -20,10 +20,10 @@ Route::middleware(['throttle:api'])->group(function () {
         Route::get('/profile', [AuthController::class, 'profile']);
         Route::post('/update', [AuthController::class, 'update']);
         Route::post('/logout', [AuthController::class, 'logout']);
-    });
+    // });
 
     // role admin
-    Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    // Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
         // Cars
         Route::get('/car', [CarController::class, 'showAll']);
         Route::get('/car/show/{id}', [CarController::class, 'showByID']);
@@ -38,15 +38,14 @@ Route::middleware(['throttle:api'])->group(function () {
         Route::get('/payment', [PaymentController::class, 'showPayments']);
         Route::post('/payment/create', [PaymentController::class, 'store'])->name('payment.create');
         Route::post('/payment/notification', [PaymentController::class, 'notification']);
-    });
+    // });
     
     // role owner
-    Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
-
-    });
+    // Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
+    // });
     
     // role customer
-    Route::middleware(['auth:sanctum', 'role:customer'])->group(function () {
+    // Route::middleware(['auth:sanctum', 'role:customer'])->group(function () {
         
     });
 

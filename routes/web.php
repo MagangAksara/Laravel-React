@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\API\PaymentController;
+use App\Http\Controllers\BookingController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 
@@ -48,33 +50,16 @@ Route::middleware('auth')->get('/dashboard', function () {
     abort(403);
 })->name('dashboard');
 
-Route::get('/booking/{id}', function () {
-    return Inertia::render('Customer/Booking', [
-        // Data ini nanti bisa diganti dari database
-        'car' => [
-            'brand' => 'Toyota',
-            'model' => 'Yaris G GR-Sport',
-            'duration' => '2 day',
-            'price_per_day' => 250000,
-            'total_price' => 500000,
-            'driver_fee' => 200000,
-            'pickup_fee' => 30000,
-            'return_fee' => 30000,
-            'total_payment' => 760000,
-        ],
-        'pickup_location' => [
-            'name' => 'Amelia Putri Safani',
-            'phone' => '08962642xxxxx',
-            'address' => 'Jl. Panglima Sudirman No.12, Karangploso, Malang'
-        ],
-        'return_location' => [
-            'name' => 'Amelia Putri Safani',
-            'phone' => '08962642xxxxx',
-            'address' => 'Jl. Panglima Sudirman No.12, Karangploso, Malang'
-        ],
-        'payment_method' => 'Mandiri'
-    ]);
-})->name('booking');
+Route::get('/booking/{id}', [BookingController::class, 'show'])->name('booking');
+// Route::post('/payment/create', [PaymentController::class, 'store'])->name('payment.create');
+
+Route::get('/payment/success', function () {
+    return inertia('Payment/Success'); // Bisa render halaman Inertia React
+})->name('payment.success');
+
+Route::get('/payment/failed', function () {
+    return inertia('Payment/Failed');
+})->name('payment.failed');
 
 
 require __DIR__.'/auth.php';

@@ -15,21 +15,21 @@ class UserSeeder extends Seeder
     {
         $admin = User::create([
             'name' => 'Admin User',
-            'email' => 'admin@example.com',
+            'email' => 'iizulhaqzaindimad@gmail.com',
             'password' => bcrypt('password'),
         ]);
         $admin->assignRole('admin');
 
         $customer = User::create([
             'name' => 'Customer User',
-            'email' => 'customer@example.com',
+            'email' => 'dimasok025@gmail.com',
             'password' => bcrypt('password'),
         ]);
         $customer->assignRole('customer');
 
         $owner = User::create([
             'name' => 'Owner User',
-            'email' => 'owner@example.com',
+            'email' => 'nukleou@gmail.com',
             'password' => bcrypt('password'),
         ]);
         $owner->assignRole('owner');

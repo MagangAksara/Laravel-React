@@ -40,6 +40,9 @@ class PaymentController extends Controller
             'amount' => (int) $request->amount,
             'description' => $request->description,
             'payer_email' => $request->payer_email,
+            'success_redirect_url' => url('/payment/success'), // halaman sukses
+            'failure_redirect_url' => url('/payment/failed'),  // halaman gagal
+            
             // 'metadata' => ['example' => 'value'], // optional
         ]);
 

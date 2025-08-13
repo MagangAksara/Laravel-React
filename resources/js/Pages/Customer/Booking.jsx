@@ -1,4 +1,4 @@
-// resources/js/Pages/BookingPage.jsx
+// resources/js/Pages/Customer/Booking.jsx
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,12 +6,71 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Link } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 
-export default function BookingPage() {
+export default function Booking() {
+  // Ambil data dari Laravel controller lewat Inertia props
+  const { car, pickup_location, return_location, payment_method } = usePage().props;
+
   const [driverOption, setDriverOption] = useState("with-driver");
   const [pickupOption, setPickupOption] = useState("owner");
   const [returnOption, setReturnOption] = useState("owner");
+  const [loading, setLoading] = useState(false);
+
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+  const handlePayNow = async () => {
+    try {
+      setLoading(true);
+
+      // 1. Ambil CSRF cookie dari Laravel Sanctum
+      await fetch("http://127.0.0.1:8000/sanctum/csrf-cookie", {
+        method: "GET",
+        credentials: "include", // penting: simpan cookie di browser
+      });
+
+      // 2. Ambil nilai XSRF-TOKEN dari cookie browser
+      const xsrfToken = getCookie('XSRF-TOKEN');
+      
+      // 2. Kirim request ke API dengan cookie
+      const response = await fetch("http://127.0.0.1:8000/api/payment/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "X-XSRF-TOKEN": decodeURIComponent(xsrfToken)
+        },
+        credentials: "include", // penting: kirim cookie laravel_session & XSRF-TOKEN
+        body: JSON.stringify({
+          amount: car.total_payment,
+          description: `Rental ${car.brand} ${car.model}`,
+          payer_email: "customer@email.com",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.checkout_link) {
+        window.location.href = result.checkout_link; // redirect ke Xendit
+      } else {
+        alert("Gagal membuat pembayaran: checkout_link tidak ditemukan.");
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
 
   return (
     <div className="min-h-screen bg-[#f8fcff]">
@@ -67,7 +126,12 @@ export default function BookingPage() {
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="with-driver" id="with-driver" />
-                    <Label htmlFor="with-driver">With Driver <span className="text-gray-500">Rp 200.000</span></Label>
+                    <Label htmlFor="with-driver">
+                      With Driver{" "}
+                      <span className="text-gray-500">
+                        Rp {car.driver_fee.toLocaleString()}
+                      </span>
+                    </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="self-drive" id="self-drive" />
@@ -90,14 +154,19 @@ export default function BookingPage() {
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="other" id="pickup-other" />
-                    <Label htmlFor="pickup-other">At Other Location <span className="text-gray-500">Rp 30.000</span></Label>
+                    <Label htmlFor="pickup-other">
+                      At Other Location{" "}
+                      <span className="text-gray-500">
+                        Rp {car.pickup_fee.toLocaleString()}
+                      </span>
+                    </Label>
                   </div>
                 </RadioGroup>
                 <div className="mt-4 border p-4 rounded-lg">
                   <p className="font-semibold">Meeting Point Location</p>
-                  <p className="text-sm text-gray-600">Amelia Putri Safani</p>
-                  <p className="text-sm">Jl. Panglima Sudirman No.12, Karangploso, Malang</p>
-                  <p className="text-sm">08962642xxxxx</p>
+                  <p className="text-sm text-gray-600">{pickup_location.name}</p>
+                  <p className="text-sm">{pickup_location.address}</p>
+                  <p className="text-sm">{pickup_location.phone}</p>
                 </div>
               </div>
 
@@ -115,14 +184,19 @@ export default function BookingPage() {
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="other" id="return-other" />
-                    <Label htmlFor="return-other">At Other Location <span className="text-gray-500">Rp 30.000</span></Label>
+                    <Label htmlFor="return-other">
+                      At Other Location{" "}
+                      <span className="text-gray-500">
+                        Rp {car.return_fee.toLocaleString()}
+                      </span>
+                    </Label>
                   </div>
                 </RadioGroup>
                 <div className="mt-4 border p-4 rounded-lg">
                   <p className="font-semibold">Meeting Point Location</p>
-                  <p className="text-sm text-gray-600">Amelia Putri Safani</p>
-                  <p className="text-sm">Jl. Panglima Sudirman No.12, Karangploso, Malang</p>
-                  <p className="text-sm">08962642xxxxx</p>
+                  <p className="text-sm text-gray-600">{return_location.name}</p>
+                  <p className="text-sm">{return_location.address}</p>
+                  <p className="text-sm">{return_location.phone}</p>
                 </div>
               </div>
             </CardContent>
@@ -137,29 +211,31 @@ export default function BookingPage() {
               <CardTitle>Yoger Car Malang</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <p className="font-semibold">Toyota Yaris G GR-Sport</p>
-              <p>Duration Rental: 2 days</p>
+              <p className="font-semibold">
+                {car.brand} {car.model}
+              </p>
+              <p>Duration Rental: {car.duration}</p>
               <Separator />
               <div className="flex justify-between">
                 <span>Total Price</span>
-                <span>Rp 500.000</span>
+                <span>Rp {car.total_price.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span>Driver Fee</span>
-                <span>Rp 200.000</span>
+                <span>Rp {car.driver_fee.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span>Pick Up Location</span>
-                <span>Rp 30.000</span>
+                <span>Rp {car.pickup_fee.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span>Return Location</span>
-                <span>Rp 30.000</span>
+                <span>Rp {car.return_fee.toLocaleString()}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-bold">
                 <span>Total Payment</span>
-                <span>Rp 760.000</span>
+                <span>Rp {car.total_payment.toLocaleString()}</span>
               </div>
               <p className="text-xs text-gray-500">
                 With driver bookings, meals, fuel, tolls, etc. are counted as additional costs not included in the system.
@@ -172,16 +248,22 @@ export default function BookingPage() {
             <CardContent className="p-6 space-y-4">
               <div className="flex justify-between">
                 <span>Payment Method</span>
-                <Button variant="link" className="p-0 text-blue-500">Choose Payment Method</Button>
+                <Button variant="link" className="p-0 text-blue-500">
+                  Choose Payment Method
+                </Button>
               </div>
-              <p className="font-semibold">Mandiri</p>
+              <p className="font-semibold">{payment_method}</p>
               <div className="flex justify-between text-lg font-bold">
                 <span>Total Payment</span>
-                <span>Rp 760.000</span>
+                <span>Rp {car.total_payment.toLocaleString()}</span>
               </div>
-              <Link href="api/payment/create" className="w-full">
-                <Button className="w-full bg-[#1e6fa1] hover:bg-[#195b82]">Pay Now</Button>
-              </Link>
+              <Button
+                className="w-full bg-[#1e6fa1] hover:bg-[#195b82]"
+                onClick={handlePayNow}
+                disabled={loading}
+              >
+                {loading ? "Processing..." : "Pay Now"}
+              </Button>
             </CardContent>
           </Card>
         </div>
