@@ -19,6 +19,7 @@ class ProfileController extends Controller
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
+            'addresses' => UserAddress::where('user_id', Auth::id())->get(),
         ]);
     }
 
@@ -60,11 +61,20 @@ class ProfileController extends Controller
     {
         return $request->validate([
             'city'        => 'required|string|max:255',
-            'district'       => 'required|string|max:20',
+            'district'    => 'required|string|max:20',
             'regency'     => 'required|string|max:255',
             'province'    => 'required|string|max:255',
             'postal_code' => 'required|string|max:10',
             'detail'      => 'nullable|string|max:500',
+        ]);
+    }
+
+    public function showAddress(Request $request)
+    {
+        $addresses = UserAddress::where('user_id', Auth::id())->get();
+
+        return Inertia::render('Profile/Address', [
+            'addresses' => $addresses,
         ]);
     }
 
@@ -84,10 +94,11 @@ class ProfileController extends Controller
 
         $address->save();
 
-        return response()->json([
-            'message' => 'Alamat berhasil ditambahkan',
-            'data'    => $address
-        ], 201);
+        // return response()->json([
+        //     'message' => 'Alamat berhasil ditambahkan',
+        //     'data'    => $address
+        // ], 201);
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
     public function updateAddress(Request $request, $id)
@@ -105,10 +116,12 @@ class ProfileController extends Controller
             'detail'      => $validated['detail'],
         ]);
 
-        return response()->json([
-            'message' => 'Alamat berhasil diperbarui',
-            'data'    => $address
-        ], 200);
+        // return response()->json([
+        //     'message' => 'Alamat berhasil diperbarui',
+        //     'data'    => $address
+        // ], 200);
+
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
 }

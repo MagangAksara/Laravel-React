@@ -5,6 +5,11 @@ export default function UpdateAddressInformation({ addresses = [] }) {
     const [showModal, setShowModal] = useState(false);
     const [editData, setEditData] = useState(null);
 
+    const handleEditClick = (address) => {
+        setEditData(address); // simpan data yang mau diedit
+        setShowModal(true);         // buka modal
+    };
+
     return (
         <>
             <section className="bg-white shadow rounded p-6">
@@ -29,14 +34,16 @@ export default function UpdateAddressInformation({ addresses = [] }) {
                         <div>
                             <p className="font-semibold">{address.full_address}</p>
                             <p className="text-sm text-gray-600">
-                                {address.city}, {address.province} ({address.postal_code})
+                                {address.city}, {address.district}, {address.regency}, {address.province}, ({address.postal_code})
+                            </p>
+                            <p className="text-sm text-gray-600 mt-2">
+                                {address.detail}
                             </p>
                         </div>
                         <div className="flex gap-2">
                             <button
                                 onClick={() => {
-                                    setEditData(address);
-                                    setShowModal(true);
+                                    handleEditClick(address)
                                 }}
                                 className="text-blue-500 hover:underline"
                             >

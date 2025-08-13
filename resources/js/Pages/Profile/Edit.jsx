@@ -9,7 +9,7 @@ import Navbar from '../ComponetGlobal/Navbar';
 import PageHeader from '../ComponetGlobal/PageHeader';
 import TabsProfile from '@/assets/TabsProfile'; // ✅ Pastikan path sesuai lokasi file Tabs
 
-export default function Edit({ mustVerifyEmail, status }) {
+export default function Edit({ mustVerifyEmail, status, addresses }) {
     const [activeTab, setActiveTab] = useState('profile'); // ✅ useState sudah aman
 
     const tabs = [
@@ -38,7 +38,7 @@ export default function Edit({ mustVerifyEmail, status }) {
                                 )}
 
                                 {activeTab === 'address' && (
-                                    <UpdateAddressInformation />
+                                    <UpdateAddressInformation addresses={addresses}/>
                                 )}
                             </div>
                         </div>

@@ -17,26 +17,64 @@ const NavigationTabsInformation = () => {
     const renderTabContent = () => {
         switch (activeTab) {
             case 0:
-            return <p className="text-gray-600">Informasi penting sebelum menyewa mobil ini...</p>;
+                return ( 
+                    <div>
+                        <div className="text-black space-y-4">
+                            <div>
+                                <p className="font-semibold">Before You Book</p>
+                                <ul className="list-disc list-outside">
+                                    <li className="ml-7"> Make sure to read the rental terms and conditions.</li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <p className="font-semibold">After You Book</p>
+                                <ul className="list-disc list-outside">
+                                    <li className="ml-7">The provider will contact the driver via WhatsApp to request photos of several required documents.</li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <p className="font-semibold">At Pick-up</p>
+                                <ul className="list-disc list-outside">
+                                    <li className="ml-7">Bring your ID card, driver’s license, and any other documents required by the rental provider.</li>
+                                    <li className="ml-7">When you meet the rental staff, inspect the car’s condition together with them. After that, read and sign the rental agreement.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                );
             case 1:
-            return <p className="text-gray-600">{car.description ?? "Tidak ada deskripsi."}</p>;
+                return (
+                    <p className="text-black">{car.description ?? "Tidak ada deskripsi."}</p>
+                );
             case 2:
-            return (
-                <ul className="list-disc list-inside text-gray-600">
-                <li>Brand: {car.brand}</li>
-                <li>Model: {car.model}</li>
-                <li>Transmisi: {car.type_transmisi}</li>
-                <li>Bahan Bakar: {car.fuel_type}</li>
-                <li>Kapasitas: {car.capacity} orang</li>
-                <li>Tahun: {car.year}</li>
-                </ul>
-            );
+                return (
+                    <div>
+                        <h4 className="font-semibold mb-2">Info Product</h4>
+                        <div 
+                            className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 ml-3"
+                        >
+                            <span className="font-medium">Brand</span>         <span className="text-gray-600">: {car.brand}</span>
+                            <span className="font-medium">Model</span>         <span className="text-gray-600">: {car.model}</span>
+                            <span className="font-medium">Fuel</span>          <span className="text-gray-600">: {car.fuel_type}</span>
+                            <span className="font-medium">Seat</span>          <span className="text-gray-600">: {car.capacity}</span>
+                            <span className="font-medium">Transmission</span>  <span className="text-gray-600">: {car.type_transmisi}</span>
+                            <span className="font-medium">Year</span>          <span className="text-gray-600">: {car.year}</span>
+                            <span className="font-medium">Color</span>         <span className="text-gray-600">: {car.color}</span>
+                        </div>
+                    </div>
+                );
             case 3:
-            return <p className="text-gray-600">Kebijakan penyewaan mobil...</p>;
+                return (
+                    <p className="text-gray-600">Kebijakan penyewaan mobil...</p>
+                );
             case 4:
-            return <p className="text-gray-600">Detail harga dan cara penyewaan...</p>;
+                return ( 
+                    <p className="text-gray-600">Detail harga dan cara penyewaan...</p>
+                );
             default:
-            return null;
+                return null;
         }
     };
 

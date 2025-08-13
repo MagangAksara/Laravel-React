@@ -21,7 +21,7 @@ const Reviews = () => {
                 <div key={i} className="mt-4 bg-white p-4 rounded-lg shadow-sm">
                     <div className="flex items-center gap-3">
                         <img
-                            src="https://via.placeholder.com/40"
+                            src={`https://picsum.photos/640/480?random=${Math.floor(Math.random() * 1000) + 1}`}
                             alt="user"
                             className="w-10 h-10 rounded-full"
                         />

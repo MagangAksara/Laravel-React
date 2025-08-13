@@ -15,22 +15,20 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'email' => [
-                'required',
-                'string',
-                'lowercase',
-                'email',
-                'max:255',
+            'email' => ['required','string','lowercase','email','max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
-            'phone_number' => [
-                'nullable',
-                'string',
-                'max:15',
+            'phone_number' => ['nullable','string','max:15',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
         ];
+
+        if ($this->user()->hasRole('owner')) {
+            $rules['is_driver'] = ['required', 'boolean'];
+        }
+        
+        return $rules;
     }
 }

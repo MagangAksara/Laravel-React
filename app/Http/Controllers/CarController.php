@@ -13,6 +13,8 @@ class CarController extends Controller
         // Ambil data mobil berdasarkan ID
         $car = Car::findOrFail($id);
 
+        // dd($car);
+
         // Kirim data ke halaman detail mobil
         return Inertia::render('Customer/CarDetail', [
             'car' => $car

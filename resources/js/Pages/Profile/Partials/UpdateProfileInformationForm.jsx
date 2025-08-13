@@ -16,7 +16,8 @@ export default function UpdateProfileInformation({
         useForm({
             name: user.name,
             email: user.email,
-            phone_number: user.phone_number || '', // tambahkan nomor telepon jika ada di user
+            phone_number: user.phone_number || '',
+            is_driver: user.is_driver || false,
         });
 
     const submit = (e) => {
@@ -90,6 +91,24 @@ export default function UpdateProfileInformation({
                         />
                         <InputError className="mt-2" message={errors.phone_number} />
                     </div>
+
+                    {user.role === 'owner' && (
+                        <div>
+                            <InputLabel htmlFor="is_driver" value="Driver Status" />
+                            <select
+                                id="is_driver"
+                                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                value={data.is_driver ? '1' : '0'}
+                                onChange={(e) =>
+                                    setData('is_driver', e.target.value === '1')
+                                }
+                            >
+                                <option value="0">Not a Driver</option>
+                                <option value="1">Is a Driver</option>
+                            </select>
+                            <InputError className="mt-2" message={errors.is_driver} />
+                        </div>
+                    )}
 
                     {mustVerifyEmail && user.email_verified_at === null && (
                         <div>

@@ -32,8 +32,16 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
+            // 'auth' => [
+            //     'user' => $request->user(),
+            // ],
             'auth' => [
-                'user' => $request->user(),
+                'user' => fn () => $request->user() ? array_merge(
+                    $request->user()->only(['id', 'name', 'email', 'phone_number', 'is_driver']),
+                    [
+                        'role' => $request->user()->getRoleNames()->first(), // Ambil role pertama
+                    ]
+                ) : null,
             ],
             'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),

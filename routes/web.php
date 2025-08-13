@@ -21,6 +21,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/address', [ProfileController::class, 'storeAddress'])->name('address.store');
+    Route::put('/profile/address/{id}', [ProfileController::class, 'updateAddress'])->name('address.update');
 });
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
@@ -29,12 +31,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
 });
 
-// Route::middleware(['auth','role:owner'])->group(function () {
-    // Route::get('/dashboard-owner', [DashboardController::class, 'indexOwner'])->name('dashboard.owner');
-    // Route::get('dashboard', function () {
-    //     return Inertia::render('Owner/Dashboard');
-    // })->name('dashboard.owner');
-// });
+Route::middleware(['auth','role:owner'])->group(function () { });
 
 Route::middleware('auth')->get('/dashboard', function () {
     $user = Auth::user();
@@ -50,7 +47,6 @@ Route::middleware('auth')->get('/dashboard', function () {
     abort(403);
 })->name('dashboard');
 
-// Route::get('/booking/{id}', [BookingController::class, 'show'])->name('booking');
 Route::get('car/{id}/booking', [BookingController::class, 'show'])->name('booking');
 // Route::post('/payment/create', [PaymentController::class, 'store'])->name('payment.create');
 

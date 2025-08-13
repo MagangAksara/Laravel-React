@@ -1,18 +1,43 @@
 import { Input } from '@/Components/ui/input';
 import { Textarea } from '@/Components/ui/textarea';
 import { useForm } from '@inertiajs/react';
+import { useEffect } from 'react';
 
 export default function AddressModal({ show, onClose, address = null }) {
-    const { data, setData, post, put, processing, reset } = useForm({
-        name: address?.name || '',
-        number_phone: address?.number_phone || '',
-        province: address?.province || '',
-        city: address?.city || '',
-        district: address?.district || '',
-        postal_code: address?.postal_code || '',
-        full_address: address?.full_address || '',
-        other_details: address?.other_details || ''
+    const { data, setData, post, put, processing, reset, errors  } = useForm({
+        city: '',
+        district: '',
+        regency: '',
+        province: '',
+        postal_code: '',
+        detail: '',
     });
+    // city: address?.city || '',
+    // district: address?.district || '',
+    // regency: address?.regency || '',
+    // province: address?.province || '',
+    // postal_code: address?.postal_code || '',
+    // // full_address: address?.full_address || '',
+    // detail: address?.detail || '',
+    // // other_details: address?.other_details || ''
+
+    useEffect(() => {
+        if (address) {
+            setData({
+                city: address.city,
+                district: address.district,
+                regency: address.regency,
+                province: address.province,
+                postal_code: address.postal_code,
+                // full_address: address.full_address,
+                detail: address.detail,
+                // other_details: address?.other_details
+                // address: address.address || '',
+                // city: address.city || '',
+                // postal_code: address.postal_code || '',
+            });
+        }
+    }, [address]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -35,40 +60,33 @@ export default function AddressModal({ show, onClose, address = null }) {
                 <form onSubmit={handleSubmit} className="space-y-3">
                     <Input
                         type="text"
-                        placeholder="Name"
-                        value={data.name}
-                        onChange={(e) => setData('name', e.target.value)}
+                        placeholder="city"
+                        value={data.city}
+                        onChange={(e) => setData('city', e.target.value)}
                         className="w-full border rounded p-2"
                     />
                     <Input
                         type="text"
-                        placeholder="Number Phone"
-                        value={data.number_phone}
-                        onChange={(e) => setData('number_phone', e.target.value)}
+                        placeholder="district"
+                        value={data.district}
+                        onChange={(e) => setData('district', e.target.value)}
                         className="w-full border rounded p-2"
                     />
                     <div className='justify-between flex gap-2'>
                         <Input
                             type="text"
-                            placeholder="Province"
-                            value={data.province}
-                            onChange={(e) => setData('province', e.target.value)}
+                            placeholder="regency"
+                            value={data.regency}
+                            onChange={(e) => setData('regency', e.target.value)}
                             className="w-full border rounded p-2"
                             />
-                        <Input
-                            type="text"
-                            placeholder="City / Regency"
-                            value={data.city}
-                            onChange={(e) => setData('city', e.target.value)}
-                            className="w-full border rounded p-2"
-                        />
                     </div>
                     <div className='justify-between flex gap-2'>
                         <Input
                             type="text"
-                            placeholder="District"
-                            value={data.district}
-                            onChange={(e) => setData('district', e.target.value)}
+                            placeholder="province"
+                            value={data.province}
+                            onChange={(e) => setData('province', e.target.value)}
                             className="w-full border rounded p-2"
                         />
                         <Input
@@ -81,9 +99,9 @@ export default function AddressModal({ show, onClose, address = null }) {
                     </div>
                     <Textarea
                         type="text"
-                        placeholder="Full Address"
-                        value={data.full_address}
-                        onChange={(e) => setData('full_address', e.target.value)}
+                        placeholder="detail"
+                        value={data.detail}
+                        onChange={(e) => setData('detail', e.target.value)}
                         className="w-full border rounded p-2"
                     />
                     {/* <Textarea
@@ -100,12 +118,8 @@ export default function AddressModal({ show, onClose, address = null }) {
                     </div>
 
                     <div className="flex justify-end gap-2 mt-4">
-                        <button
-                            type="submit"
-                            disabled={processing}
-                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                        >
-                            Save
+                        <button type="submit" disabled={processing}>
+                            {address ? 'Update' : 'Save'}
                         </button>
                         <button
                             type="button"
