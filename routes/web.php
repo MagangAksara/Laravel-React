@@ -50,7 +50,8 @@ Route::middleware('auth')->get('/dashboard', function () {
     abort(403);
 })->name('dashboard');
 
-Route::get('/booking/{id}', [BookingController::class, 'show'])->name('booking');
+// Route::get('/booking/{id}', [BookingController::class, 'show'])->name('booking');
+Route::get('car/{id}/booking', [BookingController::class, 'show'])->name('booking');
 // Route::post('/payment/create', [PaymentController::class, 'store'])->name('payment.create');
 
 Route::get('/payment/success', function () {

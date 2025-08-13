@@ -10,7 +10,10 @@ class DashboardController extends Controller
 {
     public function indexCustomer()
     {
-        $cars = Car::all()->map(function ($car) {
+        $cars = Car::paginate(18);
+
+        // Transform hanya pada data, pagination meta tetap ada
+        $cars->getCollection()->transform(function ($car) {
             return [
                 'id' => $car->id,
                 'brand' => $car->brand,
@@ -23,10 +26,13 @@ class DashboardController extends Controller
             ];
         });
 
+        // dd($cars);
+
         return Inertia::render('Customer/Dashboard', [
             'cars' => $cars,
         ]);
     }
+
     public function indexOwner()
     {
         return Inertia::render('Owner/Dashboard');
