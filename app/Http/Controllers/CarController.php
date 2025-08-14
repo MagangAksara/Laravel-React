@@ -32,16 +32,21 @@ class CarController extends Controller
     {
         return [
             'id' => $car->id,
-            'brand' => $car->brand?->name,
-            'model' => $car->model?->name,
-            'fuel_type' => $car->fuelType?->name,
-            'type_transmisi' => $car->transmission?->name,
-            'color' => $car->color?->name,
+            // dari relasi
+            'brand' => $car->brand->name ?? '-',
+            'model' => $car->model->name ?? '-',
+            'tyoe' => $car->type->name ?? '-',
+            'fuel_type' => $car->fuelType->name ?? '-',
+            'type_transmisi' => $car->transmission->name ?? '-',
+            'thumbnails' => $car->imagePath->pluck('image_path'),
+            // dari car
+            'car_image' => $car->main_image,
+            'color' => $car->color->name ?? '-',
             'capacity' => $car->capacity,
             'year' => $car->year,
             'description' => $car->description,
             'price_per_day' => $car->price_per_day,
-            'car_image' => $car->main_image,
+            // dari user
             'owner_name' => $car->user->name ?? '-',
             'owner_picture' => $car->user->profile_picture ?? '/default-avatar.png',
             'city' => $car->user->firstAddress->city ?? '-',

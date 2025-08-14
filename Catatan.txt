@@ -1,6 +1,188 @@
-client:733 [vite] connecting...
-client:827 [vite] connected.
-chunk-NXESFFTV.js?v=1c93c8c1:21609 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
-index.js:1 content loaded
-index.a4962feb.js:3 Content Script: Initializing
-:8000/public/fonts/PlayfairDisplaySemiBold.ttf:1  GET http://127.0.0.1:8000/public/fonts/PlayfairDisplaySemiBold.ttf net::ERR_ABORTED 404 (Not Found)
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class CarImage extends Model
+{
+    protected $fillable = [
+        'car_id',
+        'image_path',
+    ];
+
+    public function cars()
+    {
+        return $this->belongsTo(Car::class);
+    }
+}
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+/**
+ * @mixin IdeHelperCar
+ */
+class Car extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'car_brand_id',
+        'car_model_id',
+        'car_type_id',
+        'car_color_id',
+        'car_fuel_type_id',
+        'car_transmision_id',
+        'main_image',
+        'plate_number',
+        'capacity',
+        'year',
+        'description',
+        'price_per_day',
+        'is_available',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    
+    public function rentals()
+    {
+        return $this->hasMany(Rental::class);
+    }
+
+    // cars variable
+    public function brand()
+    {
+        return $this->belongsTo(CarBrand::class, 'car_brand_id');
+    }
+
+    public function model()
+    {
+        return $this->belongsTo(CarModel::class, 'car_model_id');
+    }
+
+    public function type()
+    {
+        return $this->belongsTo(CarType::class, 'car_type_id');
+    }
+
+    public function imagePath()
+    {
+        return $this->hasMany(CarImage::class);
+    }
+
+    public function color()
+    {
+        return $this->belongsTo(CarColor::class, 'car_color_id');
+    }
+
+    public function fuelType()
+    {
+        return $this->belongsTo(CarFuelType::class, 'car_fuel_type_id');
+    }
+
+    public function transmission()
+    {
+        return $this->belongsTo(CarTransmission::class, 'car_transmission_id');
+    }
+}
+
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Car;
+use Inertia\Inertia;
+
+class CarController extends Controller
+{
+    public function index()
+    {
+        $cars = Car::with(['user.address'])
+            ->get()
+            ->map(fn($car) => $this->transformCar($car));
+
+        return Inertia::render('CarList', [
+            'cars' => $cars
+        ]);
+    }
+
+    public function show($id)
+    {
+        $car = Car::with(['user.address'])->findOrFail($id);
+
+        return Inertia::render('Customer/CarDetail', [
+            'car' => $this->transformCar($car)
+        ]);
+    }
+
+    private function transformCar(Car $car)
+    {
+        return [
+            'id' => $car->id,
+            // dari relasi
+            'brand' => $car->brand->name ?? '-',
+            'model' => $car->model->name ?? '-',
+            'tyoe' => $car->type->name ?? '-',
+            'fuel_type' => $car->fuelType->name ?? '-',
+            'type_transmisi' => $car->transmission->name ?? '-',
+            'thumbnail' => $car->imagePath->image_path ?? '-',
+            // dari car
+            'car_image' => $car->main_image,
+            'color' => $car->color->name ?? '-',
+            'capacity' => $car->capacity,
+            'year' => $car->year,
+            'description' => $car->description,
+            'price_per_day' => $car->price_per_day,
+            // dari user
+            'owner_name' => $car->user->name ?? '-',
+            'owner_picture' => $car->user->profile_picture ?? '/default-avatar.png',
+            'city' => $car->user->firstAddress->city ?? '-',
+            'rating' => $car->rating ?? 4.5, // Bisa diganti query rating asli
+            'reviews' => $car->reviews_count ?? 1094 // Bisa diganti hitungan review asli
+        ];
+    }
+}
+
+
+import React from "react";
+import { usePage } from "@inertiajs/react";
+
+const Pictures = () => {
+    const { car } = usePage().props;
+    return (
+        <>
+            <div>
+                {/* gambar utama dari tb car main_image */}
+                <img
+                src={car.car_image }
+                alt={`${car.brand} ${car.model}`}
+                className="w-full h-[350px] object-cover rounded-lg shadow"
+                />
+                {/* gambar tumbnail dari tb car_image => satu mobil bisa memiliki banyak gambar */}
+                <div className="flex gap-3 mt-4 overflow-x-auto">
+                {[car.car_image , car.car_image , car.car_image ].map((src, i) => (
+                    <img
+                    key={i}
+                    src={src}
+                    alt="thumbnail"
+                    className="w-28 h-20 object-cover rounded-md border hover:border-blue-500 cursor-pointer"
+                    />
+                ))}
+                </div>
+            </div>
+        </>
+    )
+}
+
+export default  Pictures;

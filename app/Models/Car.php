@@ -57,7 +57,7 @@ class Car extends Model
 
     public function imagePath()
     {
-        return $this->hasOne(CarImage::class);
+        return $this->hasMany(CarImage::class);
     }
 
     public function color()
