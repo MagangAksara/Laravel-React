@@ -19,6 +19,7 @@ class UserAddress extends Model
         'province',
         'postal_code',
         'detail',
+        'is_active',
     ];
 
     public function user()

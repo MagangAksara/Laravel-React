@@ -16,13 +16,15 @@ class DashboardController extends Controller
         $cars->getCollection()->transform(function ($car) {
             return [
                 'id' => $car->id,
-                'brand' => $car->brand,
-                'model' => $car->model,
-                'image_url' => $car->car_image,
-                'price' => $car->price_per_day,
-                'type_transmisi' => $car->type_transmisi,
+                'brand' => $car->brand->name ?? '-',
+                'model' => $car->model->name ?? '-',
+                'type' => $car->type->name ?? '-',
+                'image_url' => $car->main_image,
+                'type_transmisi' => $car->transmission->name ?? '-',
+                'fuel_type' => $car->fuelType->name ?? '-',
+                'color' => $car->color->name ?? '-',
                 'capacity' => $car->capacity,
-                'fuel_type' => $car->fuel_type,
+                'price' => $car->price_per_day,
             ];
         });
 

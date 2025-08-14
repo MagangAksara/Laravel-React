@@ -8,16 +8,45 @@ use Inertia\Inertia;
 
 class CarController extends Controller
 {
+    public function index()
+    {
+        $cars = Car::with(['user.address'])
+            ->get()
+            ->map(fn($car) => $this->transformCar($car));
+
+        return Inertia::render('CarList', [
+            'cars' => $cars
+        ]);
+    }
+
     public function show($id)
     {
-        // Ambil data mobil berdasarkan ID
-        $car = Car::findOrFail($id);
+        $car = Car::with(['user.address'])->findOrFail($id);
 
-        // dd($car);
-
-        // Kirim data ke halaman detail mobil
         return Inertia::render('Customer/CarDetail', [
-            'car' => $car
+            'car' => $this->transformCar($car)
         ]);
+    }
+
+    private function transformCar(Car $car)
+    {
+        return [
+            'id' => $car->id,
+            'brand' => $car->brand?->name,
+            'model' => $car->model?->name,
+            'fuel_type' => $car->fuelType?->name,
+            'type_transmisi' => $car->transmission?->name,
+            'color' => $car->color?->name,
+            'capacity' => $car->capacity,
+            'year' => $car->year,
+            'description' => $car->description,
+            'price_per_day' => $car->price_per_day,
+            'car_image' => $car->main_image,
+            'owner_name' => $car->user->name ?? '-',
+            'owner_picture' => $car->user->profile_picture ?? '/default-avatar.png',
+            'city' => $car->user->firstAddress->city ?? '-',
+            'rating' => $car->rating ?? 4.5, // Bisa diganti query rating asli
+            'reviews' => $car->reviews_count ?? 1094 // Bisa diganti hitungan review asli
+        ];
     }
 }

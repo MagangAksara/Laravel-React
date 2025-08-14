@@ -7,7 +7,7 @@ const Information = () => {
 
     return(
         <>
-            <h1 className="text-3xl font-bold">{car.brand} {car.model}</h1>
+            <h1 className="text-3xl font-bold">{car.brand} {car.model} {car.type}</h1>
             <div className="flex flex-col justify-end items-end">
                 <p className="text-2xl font-semibold text-gray-700 mt-1">
                     {new Intl.NumberFormat('id-ID', {

@@ -25,7 +25,15 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             
             UserSeeder::class,
+            
+            CarBrandSeeder::class,
+            CarModelSeeder::class,
+            CarTypeSeeder::class,
+            CarColorSeeder::class,
+            CarFuelTypeSeeder::class,
+            CarTransmissionSeeder::class,
             CarSeeder::class,
+            CarImageSeeder::class,
             // RentalSeeder::class,
             // PaymentSeeder::class,
         ]);

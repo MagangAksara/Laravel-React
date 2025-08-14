@@ -26,12 +26,12 @@ export default function CarsDraft({ cars }) {
                     >
                         <img
                             src={car.image_url || "https://i.pinimg.com/1200x/56/8d/fd/568dfd7a80533c41873113576f5791fb.jpg"}
-                            alt={`${car.brand} ${car.model}`}
+                            alt={`${car.brand} ${car.model} ${car.type}`}
                             className="w-full h-48 object-cover"
                         />
                         <div className="p-4 space-y-2">
                             <h3 className="font-semibold text-lg">
-                                {car.brand} {car.model}
+                                {car.brand} {car.model} {car.type}
                             </h3>
                             <p className="text-xl font-semibold text-gray-700 mt-1">
                                 {new Intl.NumberFormat('id-ID', {

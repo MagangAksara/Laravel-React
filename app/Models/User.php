@@ -28,7 +28,7 @@ class User extends Authenticatable
         'email_verified_at',
         'password',
         'phone_number',
-        // 'address',
+        'profile_picture',
         'is_driver',
     ];
 
@@ -59,6 +59,11 @@ class User extends Authenticatable
     public function address()
     {
         return $this->hasOne(UserAddress::class);
+    }
+
+    public function firstAddress()
+    {
+        return $this->hasOne(UserAddress::class, 'user_id')->orderBy('id', 'asc');
     }
 
     public function cars()

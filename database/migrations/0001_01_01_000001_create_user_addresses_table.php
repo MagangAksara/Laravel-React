@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('province')->nullable(); // e.g., Jawa Timur
             $table->string('postal_code')->nullable(); // e.g., 62704
             $table->text('detail')->nullable(); // Additional details about the address
+            $table->boolean('is_active')->default(false);
             $table->timestamps();
         });
     }

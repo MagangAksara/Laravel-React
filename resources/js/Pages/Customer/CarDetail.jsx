@@ -7,13 +7,14 @@ import Pictures from "./CarDetailComponent/Pictures.jsx";
 import Information from "./CarDetailComponent/Information.jsx";
 import NavigationTabsInformation from "./CarDetailComponent/NavigationTabsInformation.jsx";
 import Reviews from "./CarDetailComponent/Reviews.jsx";
+import OwnerInformation from "./CarDetailComponent/OwnerInformation.jsx";
 
 export default function CarDetail() {
   const { car } = usePage().props;
 
   return (
     <>
-      <Head title={`${car.brand} ${car.model}`} />
+      <Head title={`${car.brand} ${car.model} ${car.type}`} />
       <Navbar header={<PageHeader />}>
         <div className="p-6 bg-gray-50 min-h-screen">
           {/* Bagian Atas - Gambar & Info */}
@@ -38,6 +39,8 @@ export default function CarDetail() {
               </div>
             </div>
           </div>
+
+          <OwnerInformation car={car}/>
 
           {/* Review */}
           <Reviews />

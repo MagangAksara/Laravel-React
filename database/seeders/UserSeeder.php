@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
             'name' => 'Admin User',
             'email' => 'iizulhaqzaindimad@gmail.com',
             'password' => bcrypt('password'),
+            'profile_picture' => 'https://picsum.photos/640/480?random=' . fake()->unique()->numberBetween(1, 1000),
         ]);
         $admin->assignRole('admin');
 
@@ -24,6 +25,7 @@ class UserSeeder extends Seeder
             'name' => 'Customer User',
             'email' => 'dimasok025@gmail.com',
             'password' => bcrypt('password'),
+            'profile_picture' => 'https://picsum.photos/640/480?random=' . fake()->unique()->numberBetween(1, 1000),
         ]);
         $customer->assignRole('customer');
 
@@ -31,6 +33,7 @@ class UserSeeder extends Seeder
             'name' => 'Owner User',
             'email' => 'nukleou@gmail.com',
             'password' => bcrypt('password'),
+            'profile_picture' => 'https://picsum.photos/640/480?random=' . fake()->unique()->numberBetween(1, 1000),
         ]);
         $owner->assignRole('owner');
     }
