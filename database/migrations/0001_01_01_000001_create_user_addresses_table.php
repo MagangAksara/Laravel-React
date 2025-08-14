@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('regency')->nullable(); // e.g., Situbondo
             $table->string('province')->nullable(); // e.g., Jawa Timur
             $table->string('postal_code')->nullable(); // e.g., 62704
+            $table->decimal('latitude', 10, 7)->nullable(); // e.g., 
+            $table->decimal('longitude', 10, 7)->nullable(); // e.g., 
             $table->text('detail')->nullable(); // Additional details about the address
             $table->boolean('is_active')->default(false);
             $table->timestamps();
