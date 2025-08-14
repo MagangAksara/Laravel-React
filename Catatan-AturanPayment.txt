@@ -1,0 +1,29 @@
+sekarang kita akan mengurus bagian rental
+
+tampilan sudah benar namun
+-> return location dihapus
+lalu disini akan:
+1. tanggal mulai dan berakhir yang akan dihitung dan menjadi durasi
+2. pada detail opsi 
+2-1. pilihan driver
+2-1-1. diatur default self driver
+2-1-2. jika owner dari driver mengisi is_driver dengan false => maka with driver akan menjadi tidak dapat ditekan dan tampil dalam keadaan buram
+2-1-3. jika with driver dapat dipilih maka terdapat biaya tambahan yang saat ini diatur fix 200000 dikali durasi banyak hari
+2-2. pilihan pick up location
+2-2-1. jika is_driver false => at other location akan menjadi tidak dapat dipilih dan memburam
+2-2-2. jika at other location dipilih maka terdapat biaya fix 3500 dikali degan per kilometer silisih jarak dari posisi owner dengan posisi customer
+2-2-3. alamat owner yang tampak hanya alamat yang dinyatakan aktif oleh owner
+2-2-4. alamat customer yang dapat dipilih dapat lebih dari satu selain dari alamat yang dinyatakan aktif
+2-3. pada detail pembiayaan
+2-3-1. nama diambil dari car.brand + car.model + car.type
+2-3-2. durasi dihitung dari tanggal mulai dan tanggal akhir
+2-3-3. biaya rental = durasi dikali price_per_day pada tb car
+2-3-4. biaya tambahan seperti driver fee + pick_up with driver sudah disebutkan sebelumnya dalam 2-1-3 dan 2-2-2
+2-3-5 lalu semuanya ditotal
+3. tidak ada methode pembayaran karena menggunakan xendit sehingga saat paynow akan langsung ditujukan pada tampilan xendit -> sudah berhasil
+
+tambahan:
+-> perhitungan jarak menggunakan API OpenRouteService
+
+catatan pengingat:
+mennggunakan laravel12 + react + spatie + inersia + xendit

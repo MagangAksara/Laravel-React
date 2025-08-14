@@ -14,21 +14,14 @@ return new class extends Migration
         Schema::create('cars', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            // name
-            // $table->string('brand'); // e.g., Toyota, Honda
+            // in relasion
             $table->foreignId('car_brand_id')->constrained()->onDelete('cascade');
-            // $table->string('model')->nullable(); // e.g., Corolla, Civic
             $table->foreignId('car_model_id')->constrained()->onDelete('cascade');
-            // $table->string('type')->nullable(); // e.g., G for sedan, SUV, MPV
             $table->foreignId('car_type_id')->constrained()->onDelete('cascade');
-            // description
-            // $table->foreignId('car_image_id')->constrained()->onDelete('cascade');
             $table->foreignId('car_color_id')->constrained()->onDelete('cascade');
             $table->foreignId('car_fuel_type_id')->constrained()->onDelete('cascade');
             $table->foreignId('car_transmission_id')->constrained()->onDelete('cascade');
-            // $table->string('color')->nullable(); // e.g., Red, Blue
-            // $table->text('fuel_type')->nullable(); // e.g., Petrol, Diesel, Electric
-            // $table->string('type_transmisi')->nullable(); // manual atau automatic
+            // in tabel
             $table->text('main_image')->nullable(); // URL or path to the car image
             $table->string('plate_number')->unique();
             $table->integer('capacity')->nullable(); // e.g., 4, 5, 7

@@ -1,19 +1,102 @@
+Database
+Schema::create('rentals', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('car_id')->constrained()->onDelete('cascade');
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->decimal('total_price', 10, 2);
+            $table->string('status')->default('pending'); // pending, confirmed, completed,
+            $table->string('payment_id')->nullable(); // For payment tracking
+            $table->timestamps();
+        });
+Schema::create('cars', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            // in relasion
+            $table->foreignId('car_brand_id')->constrained()->onDelete('cascade');
+            $table->foreignId('car_model_id')->constrained()->onDelete('cascade');
+            $table->foreignId('car_type_id')->constrained()->onDelete('cascade');
+            $table->foreignId('car_color_id')->constrained()->onDelete('cascade');
+            $table->foreignId('car_fuel_type_id')->constrained()->onDelete('cascade');
+            $table->foreignId('car_transmission_id')->constrained()->onDelete('cascade');
+            // in tabel
+            $table->text('main_image')->nullable(); // URL or path to the car image
+            $table->string('plate_number')->unique();
+            $table->integer('capacity')->nullable(); // e.g., 4, 5, 7
+            $table->string('year')->nullable(); // e.g., 2020, 2021
+            $table->text('description')->nullable();
+            // price order
+            $table->decimal('price_per_day', 10, 2);
+            $table->boolean('is_available')->default(true);
+            $table->timestamps();
+        });
+Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            // masuk dalam profile bukan di register
+            $table->string('phone_number')->nullable();
+            // opsi tambahan jika role owner
+            $table->text('profile_picture')->nullable();
+            $table->boolean('is_driver')->default(false); // false karena tidak semua owner adalah driver, dan tidak semua user adalah owner
+            $table->rememberToken();
+            $table->timestamps();
+        });
+Schema::create('user_addresses', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('city')->nullable(); // e.g., Malang
+            $table->string('district')->nullable(); // e.g., Asembagus
+            $table->string('regency')->nullable(); // e.g., Situbondo
+            $table->string('province')->nullable(); // e.g., Jawa Timur
+            $table->string('postal_code')->nullable(); // e.g., 62704
+            $table->text('detail')->nullable(); // Additional details about the address
+            $table->boolean('is_active')->default(false);
+            $table->timestamps();
+        });
+
+Models
 <?php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class CarImage extends Model
+/**
+ * @mixin IdeHelperRental
+ */
+class Rental extends Model
 {
     protected $fillable = [
+        'user_id',
         'car_id',
-        'image_path',
+        'start_date',
+        'end_date',
+        'total_price',
+        'status',
     ];
 
-    public function cars()
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function car()
     {
         return $this->belongsTo(Car::class);
+    }
+
+    public function payment()
+    {
+        return $this->hasOne(Payment::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
     }
 }
 
@@ -95,94 +178,685 @@ class Car extends Model
     }
 }
 
+<?php
 
+namespace App\Models;
+
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+/**
+ * @mixin IdeHelperUser
+ */
+class User extends Authenticatable
+{
+    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'email_verified_at',
+        'password',
+        'phone_number',
+        'profile_picture',
+        'is_driver',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+
+    // Relationships
+    public function address()
+    {
+        return $this->hasOne(UserAddress::class);
+    }
+
+    public function firstAddress()
+    {
+        return $this->hasOne(UserAddress::class, 'user_id')->orderBy('id', 'asc');
+    }
+
+    public function cars()
+    {
+        return $this->hasMany(Car::class);
+    }
+
+    public function rentals()
+    {
+        return $this->hasMany(Rental::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+}
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * @mixin IdeHelperUserAddress
+ */
+class UserAddress extends Model
+{
+    protected $table = 'user_addresses';
+
+    protected $fillable = [
+        'user_id',
+        'city',
+        'district',
+        'regency',
+        'province',
+        'postal_code',
+        'detail',
+        'is_active',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}
+
+Controllers
 <?php
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Car;
+use App\Models\Rental;
 use Inertia\Inertia;
 
-class CarController extends Controller
+class BookingController extends Controller
 {
-    public function index()
-    {
-        $cars = Car::with(['user.address'])
-            ->get()
-            ->map(fn($car) => $this->transformCar($car));
-
-        return Inertia::render('CarList', [
-            'cars' => $cars
-        ]);
-    }
-
-    public function show($id)
-    {
-        $car = Car::with(['user.address'])->findOrFail($id);
-
-        return Inertia::render('Customer/CarDetail', [
-            'car' => $this->transformCar($car)
-        ]);
-    }
-
-    private function transformCar(Car $car)
+    private function transform(Rental $rental)
     {
         return [
-            'id' => $car->id,
+            'id' => $rental->id,
             // dari relasi
-            'brand' => $car->brand->name ?? '-',
-            'model' => $car->model->name ?? '-',
-            'tyoe' => $car->type->name ?? '-',
-            'fuel_type' => $car->fuelType->name ?? '-',
-            'type_transmisi' => $car->transmission->name ?? '-',
-            'thumbnail' => $car->imagePath->image_path ?? '-',
-            // dari car
-            'car_image' => $car->main_image,
-            'color' => $car->color->name ?? '-',
-            'capacity' => $car->capacity,
-            'year' => $car->year,
-            'description' => $car->description,
-            'price_per_day' => $car->price_per_day,
+            'brand' => $rental->brand->name ?? '-',
+            'model' => $rental->model->name ?? '-',
+            'tyoe' => $rental->type->name ?? '-',
+            'fuel_type' => $rental->fuelType->name ?? '-',
+            'type_transmisi' => $rental->transmission->name ?? '-',
+            'thumbnails' => $rental->imagePath->pluck('image_path'),
+            // dari rental
+            'rental_image' => $rental->main_image,
+            'color' => $rental->color->name ?? '-',
+            'capacity' => $rental->capacity,
+            'year' => $rental->year,
+            'description' => $rental->description,
+            'price_per_day' => $rental->price_per_day,
             // dari user
-            'owner_name' => $car->user->name ?? '-',
-            'owner_picture' => $car->user->profile_picture ?? '/default-avatar.png',
-            'city' => $car->user->firstAddress->city ?? '-',
-            'rating' => $car->rating ?? 4.5, // Bisa diganti query rating asli
-            'reviews' => $car->reviews_count ?? 1094 // Bisa diganti hitungan review asli
+            'owner_name' => $rental->user->name ?? '-',
+            'owner_picture' => $rental->user->profile_picture ?? '/default-avatar.png',
+            'city' => $rental->user->firstAddress->city ?? '-',
+            'rating' => $rental->rating ?? 4.5, // Bisa diganti query rating asli
+            'reviews' => $rental->reviews_count ?? 1094 // Bisa diganti hitungan review asli
+            // dari rental
+            // 'start' => 
         ];
+    }
+    
+    public function show($id)
+    {
+        // Data dummy - nanti bisa ambil dari DB
+        $car = [
+            'brand' => 'Toyota',
+            'model' => 'Yaris G GR-Sport',
+            'duration' => '2 day',
+            'price_per_day' => 250000,
+            'total_price' => 500000,
+            'driver_fee' => 200000,
+            'pickup_fee' => 30000,
+            'return_fee' => 30000,
+            'total_payment' => 760000,
+        ];
+
+        $pickup_location = [
+            'name' => 'Amelia Putri Safani',
+            'phone' => '08962642xxxxx',
+            'address' => 'Jl. Panglima Sudirman No.12, Karangploso, Malang'
+        ];
+
+        $return_location = [
+            'name' => 'Amelia Putri Safani',
+            'phone' => '08962642xxxxx',
+            'address' => 'Jl. Panglima Sudirman No.12, Karangploso, Malang'
+        ];
+
+        $payment_method = 'Mandiri';
+
+        return Inertia::render('Customer/Booking', [
+            'car' => $car,
+            'pickup_location' => $pickup_location,
+            'return_location' => $return_location,
+            'payment_method' => $payment_method
+        ]);
+    }
+}
+
+Controllers/api/Xendit
+<?php
+
+namespace App\Http\Controllers\API;
+
+use App\Http\Controllers\Controller;
+
+use Xendit\Xendit;
+use Xendit\Configuration;
+use Xendit\XenditSdkException;
+use Xendit\invoice\InvoiceApi;
+use Xendit\Invoice\CreateInvoiceRequest;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+
+use App\Models\Payment;
+
+class PaymentController extends Controller
+{
+    var $apiInstance = null;
+
+    public function __construct() {
+        Configuration::setXenditKey(config('services.xendit.secret_key'));
+        $this->apiInstance = new InvoiceApi();
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:1000',
+            'description' => 'required|string|max:255',
+            'payer_email' => 'required|email',
+        ]);
+
+        $external_id = (string) Str::uuid();
+
+        $create_invoice_request = new CreateInvoiceRequest([
+            'external_id' => $external_id,
+            'amount' => (int) $request->amount,
+            'description' => $request->description,
+            'payer_email' => $request->payer_email,
+            'success_redirect_url' => url('/payment/success'), // halaman sukses
+            'failure_redirect_url' => url('/payment/failed'),  // halaman gagal
+            
+            // 'metadata' => ['example' => 'value'], // optional
+        ]);
+
+        try {
+            $result = $this->apiInstance->createInvoice($create_invoice_request);
+
+            $payment = new Payment();
+            $payment->status = 'pending';
+            $payment->rental_id = null;
+            $payment->external_id = $external_id;
+            $payment->xendit_payment_id = $result->getId();
+            $payment->payer_email = $request->payer_email;
+            $payment->payment_method = 'xendit';
+            $payment->checkout_link = $result->getInvoiceUrl();
+            $payment->paid_at = null;
+            $payment->description = $request->description;
+            $payment->save();
+
+            return response()->json([
+                'message' => 'Payment created successfully',
+                'data' => $payment,
+                'checkout_link' => $result->getInvoiceUrl(),
+            ], 201);
+        } catch (XenditSdkException $e) {
+            Log::error($e->getMessage());
+            // Log::error($e->getResponseBody()); // Removed due to undefined method
+            return response()->json([
+                'error' => 'Failed to create invoice',
+                'details' => $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function notification(Request $request)
+    {
+        $result = $this->apiInstance->getInvoices(null, $request->external_id);
+
+        // get data dari DB
+        $payment = Payment::where('external_id', $request->external_id)->first();
+
+        if (!$payment) {
+            return response()->json(['message' => 'Payment tidak ditemukan'], 404);
+        }
+
+        if ($payment->status == 'settled') {
+            return response()->json('Payment telah diproses');
+        }
+
+        // update status
+        $payment->status = strtolower($result[0]['status']);
+
+        // update paid_at jika ada dari Xendit
+        if (!empty($result[0]['paid_at'])) {
+            $payment->paid_at = $result[0]['paid_at'];
+        }
+
+        // simpan perubahan
+        $payment->save();
+
+        return response()->json([
+            'message' => 'Payment status updated successfully',
+            'updated_payment' => [
+                'id' => $payment->id,
+                'external_id' => $payment->external_id,
+                'status' => $payment->status,
+                'paid' => $payment->status === 'settled' || $payment->status === 'paid',
+                'paid_at' => $payment->paid_at,
+                'description' => $payment->description,
+                'payer_email' => $payment->payer_email,
+                'checkout_link' => $payment->checkout_link,
+            ]
+        ]);
+    
+
+        // $data = $request->all();
+        // Log::info('Payment notification received', $data);
+
+        // if (isset($data['id']) && isset($data['status'])) {
+        //     $payment = Payment::where('xendit_payment_id', $data['id'])->first();
+
+        //     if ($payment) {
+        //         $payment->status = $data['status'];
+        //         if ($data['status'] === 'PAID') {
+        //             $payment->paid_at = now();
+        //         }
+        //         $payment->save();
+
+        //         return response()->json(['message' => 'Payment status updated successfully'], 200);
+        //     }
+        // }
+
+        // return response()->json(['error' => 'Invalid notification data'], 400);
+    }
+
+    public function showPayments()
+    {
+        $payments = Payment::all();
+        return response()->json($payments);
     }
 }
 
 
-import React from "react";
+Resouces/Js/Pages
+// resources/js/Pages/Customer/Booking.jsx
+import React, { useState } from "react";
+import { Head, usePage } from "@inertiajs/react";
+
+import DateTime from "./BookingComponent/DateTime";
+import ConfirmFilter from "./BookingComponent/ConfirmFilter";
+import DetailPrice from "./BookingComponent/DetailPrice";
+import ReadyToPay from "./BookingComponent/ReadyToPay";
+import Navbar from "../ComponetGlobal/Navbar";
+import PageHeader from "../ComponetGlobal/PageHeader";
+
+export default function Booking() {
+  // Ambil data dari Laravel controller lewat Inertia props
+  const { car, pickup_location, return_location, payment_method } = usePage().props;
+
+  return (
+    <>
+      <Head title="Booking" />
+      <div className="min-h-screen bg-[#f8fcff]">
+        <Navbar header={<PageHeader />} >
+          {/* Main Content */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 max-w-7xl mx-auto">
+            {/* Left Column */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Date & Time */}
+              <DateTime />
+
+              {/* Driver */}
+              <ConfirmFilter />
+            </div>
+
+            {/* Right Column */}
+            <div className="space-y-6">
+              {/* Summary */}
+              <DetailPrice />
+
+              {/* Payment */}
+              <ReadyToPay />
+            </div>
+          </div>
+        </Navbar>
+      </div>
+    </>
+  );
+}
+
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { usePage } from "@inertiajs/react";
 
-const Pictures = () => {
+const ConfirmFilter = () => {
+    const { car, pickup_location, return_location, payment_method } = usePage().props;
+
+    const [driverOption, setDriverOption] = useState("with-driver");
+    const [pickupOption, setPickupOption] = useState("owner");
+    const [returnOption, setReturnOption] = useState("owner");
+    const [loading, setLoading] = useState(false);
+    
+    return (
+        <>
+            <Card>
+                <CardContent className="p-6 space-y-6">
+                    <div>
+                    <Label className="mb-2 block">Driver</Label>
+                    <RadioGroup
+                        value={driverOption}
+                        onValueChange={setDriverOption}
+                        className="flex gap-6"
+                    >
+                        <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="with-driver" id="with-driver" />
+                        <Label htmlFor="with-driver">
+                            With Driver{" "}
+                            <span className="text-gray-500">
+                            Rp {car.driver_fee.toLocaleString()}
+                            </span>
+                        </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="self-drive" id="self-drive" />
+                        <Label htmlFor="self-drive">Self Drive</Label>
+                        </div>
+                    </RadioGroup>
+                    </div>
+
+                    {/* Pick-Up */}
+                    <div>
+                    <Label className="mb-2 block">Pick-Up Location</Label>
+                    <RadioGroup
+                        value={pickupOption}
+                        onValueChange={setPickupOption}
+                        className="flex gap-6"
+                    >
+                        <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="owner" id="pickup-owner" />
+                        <Label htmlFor="pickup-owner">At Owner’s Location</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="other" id="pickup-other" />
+                        <Label htmlFor="pickup-other">
+                            At Other Location{" "}
+                            <span className="text-gray-500">
+                            Rp {car.pickup_fee.toLocaleString()}
+                            </span>
+                        </Label>
+                        </div>
+                    </RadioGroup>
+                    <div className="mt-4 border p-4 rounded-lg">
+                        <p className="font-semibold">Meeting Point Location</p>
+                        <p className="text-sm text-gray-600">{pickup_location.name}</p>
+                        <p className="text-sm">{pickup_location.address}</p>
+                        <p className="text-sm">{pickup_location.phone}</p>
+                    </div>
+                    </div>
+
+                    {/* Return */}
+                    <div>
+                    <Label className="mb-2 block">Return Location</Label>
+                    <RadioGroup
+                        value={returnOption}
+                        onValueChange={setReturnOption}
+                        className="flex gap-6"
+                    >
+                        <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="owner" id="return-owner" />
+                        <Label htmlFor="return-owner">At Owner’s Location</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="other" id="return-other" />
+                        <Label htmlFor="return-other">
+                            At Other Location{" "}
+                            <span className="text-gray-500">
+                            Rp {car.return_fee.toLocaleString()}
+                            </span>
+                        </Label>
+                        </div>
+                    </RadioGroup>
+                    <div className="mt-4 border p-4 rounded-lg">
+                        <p className="font-semibold">Meeting Point Location</p>
+                        <p className="text-sm text-gray-600">{return_location.name}</p>
+                        <p className="text-sm">{return_location.address}</p>
+                        <p className="text-sm">{return_location.phone}</p>
+                    </div>
+                    </div>
+                </CardContent>
+            </Card>
+        </>
+    );
+}
+
+export default ConfirmFilter;
+
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const DateTime = () => {
+
+    return (
+        <>
+            <Card>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+                <div>
+                    <Label>Rental Start Date & Time</Label>
+                    <Select>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Senin, 11 Agustus 2025 09:00" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="start1">Senin, 11 Agustus 2025 09:00</SelectItem>
+                    </SelectContent>
+                    </Select>
+                </div>
+                <div>
+                    <Label>Rental End Date & Time</Label>
+                    <Select>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Selasa, 12 Agustus 2025 15:00" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="end1">Selasa, 12 Agustus 2025 15:00</SelectItem>
+                    </SelectContent>
+                    </Select>
+                </div>
+                </CardContent>
+            </Card>
+        </>
+    );
+}
+
+export default DateTime;
+
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { usePage } from "@inertiajs/react";
+
+const DetailPrice = () => {
     const { car } = usePage().props;
     return (
         <>
-            <div>
-                {/* gambar utama dari tb car main_image */}
-                <img
-                src={car.car_image }
-                alt={`${car.brand} ${car.model}`}
-                className="w-full h-[350px] object-cover rounded-lg shadow"
-                />
-                {/* gambar tumbnail dari tb car_image => satu mobil bisa memiliki banyak gambar */}
-                <div className="flex gap-3 mt-4 overflow-x-auto">
-                {[car.car_image , car.car_image , car.car_image ].map((src, i) => (
-                    <img
-                    key={i}
-                    src={src}
-                    alt="thumbnail"
-                    className="w-28 h-20 object-cover rounded-md border hover:border-blue-500 cursor-pointer"
-                    />
-                ))}
-                </div>
-            </div>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Yoger Car Malang</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                    <p className="font-semibold">
+                        {car.brand} {car.model}
+                    </p>
+                    <p>Duration Rental: {car.duration}</p>
+                    <Separator />
+                        <div className="flex justify-between">
+                            <span>Total Price</span>
+                            <span>Rp {car.total_price.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>Driver Fee</span>
+                            <span>Rp {car.driver_fee.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>Pick Up Location</span>
+                            <span>Rp {car.pickup_fee.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>Return Location</span>
+                            <span>Rp {car.return_fee.toLocaleString()}</span>
+                        </div>
+                    <Separator />
+                    <div className="flex justify-between font-bold">
+                        <span>Total Payment</span>
+                        <span>Rp {car.total_payment.toLocaleString()}</span>
+                    </div>
+                    <p className="text-xs text-gray-500">
+                        With driver bookings, meals, fuel, tolls, etc. are counted as additional costs not included in the system.
+                    </p>
+                </CardContent>
+            </Card>
         </>
-    )
+    );
 }
 
-export default  Pictures;
+export default DetailPrice;
+
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { usePage } from "@inertiajs/react";
+
+import HandlePayNow from "./HandlePayNow";
+
+const ReadyToPay = () => {
+  const { car, pickup_location, return_location, payment_method } = usePage().props;
+  const [loading, setLoading] = useState(false);
+
+    return (
+        <>
+            <Card>
+                <CardContent className="p-6 space-y-4">
+                <div className="flex justify-between">
+                    <span>Payment Method</span>
+                    <Button variant="link" className="p-0 text-blue-500">
+                    Choose Payment Method
+                    </Button>
+                </div>
+                <p className="font-semibold">{payment_method}</p>
+                <div className="flex justify-between text-lg font-bold">
+                    <span>Total Payment</span>
+                    <span>Rp {car.total_payment.toLocaleString()}</span>
+                </div>
+                <Button
+                    className="w-full bg-[#1e6fa1] hover:bg-[#195b82]"
+                    onClick={() => HandlePayNow({ car, setLoading })}
+                    disabled={loading}
+                >
+                    {loading ? "Processing..." : "Pay Now"}
+                </Button>
+                </CardContent>
+            </Card>
+        </>
+    );
+}
+
+export default ReadyToPay;
+
+Hendler
+// resources/js/Pages/Customer/BookingComponent/HandlePayNow.jsx
+export default async function HandlePayNow({ car, setLoading }) {
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  }
+
+  try {
+    setLoading(true);
+
+    // 1. Ambil CSRF cookie dari Laravel Sanctum
+    await fetch("http://127.0.0.1:8000/sanctum/csrf-cookie", {
+      method: "GET",
+      credentials: "include", // penting: simpan cookie di browser
+    });
+
+    // 2. Ambil nilai XSRF-TOKEN dari cookie browser
+    const xsrfToken = getCookie("XSRF-TOKEN");
+
+    // 3. Kirim request ke API untuk buat pembayaran
+    const response = await fetch("http://127.0.0.1:8000/api/payment/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
+      },
+      credentials: "include", // kirim cookie laravel_session & XSRF-TOKEN
+      body: JSON.stringify({
+        amount: car.total_payment,
+        description: `Rental ${car.brand} ${car.model}`,
+        payer_email: "customer@email.com",
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (result.checkout_link) {
+      window.location.href = result.checkout_link; // redirect ke Xendit
+    } else {
+      alert("Gagal membuat pembayaran: checkout_link tidak ditemukan.");
+    }
+  } catch (error) {
+    console.error("Payment error:", error);
+  } finally {
+    setLoading(false);
+  }
+}

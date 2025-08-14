@@ -1,0 +1,31 @@
+1. Perhitungan waktu penyewaan dimulai sejak di bayar (opsi 2)
+2. tidak jadi menggunakan deposit, ganti dengan denda
+3. aturan denda berupa
+3-1. denda keterlambatan terhitung per-jam
+3-2. denda kerusakan -> tambahkan form kerusakan berupa input gambar awal yang dilakukan oleh owner dan customer  (opsi tambahan bukan prioritas awal)
+3-2-1. form input kerusakan berisikan foto dan input biaya denda
+3-3. denda kerusakan tidak berlaku saat membawa supir
+3-4. denda kerusakan dibagi 2 kerusakan kecil (lecet dan semacamnya) dan kerusakan besar (hancur sebagian besar dari tubuh mobil)
+3-5. biaya denda kerusakan yang merupakan opsi tambahan karena sistem kita tidak memiliki sistem asuransi. sehingga biaya pembayaran perbaikan kerusakan dapat sangat memberatkan
+4. biaya denda untuk aturan 3-1 dapat input manual namun hitungan lanjutan dari sistem
+5. sebagai bentuk kesepakatan (jika tidak membawa supir)
+5-1. customer harus memberikan KTP kepada owner
+5-2. customer dapat memotret keadaan awal kendaraan sebelum berangkat sebagai bentuk keadilan jika owner melakukan kecurangan dengan menyebut berbagai hal untuk menaikkan denda
+5-3. dalam sistem, owner diharapkan memotret kondisi awal mobil yang akan disewakannya
+5-3. customer harus datang ke tempat owner jika menyewa tidak dengan supir
+5-4. yang menyewakan mobil dapat memerikan STNK pada penyewa namun tidak diperbolehkan untuk memberikan surat BPKB
+6. saat membawa supir maupun tidak membawa supir, biaya tambahan seperti bensin, tol dan lain lain tidak terhitung dalam sistem.
+7. (opsi tambahan bukan prioritas) di berikan keharusan pada mobil yang akan di daftarkan untuk disewakan agar memiliki
+7-1. descamp
+7-2. Gps
+8. sistem dapat tracking arah dengan gps dari posisi penyewa ke posisi yang menyewa
+9.  pada mobil yang tampil pada dashboard penyewaan hanya merupakan mobil-mobil yang siap untuk disewakan
+9. pembayaran awal hanya berupa biaya sewa sesuai perhitungan dengan waktu sewa yang di input
+10. semua jenis pembayaran kecuali biaya tambahan seperti yang telahdisebut dilakukan melalui sistem
+
+
+Pengingat -> pengaturan denda untuk kerusakan merupakan opsi tambahan dan bukan prioritas, namun fungsi untuk menginput kerusakan dapat di gunakan sebagai data perbaikan dan perlindungan
+
+catatan:
+customer : yang menyewa 
+owner : pemilik atau yang menyewakan

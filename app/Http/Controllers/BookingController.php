@@ -2,10 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Car;
+use App\Models\Rental;
 use Inertia\Inertia;
 
 class BookingController extends Controller
 {
+    private function transform(Rental $rental)
+    {
+        return [
+            'id' => $rental->id,
+            // dari relasi
+            'brand' => $rental->brand->name ?? '-',
+            'model' => $rental->model->name ?? '-',
+            'tyoe' => $rental->type->name ?? '-',
+            'fuel_type' => $rental->fuelType->name ?? '-',
+            'type_transmisi' => $rental->transmission->name ?? '-',
+            'thumbnails' => $rental->imagePath->pluck('image_path'),
+            // dari rental
+            'rental_image' => $rental->main_image,
+            'color' => $rental->color->name ?? '-',
+            'capacity' => $rental->capacity,
+            'year' => $rental->year,
+            'description' => $rental->description,
+            'price_per_day' => $rental->price_per_day,
+            // dari user
+            'owner_name' => $rental->user->name ?? '-',
+            'owner_picture' => $rental->user->profile_picture ?? '/default-avatar.png',
+            'city' => $rental->user->firstAddress->city ?? '-',
+            'rating' => $rental->rating ?? 4.5, // Bisa diganti query rating asli
+            'reviews' => $rental->reviews_count ?? 1094 // Bisa diganti hitungan review asli
+            // dari rental
+            // 'start' => 
+        ];
+    }
+    
     public function show($id)
     {
         // Data dummy - nanti bisa ambil dari DB
