@@ -1,5 +1,5 @@
 // resources/js/Pages/Customer/Booking.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Head, usePage } from "@inertiajs/react";
 
 import DateTime from "./BookingComponent/DateTime";
@@ -11,7 +11,25 @@ import PageHeader from "../ComponetGlobal/PageHeader";
 
 export default function Booking() {
   // Ambil data dari Laravel controller lewat Inertia props
-  const { car, pickup_location, return_location, payment_method } = usePage().props;
+  const { car, ownerAddress, customerAddress } = usePage().props;
+
+  // State untuk tanggal
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
+  // State untuk driver dan pickup (dipindahkan dari ConfirmFilter)
+  const [pickupOption, setPickupOption] = useState("owner");
+  const [selectedAddress, setSelectedAddress] = useState(
+    customerAddress?.[0]?.id?.toString() || ""
+  );
+
+  const [driverOption, setDriverOption] = useState("self-drive");
+
+  const [totalPayment, setTotalPayment] = useState(0);
+
+  useEffect(() => {
+    setDriverOption(car.is_driver ? "self-drive" : "with-driver");
+  }, [car.is_driver]);
 
   return (
     <>
@@ -23,19 +41,47 @@ export default function Booking() {
             {/* Left Column */}
             <div className="lg:col-span-2 space-y-6">
               {/* Date & Time */}
-              <DateTime />
+              <DateTime
+                car={car}
+                startDate={startDate}
+                setStartDate={setStartDate}
+                endDate={endDate}
+                setEndDate={setEndDate}
+              />
 
               {/* Driver */}
-              <ConfirmFilter />
+              <ConfirmFilter
+                car={car}
+                customer_addresses={customerAddress}
+                driverOption={driverOption}
+                setDriverOption={setDriverOption}
+                pickupOption={pickupOption}
+                setPickupOption={setPickupOption}
+                selectedAddress={selectedAddress}
+                setSelectedAddress={setSelectedAddress}
+              />
             </div>
 
             {/* Right Column */}
             <div className="space-y-6">
               {/* Summary */}
-              <DetailPrice />
+              <DetailPrice 
+                car={car}
+                startDate={startDate}
+                endDate={endDate}
+                ownerAddress={ownerAddress}
+                customerAddress={customerAddress}
+                driverOption={driverOption}
+                pickupOption={pickupOption}
+                selectedAddress={selectedAddress}
+                setTotalPayment={setTotalPayment}
+              />
 
               {/* Payment */}
-              <ReadyToPay />
+              <ReadyToPay 
+                car={car} 
+                totalPayment={totalPayment}
+              />
             </div>
           </div>
         </Navbar>

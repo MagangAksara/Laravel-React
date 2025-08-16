@@ -26,12 +26,10 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
-    // Route::middleware('role:customer')->group(function () {
-    // Route::get('/dashboard-customer', [DashboardController::class, 'index'])->name('dashboard.customer');
     Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
+    Route::get('car/{id}/booking', [BookingController::class, 'show'])->name('booking');
 });
 
-Route::middleware(['auth','role:owner'])->group(function () { });
 
 Route::middleware('auth')->get('/dashboard', function () {
     $user = Auth::user();
@@ -47,8 +45,6 @@ Route::middleware('auth')->get('/dashboard', function () {
     abort(403);
 })->name('dashboard');
 
-Route::get('car/{id}/booking', [BookingController::class, 'show'])->name('booking');
-// Route::post('/payment/create', [PaymentController::class, 'store'])->name('payment.create');
 
 Route::get('/payment/success', function () {
     return inertia('Payment/Success'); // Bisa render halaman Inertia React
@@ -58,5 +54,6 @@ Route::get('/payment/failed', function () {
     return inertia('Payment/Failed');
 })->name('payment.failed');
 
+Route::middleware(['auth','role:owner'])->group(function () { });
 
 require __DIR__.'/auth.php';

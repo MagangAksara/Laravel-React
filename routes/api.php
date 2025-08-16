@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CarController;
+use App\Http\Controllers\API\DistanceController;
 use App\Http\Controllers\API\RentalController;
 use App\Http\Controllers\API\PaymentController;
 
@@ -38,6 +39,8 @@ Route::middleware(['throttle:api'])->group(function () {
         Route::get('/payment', [PaymentController::class, 'showPayments']);
         Route::post('/payment/create', [PaymentController::class, 'store'])->name('payment.create');
         Route::post('/payment/notification', [PaymentController::class, 'notification']);
+
+        Route::post('/calculatePickupFee', [DistanceController::class, 'calculate'])->name('calculate');
     // });
     
     // role owner

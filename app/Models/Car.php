@@ -19,7 +19,7 @@ class Car extends Model
         'car_type_id',
         'car_color_id',
         'car_fuel_type_id',
-        'car_transmision_id',
+        'car_transmission_id',
         'main_image',
         'plate_number',
         'capacity',

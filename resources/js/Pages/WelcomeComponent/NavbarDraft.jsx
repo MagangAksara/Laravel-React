@@ -26,8 +26,8 @@ export default function NavbarDraft() {
     };
 
     const getLinkClass = (linkName) => {
-        const baseClass = "text-white hover:text-blue-600";
-        const activeClass = "text-blue-600 font-semibold";
+        const baseClass = "text-white bg-transparan rounded-full px-2 py-1";
+        const activeClass = "text-black bg-blue-200 font-semibold rounded-full px-2 py-1";
 
         if (activeLink === linkName) {
             return activeClass;
@@ -41,14 +41,18 @@ export default function NavbarDraft() {
             className={`
                 w-full flex justify-between items-center transition-all duration-300 z-50 py-3 px-6
                 ${scrolled 
-                    ? "fixed top-0 bg-blue-500/70 backdrop-blur-sm shadow-[0_15px_20px_-10px_rgba(0,0,0,0.3)]" 
-                    : "absolute top-0 left-0 bg-transparent"
+                    ? "fixed top-0 bg-blue-800/70 backdrop-blur-sm shadow-[0_15px_20px_-10px_rgba(0,0,0,0.3)]" 
+                    : "absolute top-0 left-0 bg-black/30 backdrop-blur-sm shadow-[0_15px_20px_-10px_rgba(0,0,0,0.3)]"
                 }
             `}
         >
             <div className="text-[26px] font-semibold">
-                <span style={{ color: "#122121" }}>Easy</span>
-                <span style={{ color: "#4e8eb8" }}>Ride</span>
+                <span 
+                    className="text-blue-300"
+                >Easy</span>
+                <span 
+                    className="text-white"
+                >Ride</span>
             </div>
             <div className="flex gap-4 border border-black rounded-[20px] py-1.5 px-3">
                 <a 
@@ -76,7 +80,7 @@ export default function NavbarDraft() {
             <div className="flex gap-3">
                 <Link href="/login">
                     <button 
-                        className="flex-1 px-3 py-1.5 bg-blue-600 border border-yellow-300 rounded-full text-white text-sm hover:bg-yellow-300 hover:text-black"
+                        className="flex-1 px-3 py-1.5 bg-blue-600 border border-white rounded-full text-white text-sm hover:bg-white hover:text-black"
                         style={{
                             fontFamily:"quicksand"
                         }}

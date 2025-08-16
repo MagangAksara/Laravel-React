@@ -65,6 +65,8 @@ class ProfileController extends Controller
             'regency'     => 'required|string|max:255',
             'province'    => 'required|string|max:255',
             'postal_code' => 'required|string|max:10',
+            'latitude'    => 'required|numeric',
+            'longitude'   => 'required|numeric',
             'detail'      => 'nullable|string|max:500',
         ]);
     }
@@ -89,15 +91,13 @@ class ProfileController extends Controller
             'regency'       => $validated['regency'],
             'province'      => $validated['province'],
             'postal_code'   => $validated['postal_code'],
+            'latitude'      => $validated['latitude'],
+            'longitude'     => $validated['longitude'],
             'detail'        => $validated['detail'],
         ]);
 
         $address->save();
 
-        // return response()->json([
-        //     'message' => 'Alamat berhasil ditambahkan',
-        //     'data'    => $address
-        // ], 201);
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
@@ -113,13 +113,10 @@ class ProfileController extends Controller
             'regency'     => $validated['regency'],
             'province'    => $validated['province'],
             'postal_code' => $validated['postal_code'],
+            'latitude'    => $validated['latitude'],
+            'longitude'    => $validated['longitude'],
             'detail'      => $validated['detail'],
         ]);
-
-        // return response()->json([
-        //     'message' => 'Alamat berhasil diperbarui',
-        //     'data'    => $address
-        // ], 200);
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

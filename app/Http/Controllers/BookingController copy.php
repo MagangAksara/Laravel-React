@@ -24,10 +24,9 @@ class BookingController extends Controller
             'brand',
             'model',
             'type',
-            'user.addresses',
+            'user.addresses', // gunakan addresses untuk banyak alamat
         ])->findOrFail($id);
 
-        $priceDay = $car->price_per_day;
         
         // Owner info
         $ownerId       = $car->user;
@@ -44,15 +43,43 @@ class BookingController extends Controller
         $customerAddress  = $customer?->addresses()->get();
 
         // durasi dihitung langsung dalam view
+        // $startDate = $request->filled('start_date')
+        //     ? Carbon::parse($request->input('start_date'))
+        //     : now();
+
+        // $endDate = $request->filled('end_date')
+        //     ? Carbon::parse($request->input('end_date'))
+        //     : now()->addDay();
+
+        // // Hitung durasi
+        // $diff = $startDate->diff($endDate);
+        // $durationFormatted = sprintf(
+        //     "%d hari %02d jam %02d menit",
+        //     $diff->days,
+        //     $diff->h,
+        //     $diff->i
+        // );
 
         // Biaya dasar akan ditampilkan langsung lalu dihitung di dalam view
+        // $rentalFee = ($diff->days > 0 ? $diff->days : 1) * (int) $car->price_per_day;
 
         // Biaya driver
         $driverFee = 200000;
 
         // Biaya pickup akan dihitung langsung di fiew
+        // $pickupFee = 0;
+        // if ($isDriver && $customerAddress && $ownerAddress) {
+        //     $distanceKm = OpenRouteService::getDistanceKm(
+        //         $ownerAddress->latitude, $ownerAddress->longitude,
+        //         $customerAddress->latitude, $customerAddress->longitude
+        //     );
+        //     if ($distanceKm !== null) {
+        //         $pickupFee = $distanceKm * 3500;
+        //     }
+        // }
 
         // Total pembayaran akan dihitung dalam view
+        // $totalPayment = $rentalFee + $driverFee + $pickupFee;
 
         return Inertia::render('Customer/Booking', [
             'car' => [
@@ -65,8 +92,8 @@ class BookingController extends Controller
                 'brand'         => $car->brand->name ?? '-',
                 'model'         => $car->model->name ?? '-',
                 'type'          => $car->type->name ?? '-',
-                'price_per_day' => $priceDay,
-                'driver_fee'    => $driverFee,
+                'price_per_day' => (int) $car->price_per_day,
+                'driver_fee'    => (int) $driverFee,
                 'is_driver'     => $isDriver,
             ],
             'ownerAddress'       => $ownerAddress,

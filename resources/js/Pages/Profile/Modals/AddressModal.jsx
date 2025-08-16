@@ -1,7 +1,8 @@
+import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Textarea } from '@/Components/ui/textarea';
 import { useForm } from '@inertiajs/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function AddressModal({ show, onClose, address = null }) {
     const { data, setData, post, put, processing, reset, errors  } = useForm({
@@ -10,16 +11,12 @@ export default function AddressModal({ show, onClose, address = null }) {
         regency: '',
         province: '',
         postal_code: '',
+        latitude: '',
+        longitude: '',
         detail: '',
     });
-    // city: address?.city || '',
-    // district: address?.district || '',
-    // regency: address?.regency || '',
-    // province: address?.province || '',
-    // postal_code: address?.postal_code || '',
-    // // full_address: address?.full_address || '',
-    // detail: address?.detail || '',
-    // // other_details: address?.other_details || ''
+
+    const [loadingLocation, setLoadingLocation] = useState(false);
 
     useEffect(() => {
         if (address) {
@@ -29,15 +26,31 @@ export default function AddressModal({ show, onClose, address = null }) {
                 regency: address.regency,
                 province: address.province,
                 postal_code: address.postal_code,
-                // full_address: address.full_address,
+                latitude: address.latitude,
+                longitude: address.longitude,
                 detail: address.detail,
-                // other_details: address?.other_details
-                // address: address.address || '',
-                // city: address.city || '',
-                // postal_code: address.postal_code || '',
             });
         }
     }, [address]);
+
+    const getCurrentLocation = () => {
+        if (!navigator.geolocation) {
+            alert("Browser tidak mendukung geolokasi.");
+            return;
+        }
+        setLoadingLocation(true);
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                setData('latitude', pos.coords.latitude);
+                setData('longitude', pos.coords.longitude);
+                setLoadingLocation(false);
+            },
+            (err) => {
+                alert("Gagal mengambil lokasi: " + err.message);
+                setLoadingLocation(false);
+            }
+        );
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -60,31 +73,29 @@ export default function AddressModal({ show, onClose, address = null }) {
                 <form onSubmit={handleSubmit} className="space-y-3">
                     <Input
                         type="text"
-                        placeholder="city"
+                        placeholder="Kota"
                         value={data.city}
                         onChange={(e) => setData('city', e.target.value)}
                         className="w-full border rounded p-2"
                     />
                     <Input
                         type="text"
-                        placeholder="district"
+                        placeholder="Kecamatan"
                         value={data.district}
                         onChange={(e) => setData('district', e.target.value)}
+                        className="w-full border rounded p-2"
+                    />
+                    <Input
+                        type="text"
+                        placeholder="Kabupaten"
+                        value={data.regency}
+                        onChange={(e) => setData('regency', e.target.value)}
                         className="w-full border rounded p-2"
                     />
                     <div className='justify-between flex gap-2'>
                         <Input
                             type="text"
-                            placeholder="regency"
-                            value={data.regency}
-                            onChange={(e) => setData('regency', e.target.value)}
-                            className="w-full border rounded p-2"
-                            />
-                    </div>
-                    <div className='justify-between flex gap-2'>
-                        <Input
-                            type="text"
-                            placeholder="province"
+                            placeholder="Provinsi"
                             value={data.province}
                             onChange={(e) => setData('province', e.target.value)}
                             className="w-full border rounded p-2"
@@ -97,6 +108,26 @@ export default function AddressModal({ show, onClose, address = null }) {
                             className="w-full border rounded p-2"
                         />
                     </div>
+                    <div className='justify-between flex gap-1'>
+                        <Input
+                            type="text"
+                            value={data.latitude}
+                            readOnly
+                            className="w-full border rounded p-2 text-center"
+                        />
+                        <Input
+                            type="text"
+                            value={data.longitude}
+                            readOnly
+                            className="w-full border rounded p-2 text-center"
+                        />
+                        <Button
+                            onClick={getCurrentLocation}
+                            className="bg-blue-500 text-white"
+                        >
+                            {loadingLocation ? "..." : "Cari"}
+                        </Button>
+                    </div>
                     <Textarea
                         type="text"
                         placeholder="detail"
@@ -104,13 +135,6 @@ export default function AddressModal({ show, onClose, address = null }) {
                         onChange={(e) => setData('detail', e.target.value)}
                         className="w-full border rounded p-2"
                     />
-                    {/* <Textarea
-                        type="text"
-                        placeholder="Other Details"
-                        value={data.other_details}
-                        onChange={(e) => setData('other_details', e.target.value)}
-                        className="w-full border rounded p-2"
-                    /> */}
 
                     {/* Map Preview Placeholder */}
                     <div className="w-full h-32 bg-gray-100 flex items-center justify-center text-gray-400 border rounded">

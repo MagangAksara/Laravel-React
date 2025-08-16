@@ -41,4 +41,8 @@ return [
         'webhook_url' => env('XENDIT_WEBHOOK_URL'),
     ],
 
+    'ors' => [
+        'secret_key' => env('ORS_API_KEY')
+    ],
+
 ];

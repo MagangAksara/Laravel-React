@@ -1,5 +1,5 @@
 // resources/js/Pages/Customer/BookingComponent/HandlePayNow.jsx
-export default async function HandlePayNow({ car, setLoading }) {
+export default async function HandlePayNow({ car, setLoading, totalPayment }) {
   function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -12,7 +12,7 @@ export default async function HandlePayNow({ car, setLoading }) {
     // 1. Ambil CSRF cookie dari Laravel Sanctum
     await fetch("http://127.0.0.1:8000/sanctum/csrf-cookie", {
       method: "GET",
-      credentials: "include", // penting: simpan cookie di browser
+      credentials: "include",
     });
 
     // 2. Ambil nilai XSRF-TOKEN dari cookie browser
@@ -26,9 +26,9 @@ export default async function HandlePayNow({ car, setLoading }) {
         "Accept": "application/json",
         "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
       },
-      credentials: "include", // kirim cookie laravel_session & XSRF-TOKEN
+      credentials: "include",
       body: JSON.stringify({
-        amount: car.total_payment,
+        amount: totalPayment, // ⬅️ pakai dari props
         description: `Rental ${car.brand} ${car.model}`,
         payer_email: "customer@email.com",
       }),

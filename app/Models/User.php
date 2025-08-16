@@ -61,6 +61,11 @@ class User extends Authenticatable
         return $this->hasOne(UserAddress::class);
     }
 
+    public function addresses()
+    {
+        return $this->hasMany(UserAddress::class, 'user_id');
+    }
+
     public function firstAddress()
     {
         return $this->hasOne(UserAddress::class, 'user_id')->orderBy('id', 'asc');

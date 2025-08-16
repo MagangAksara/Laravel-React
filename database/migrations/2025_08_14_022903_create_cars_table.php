@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('year')->nullable(); // e.g., 2020, 2021
             $table->text('description')->nullable();
             // price order
-            $table->decimal('price_per_day', 10, 2);
+            $table->unsignedInteger('price_per_day');
             $table->boolean('is_available')->default(true);
             $table->timestamps();
         });

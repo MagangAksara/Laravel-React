@@ -34,7 +34,10 @@ export default function UpdateAddressInformation({ addresses = [] }) {
                         <div>
                             <p className="font-semibold">{address.full_address}</p>
                             <p className="text-sm text-gray-600">
-                                {address.city}, {address.district}, {address.regency}, {address.province}, ({address.postal_code})
+                                Kota: {address.city}, Kecamatan: {address.district}, Kabupaten: {address.regency}, Provinsi: {address.province}, ({address.postal_code})
+                            </p>
+                            <p className="text-sm text-gray-600">
+                                Latitude: {address.latitude}, Longitude: {address.longitude}
                             </p>
                             <p className="text-sm text-gray-600 mt-2">
                                 {address.detail}

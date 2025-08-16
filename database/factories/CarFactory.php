@@ -54,7 +54,7 @@ class CarFactory extends Factory
             'capacity' => $this->faker->numberBetween(2, 7),
             'year' => $this->faker->year(),
             'description' => $this->faker->paragraph(),
-            'price_per_day' => $this->faker->randomFloat(2, 100000, 1000000), // harga sewa per hari
+            'price_per_day' => $this->faker->numberBetween(100000, 1000000), // harga sewa per hari
             'is_available' => $this->faker->boolean(80), // 80% kemungkinan tersedia
         ];
     }

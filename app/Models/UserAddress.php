@@ -18,6 +18,8 @@ class UserAddress extends Model
         'regency',
         'province',
         'postal_code',
+        'latitude',
+        'longitude',
         'detail',
         'is_active',
     ];

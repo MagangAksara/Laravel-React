@@ -2,106 +2,137 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { usePage } from "@inertiajs/react";
 
-const ConfirmFilter = () => {
-    const { car, pickup_location, return_location, payment_method } = usePage().props;
+const ConfirmFilter = ({
+    car,
+    customer_addresses,
+    driverOption,
+    setDriverOption,
+    pickupOption,
+    setPickupOption,
+    selectedAddress,
+    setSelectedAddress,
+}) => {
 
-    const [driverOption, setDriverOption] = useState("with-driver");
-    const [pickupOption, setPickupOption] = useState("owner");
-    const [returnOption, setReturnOption] = useState("owner");
-    const [loading, setLoading] = useState(false);
-    
     return (
-        <>
-            <Card>
-                <CardContent className="p-6 space-y-6">
-                    <div>
+        <Card>
+            <CardContent className="p-6 space-y-6">
+                {/* Driver */}
+                <div>
                     <Label className="mb-2 block">Driver</Label>
                     <RadioGroup
                         value={driverOption}
                         onValueChange={setDriverOption}
+                        defaultValue="self-drive"
                         className="flex gap-6"
                     >
+                        {/* Self Drive selalu ada */}
                         <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="with-driver" id="with-driver" />
-                        <Label htmlFor="with-driver">
-                            With Driver{" "}
-                            <span className="text-gray-500">
-                            Rp {car.driver_fee.toLocaleString()}
-                            </span>
-                        </Label>
+                            <RadioGroupItem value="self-drive" id="self-drive" />
+                            <Label htmlFor="self-drive">Self Drive</Label>
                         </div>
-                        <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="self-drive" id="self-drive" />
-                        <Label htmlFor="self-drive">Self Drive</Label>
+
+                        {/* With Driver hanya kalau owner adalah driver */}
+                        <div
+                            className={`flex items-center space-x-2 ${
+                                !car.is_driver ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
+                        >
+                            <RadioGroupItem
+                                value="with-driver"
+                                id="with-driver"
+                                disabled={!car.is_driver}
+                            />
+                            <Label
+                                htmlFor="with-driver"
+                                className={!car.is_driver ? "pointer-events-none" : ""}
+                            >
+                                With Driver{" "}
+                                <span className="text-gray-500">
+                                    Rp {car.driver_fee.toLocaleString()}
+                                </span>
+                            </Label>
                         </div>
                     </RadioGroup>
-                    </div>
+                </div>
 
-                    {/* Pick-Up */}
-                    <div>
+                {/* Pick-Up */}
+                <div>
                     <Label className="mb-2 block">Pick-Up Location</Label>
                     <RadioGroup
                         value={pickupOption}
-                        onValueChange={setPickupOption}
+                        onValueChange={(val) => {
+                            if (driverOption === "self-drive" && val === "other") return;
+                            setPickupOption(val);
+                        }}
                         className="flex gap-6"
                     >
+                        {/* At owner Location */}
                         <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="owner" id="pickup-owner" />
-                        <Label htmlFor="pickup-owner">At Owner’s Location</Label>
+                            <RadioGroupItem value="owner" id="pickup-owner" />
+                            <Label htmlFor="pickup-owner">At Owner’s Location</Label>
                         </div>
-                        <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="other" id="pickup-other" />
-                        <Label htmlFor="pickup-other">
-                            At Other Location{" "}
-                            <span className="text-gray-500">
-                            Rp {car.pickup_fee.toLocaleString()}
-                            </span>
-                        </Label>
-                        </div>
-                    </RadioGroup>
-                    <div className="mt-4 border p-4 rounded-lg">
-                        <p className="font-semibold">Meeting Point Location</p>
-                        <p className="text-sm text-gray-600">{pickup_location.name}</p>
-                        <p className="text-sm">{pickup_location.address}</p>
-                        <p className="text-sm">{pickup_location.phone}</p>
-                    </div>
-                    </div>
-
-                    {/* Return */}
-                    <div>
-                    <Label className="mb-2 block">Return Location</Label>
-                    <RadioGroup
-                        value={returnOption}
-                        onValueChange={setReturnOption}
-                        className="flex gap-6"
-                    >
-                        <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="owner" id="return-owner" />
-                        <Label htmlFor="return-owner">At Owner’s Location</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="other" id="return-other" />
-                        <Label htmlFor="return-other">
-                            At Other Location{" "}
-                            <span className="text-gray-500">
-                            Rp {car.return_fee.toLocaleString()}
-                            </span>
-                        </Label>
+                        {/* At Other Location */}
+                        <div
+                            className={`flex items-center space-x-2 ${
+                                driverOption === "self-drive" ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
+                        >
+                            <RadioGroupItem
+                                value="other"
+                                id="pickup-other"
+                                disabled={driverOption === "self-drive"}
+                            />
+                            <Label
+                                htmlFor="pickup-other"
+                                className={driverOption === "self-drive" ? "pointer-events-none" : ""}
+                            >
+                                At Other Location
+                            </Label>
                         </div>
                     </RadioGroup>
-                    <div className="mt-4 border p-4 rounded-lg">
-                        <p className="font-semibold">Meeting Point Location</p>
-                        <p className="text-sm text-gray-600">{return_location.name}</p>
-                        <p className="text-sm">{return_location.address}</p>
-                        <p className="text-sm">{return_location.phone}</p>
+                        {pickupOption === "other" && (
+                            <div className="mt-4 border p-4 rounded-lg">
+                                {customer_addresses?.length > 0 ? (
+                                    <RadioGroup
+                                        value={selectedAddress}
+                                        onValueChange={setSelectedAddress}
+                                        className="space-y-3"
+                                    >
+                                        {customer_addresses.map((addr) => (
+                                            <div
+                                                key={addr.id}
+                                                className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-gray-50 transition"
+                                            >
+                                                <RadioGroupItem 
+                                                    value={addr.id.toString()} 
+                                                    id={`address-${addr.id}`} 
+                                                    className="mt-1"
+                                                />
+                                                <Label 
+                                                    htmlFor={`address-${addr.id}`} 
+                                                    className="cursor-pointer flex flex-col"
+                                                >
+                                                    <p className="text-sm text-gray-800">
+                                                        Kota: {addr.city},  Kecamatan: {addr.district}, Kabupaten: {addr.regency}, Provinsi: {addr.province}, ({addr.postal_code})
+                                                    </p>
+                                                    <p className="text-sm text-gray-600">
+                                                        Latitude: {addr.latitude}, Longitude: {addr.longitude}
+                                                    </p>
+                                                    <p className="text-sm">{addr.detail}</p>
+                                                </Label>
+                                            </div>
+                                        ))}
+                                    </RadioGroup>
+                                ) : (
+                                    <p className="text-sm text-gray-500">Tidak ada alamat tersimpan.</p>
+                                )}
+                            </div>
+                        )}
                     </div>
-                    </div>
-                </CardContent>
-            </Card>
-        </>
+            </CardContent>
+        </Card>
     );
-}
+};
 
 export default ConfirmFilter;
