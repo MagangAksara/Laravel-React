@@ -19,7 +19,7 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('total_price'); // merupakan hasil perhitungan yang telah dilakukan
-            $table->enum('status', ['pending_payment', 'confirmed_payment', 'cancelled','expired', 'on_rent', 'waiting_for_check', 'waiting_for_fines_payment', 'completed'])->default('pending_payment');
+            $table->string('status')->default('pending_payment');
             $table->timestamps();
         });
     }

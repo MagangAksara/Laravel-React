@@ -26,11 +26,17 @@ export default function Booking() {
 
   const [driverOption, setDriverOption] = useState("self-drive");
 
-  const [totalPayment, setTotalPayment] = useState(0);
-
   useEffect(() => {
-    setDriverOption(car.is_driver ? "self-drive" : "with-driver");
+    if (car.is_driver) {
+      // Kalau owner bisa jadi driver, default with-driver
+      setDriverOption("with-driver");
+    } else {
+      // Kalau owner bukan driver, default self-drive
+      setDriverOption("self-drive");
+    }
   }, [car.is_driver]);
+  
+  const [totalPayment, setTotalPayment] = useState(0);
 
   return (
     <>

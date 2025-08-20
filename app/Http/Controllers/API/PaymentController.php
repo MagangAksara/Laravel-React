@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 
 use App\Models\Payment;
+use App\Models\Rental;
 
 class PaymentController extends Controller
 {
@@ -97,12 +98,12 @@ class PaymentController extends Controller
 
         // Mapping status untuk rental
         $statusMap = [
-            'pending' => 'pending payment',
-            'unpaid'  => 'pending payment',
-            'paid'    => 'confirmed payment',
-            'settled' => 'confirmed payment',
-            'expired' => 'expired',
-            'failed'  => 'cancelled',
+            'pending' => Rental::STATUS_PENDING_PAYMENT,
+            'unpaid'  => Rental::STATUS_CANCELLED,
+            'paid'    => Rental::STATUS_CONFIRMED_PAYMENT,
+            'settled' => Rental::STATUS_PAYMENT_RECEIVED,
+            'expired' => Rental::STATUS_EXPIRED,
+            'failed'  => Rental::STATUS_FAILED,
         ];
 
         // Selalu simpan status asli dari Xendit ke payment
@@ -114,14 +115,17 @@ class PaymentController extends Controller
 
         $payment->save();
 
-        // 🔥 update status rental (pakai status hasil mapping)
+        // Update Rental status (jika mapping tersedia)
         if (isset($statusMap[$xenditStatus])) {
-            $mappedStatus = $statusMap[$xenditStatus];
             $rental = $payment->rental;
-
-            if ($rental && in_array($mappedStatus, ['confirmed payment', 'cancelled', 'expired'])) {
-                $rental->status = $mappedStatus;
+            if ($rental) {
+                $rental->status = $statusMap[$xenditStatus];
                 $rental->save();
+
+                Log::info('Rental status updated', [
+                    'rental_id' => $rental->id,
+                    'new_status' => $rental->status,
+                ]);
             }
         }
 

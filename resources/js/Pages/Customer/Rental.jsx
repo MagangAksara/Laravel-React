@@ -35,16 +35,19 @@ const Rental = ({ rentals = [] }) => {
             </div>
 
             {/* Tabs */}
-            <Tabs value={status} onValueChange={setStatus}>
-              <TabsList className="grid grid-cols-5 gap-2">
-                {/* ngikut status dari tb payment */}
-                <TabsTrigger value="all">All Orders</TabsTrigger>
-                <TabsTrigger value="pending">Pending Payment</TabsTrigger>
-                <TabsTrigger value="confirmed payment">Confirmed</TabsTrigger>
-                <TabsTrigger value="on_rent">On Rent</TabsTrigger>
-                <TabsTrigger value="waiting_for_check">Waiting for Check</TabsTrigger>
-              </TabsList>
-            </Tabs>
+            <div className="flex flex-row gap-6">
+              <p className="self-center ml-2 font-semibold">Order Status</p>
+              <Tabs value={status} onValueChange={setStatus}>
+                <TabsList className="grid grid-cols-5 gap-2">
+                  {/* ngikut status dari tb payment */}
+                  <TabsTrigger value="all">All Orders</TabsTrigger>
+                  <TabsTrigger value="pending">Pending Payment</TabsTrigger>
+                  <TabsTrigger value="paid">Confirmed</TabsTrigger>
+                  <TabsTrigger value="on_rent">On Rent</TabsTrigger>
+                  <TabsTrigger value="waiting_for_check">Waiting for Check</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
 
             {/* Rentals List */}
             <div className="space-y-4">

@@ -42,6 +42,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => RoleOrPermissionMiddleware::class,
         ]);
     })
+    ->withSchedule(function (Illuminate\Console\Scheduling\Schedule $schedule) {
+        $schedule->command('rentals:update-status')->everyMinute();
+    })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
-    })->create();
+    })
+    ->create();

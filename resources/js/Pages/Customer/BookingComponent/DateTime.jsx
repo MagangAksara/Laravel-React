@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,20 @@ import { CalendarIcon } from "lucide-react";
 import { calculateDuration } from "./Handle/DurationHendle";
 
 const DateTime = ({ startDate, setStartDate, endDate, setEndDate }) => {
-  
+
+  // set default start & end kalau masih kosong
+  useEffect(() => {
+    if (!startDate) {
+      const now = new Date();
+      setStartDate(now);
+
+      if (!endDate) {
+        const plus24h = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+        setEndDate(plus24h);
+      }
+    }
+  }, [startDate, endDate, setStartDate, setEndDate]);
+
   const formatDateTime = (date) => {
     if (!date) return "Date & Time";
     return date.toLocaleString("en-US", {
