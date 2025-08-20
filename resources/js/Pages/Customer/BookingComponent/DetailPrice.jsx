@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { calculateDuration } from "./Handle/DurationHendle";
 import axios from "axios";
+import OwnerInformation from "./Handle/OwnerInformation";
 
 const DetailPrice = ({ car, startDate, endDate, ownerAddress, customerAddress, driverOption, pickupOption, selectedAddress, setTotalPayment }) => {
     const duration = calculateDuration(startDate, endDate);
@@ -59,17 +60,17 @@ const DetailPrice = ({ car, startDate, endDate, ownerAddress, customerAddress, d
 
     return (
         <>
-            <Card>
+            {/* <Card> */}
                 <CardHeader>
-                    <CardTitle>
+                    <CardTitle className="mb-0 pb-0">
+                        <OwnerInformation car={car}/>
                         <div className="flex text-lg">
                             <p>{car.brand} {car.model} {car.type}</p>
                             <p className="ml-1"> -- Rp {car.price_per_day.toLocaleString()}</p>
                         </div>
-                        <p className="text-sm font-normal">{car.owner_name}</p>
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent className="space-y-2 mt-0">
                     <p>Duration Rental: {duration ? duration.text : "-"}</p>
                     <Separator />
                         <div className="flex justify-between">
@@ -93,7 +94,7 @@ const DetailPrice = ({ car, startDate, endDate, ownerAddress, customerAddress, d
                         With driver bookings, meals, fuel, tolls, etc. are counted as additional costs not included in the system.
                     </p>
                 </CardContent>
-            </Card>
+            {/* </Card> */}
         </>
     );
 }

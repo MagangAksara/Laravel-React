@@ -8,6 +8,7 @@ import DetailPrice from "./BookingComponent/DetailPrice";
 import ReadyToPay from "./BookingComponent/ReadyToPay";
 import Navbar from "../ComponetGlobal/Navbar";
 import PageHeader from "../ComponetGlobal/PageHeader";
+import { Card } from "@/Components/ui/card";
 
 export default function Booking() {
   // Ambil data dari Laravel controller lewat Inertia props
@@ -63,26 +64,30 @@ export default function Booking() {
             </div>
 
             {/* Right Column */}
-            <div className="space-y-6">
-              {/* Summary */}
-              <DetailPrice 
-                car={car}
-                startDate={startDate}
-                endDate={endDate}
-                ownerAddress={ownerAddress}
-                customerAddress={customerAddress}
-                driverOption={driverOption}
-                pickupOption={pickupOption}
-                selectedAddress={selectedAddress}
-                setTotalPayment={setTotalPayment}
-              />
+            <Card>
+              <div>
+                {/* Summary */}
+                <DetailPrice 
+                  car={car}
+                  startDate={startDate}
+                  endDate={endDate}
+                  ownerAddress={ownerAddress}
+                  customerAddress={customerAddress}
+                  driverOption={driverOption}
+                  pickupOption={pickupOption}
+                  selectedAddress={selectedAddress}
+                  setTotalPayment={setTotalPayment}
+                />
 
-              {/* Payment */}
-              <ReadyToPay 
-                car={car} 
-                totalPayment={totalPayment}
-              />
-            </div>
+                {/* Payment */}
+                <ReadyToPay 
+                  car={car} 
+                  totalPayment={totalPayment}
+                  startDate={startDate}
+                  endDate={endDate}
+                />
+              </div>
+            </Card>
           </div>
         </Navbar>
       </div>

@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('rentals', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('car_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // user_id dari role customer
+            $table->foreignId('car_id')->constrained()->onDelete('cascade'); 
+            $table->foreignId('payment_id')->constrained()->onDelete('cascade');
             $table->date('start_date');
             $table->date('end_date');
-            $table->decimal('total_price', 10, 2);
-            $table->string('status')->default('pending'); // pending, confirmed, completed,
-            $table->string('payment_id')->nullable(); // For payment tracking
+            $table->integer('total_price'); // merupakan hasil perhitungan yang telah dilakukan
+            $table->enum('status', ['pending_payment', 'confirmed_payment', 'cancelled','expired', 'on_rent', 'waiting_for_check', 'waiting_for_fines_payment', 'completed'])->default('pending_payment');
             $table->timestamps();
         });
     }

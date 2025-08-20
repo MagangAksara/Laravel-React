@@ -25,6 +25,13 @@ class PaymentController extends Controller
         $this->apiInstance = new InvoiceApi();
     }
 
+    public function showPayments()
+    {
+        $payments = Payment::all();
+        return response()->json($payments);
+    }
+
+    // fungsi untuk membuat pembayaran baru
     public function store(Request $request)
     {
         $request->validate([
@@ -40,10 +47,8 @@ class PaymentController extends Controller
             'amount' => (int) $request->amount,
             'description' => $request->description,
             'payer_email' => $request->payer_email,
-            'success_redirect_url' => url('/payment/success'), // halaman sukses
-            'failure_redirect_url' => url('/payment/failed'),  // halaman gagal
-            
-            // 'metadata' => ['example' => 'value'], // optional
+            'success_redirect_url' => url('/rental'), // halaman sukses
+            'failure_redirect_url' => url('/rental/failed'),  // halaman gagal
         ]);
 
         try {
@@ -51,7 +56,7 @@ class PaymentController extends Controller
 
             $payment = new Payment();
             $payment->status = 'pending';
-            $payment->rental_id = null;
+            // $payment->rental_id = null;
             $payment->external_id = $external_id;
             $payment->xendit_payment_id = $result->getId();
             $payment->payer_email = $request->payer_email;
@@ -76,70 +81,115 @@ class PaymentController extends Controller
         }
     }
 
-    public function notification(Request $request)
+    public function webhook(Request $request)
     {
-        $result = $this->apiInstance->getInvoices(null, $request->external_id);
+        $data = $request->all();
+        Log::info('Xendit Webhook received', $data);
 
-        // get data dari DB
-        $payment = Payment::where('external_id', $request->external_id)->first();
+        $payment = Payment::where('external_id', $data['external_id'] ?? null)->first();
 
         if (!$payment) {
-            return response()->json(['message' => 'Payment tidak ditemukan'], 404);
+            return response()->json(['message' => 'Payment not found'], 404);
         }
 
-        if ($payment->status == 'settled') {
-            return response()->json('Payment telah diproses');
+        // Ambil status asli dari Xendit
+        $xenditStatus = strtolower($data['status'] ?? '');
+
+        // Mapping status untuk rental
+        $statusMap = [
+            'pending' => 'pending payment',
+            'unpaid'  => 'pending payment',
+            'paid'    => 'confirmed payment',
+            'settled' => 'confirmed payment',
+            'expired' => 'expired',
+            'failed'  => 'cancelled',
+        ];
+
+        // Selalu simpan status asli dari Xendit ke payment
+        $payment->status = $xenditStatus;
+
+        if (in_array($xenditStatus, ['paid', 'settled'])) {
+            $payment->paid_at = $data['paid_at'] ?? now();
         }
 
-        // update status
-        $payment->status = strtolower($result[0]['status']);
-
-        // update paid_at jika ada dari Xendit
-        if (!empty($result[0]['paid_at'])) {
-            $payment->paid_at = $result[0]['paid_at'];
-        }
-
-        // simpan perubahan
         $payment->save();
 
-        return response()->json([
-            'message' => 'Payment status updated successfully',
-            'updated_payment' => [
-                'id' => $payment->id,
-                'external_id' => $payment->external_id,
-                'status' => $payment->status,
-                'paid' => $payment->status === 'settled' || $payment->status === 'paid',
-                'paid_at' => $payment->paid_at,
-                'description' => $payment->description,
-                'payer_email' => $payment->payer_email,
-                'checkout_link' => $payment->checkout_link,
-            ]
-        ]);
+        // 🔥 update status rental (pakai status hasil mapping)
+        if (isset($statusMap[$xenditStatus])) {
+            $mappedStatus = $statusMap[$xenditStatus];
+            $rental = $payment->rental;
+
+            if ($rental && in_array($mappedStatus, ['confirmed payment', 'cancelled', 'expired'])) {
+                $rental->status = $mappedStatus;
+                $rental->save();
+            }
+        }
+
+        return response()->json(['message' => 'Webhook processed']);
+    }
+
+
+    
+    // public function notification(Request $request)
+    // {
+    //     $result = $this->apiInstance->getInvoices(null, $request->external_id);
+
+    //     // get data dari DB
+    //     $payment = Payment::where('external_id', $request->external_id)->first();
+
+    //     if (!$payment) {
+    //         return response()->json(['message' => 'Payment tidak ditemukan'], 404);
+    //     }
+
+    //     if ($payment->status == 'settled') {
+    //         return response()->json('Payment telah diproses');
+    //     }
+
+    //     // update status
+    //     $payment->status = strtolower($result[0]['status']);
+
+    //     // update paid_at jika ada dari Xendit
+    //     if (!empty($result[0]['paid_at'])) {
+    //         $payment->paid_at = $result[0]['paid_at'];
+    //     }
+
+    //     // simpan perubahan
+    //     $payment->save();
+
+    //     return response()->json([
+    //         'message' => 'Payment status updated successfully',
+    //         'updated_payment' => [
+    //             'id' => $payment->id,
+    //             'external_id' => $payment->external_id,
+    //             'status' => $payment->status,
+    //             'paid' => $payment->status === 'settled' || $payment->status === 'paid',
+    //             'paid_at' => $payment->paid_at,
+    //             'description' => $payment->description,
+    //             'payer_email' => $payment->payer_email,
+    //             'checkout_link' => $payment->checkout_link,
+    //         ]
+    //     ]);
     
 
-        // $data = $request->all();
-        // Log::info('Payment notification received', $data);
+    //     // $data = $request->all();
+    //     // Log::info('Payment notification received', $data);
 
-        // if (isset($data['id']) && isset($data['status'])) {
-        //     $payment = Payment::where('xendit_payment_id', $data['id'])->first();
+    //     // if (isset($data['id']) && isset($data['status'])) {
+    //     //     $payment = Payment::where('xendit_payment_id', $data['id'])->first();
 
-        //     if ($payment) {
-        //         $payment->status = $data['status'];
-        //         if ($data['status'] === 'PAID') {
-        //             $payment->paid_at = now();
-        //         }
-        //         $payment->save();
+    //     //     if ($payment) {
+    //     //         $payment->status = $data['status'];
+    //     //         if ($data['status'] === 'PAID') {
+    //     //             $payment->paid_at = now();
+    //     //         }
+    //     //         $payment->save();
 
-        //         return response()->json(['message' => 'Payment status updated successfully'], 200);
-        //     }
-        // }
+    //     //         return response()->json(['message' => 'Payment status updated successfully'], 200);
+    //     //     }
+    //     // }
 
-        // return response()->json(['error' => 'Invalid notification data'], 400);
-    }
+    //     // return response()->json(['error' => 'Invalid notification data'], 400);
+    // }
 
-    public function showPayments()
-    {
-        $payments = Payment::all();
-        return response()->json($payments);
-    }
 }
+

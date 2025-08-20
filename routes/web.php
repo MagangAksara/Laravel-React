@@ -9,6 +9,7 @@ use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\RentalController;
 use Inertia\Inertia;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
@@ -25,12 +26,6 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile/address/{id}', [ProfileController::class, 'updateAddress'])->name('address.update');
 });
 
-Route::middleware(['auth', 'role:customer'])->group(function () {
-    Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
-    Route::get('car/{id}/booking', [BookingController::class, 'show'])->name('booking');
-});
-
-
 Route::middleware('auth')->get('/dashboard', function () {
     $user = Auth::user();
 
@@ -45,14 +40,15 @@ Route::middleware('auth')->get('/dashboard', function () {
     abort(403);
 })->name('dashboard');
 
+Route::middleware(['auth', 'role:customer'])->group(function () {
+    Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
 
-Route::get('/payment/success', function () {
-    return inertia('Payment/Success'); // Bisa render halaman Inertia React
-})->name('payment.success');
+    Route::get('rental/booking/{id}', [BookingController::class, 'show'])->name('booking');
 
-Route::get('/payment/failed', function () {
-    return inertia('Payment/Failed');
-})->name('payment.failed');
+    Route::get('/rental', [RentalController::class, 'show'])->name('rental');
+    Route::get('/rental/success', [RentalController::class, 'success'])->name('rental.success');
+    Route::get('/rental/failed', [RentalController::class, 'failed'])->name('rental.failed');
+});
 
 Route::middleware(['auth','role:owner'])->group(function () { });
 

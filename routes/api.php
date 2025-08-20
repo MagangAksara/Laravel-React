@@ -15,6 +15,10 @@ Route::middleware(['throttle:api'])->group(function () {
     // butuh otp
     Route::post('/changePass', [AuthController::class, 'changePassword']);
 
+    // Route::get('/payment', [PaymentController::class, 'showPayments']);
+    Route::post('/payment/webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');
+
+
     // role all
     Route::middleware('auth:sanctum')->group(function () {
         // user profile and logout Routes
@@ -32,15 +36,17 @@ Route::middleware(['throttle:api'])->group(function () {
         Route::post('/car/update/{car}', [CarController::class, 'update']);
         Route::post('/car/delete/{car}', [CarController::class, 'destroy']);
 
-        // Rentals
-        Route::get('/rental', [RentalController::class, 'show']);
-
+        
         // Payments
         Route::get('/payment', [PaymentController::class, 'showPayments']);
         Route::post('/payment/create', [PaymentController::class, 'store'])->name('payment.create');
         Route::post('/payment/notification', [PaymentController::class, 'notification']);
 
         Route::post('/calculatePickupFee', [DistanceController::class, 'calculate'])->name('calculate');
+        
+        // Rentals
+        Route::get('/rental', [RentalController::class, 'show']);
+        Route::post('/rental/store', [RentalController::class, 'store'])->name('rental.store');
     // });
     
     // role owner

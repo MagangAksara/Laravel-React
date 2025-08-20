@@ -1,6 +1,6 @@
 import { Head } from "@inertiajs/react";
-import Navbar from "../ComponetGlobal/Navbar";
-import PageHeader from "../ComponetGlobal/PageHeader";
+import Navbar from "@/Pages/ComponetGlobal/Navbar";
+import PageHeader from "@/Pages/ComponetGlobal/PageHeader";
 
 export default function Success() {
   return (

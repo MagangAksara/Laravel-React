@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Model;
 class Payment extends Model
 {
     protected $fillable = [
-        'rental_id',
         'external_id',
         'xendit_payment_id',
         'payer_email',
@@ -21,8 +20,12 @@ class Payment extends Model
         'description',
     ];
 
+    protected $casts = [
+        'paid_at' => 'datetime',
+    ];
+
     public function rental()
     {
-        return $this->belongsTo(Rental::class);
+        return $this->hasOne(Rental::class, 'payment_id', 'id');
     }
 }

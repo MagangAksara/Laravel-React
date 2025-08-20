@@ -76,6 +76,11 @@ export default function Navbar({ header, children }) {
                                                 Profile
                                             </Dropdown.Link>
                                             <Dropdown.Link
+                                                href={route('rental')}
+                                            >
+                                                Rentals
+                                            </Dropdown.Link>
+                                            <Dropdown.Link
                                                 href={route('logout')}
                                                 method="post"
                                                 as="button"
