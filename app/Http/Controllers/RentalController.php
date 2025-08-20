@@ -30,20 +30,20 @@ class RentalController extends Controller
                     'id' => $rental->id,
                     'booking_id' => 'BK' . $rental->created_at->format('Ymd') . '-' . $rental->id,
                     'date' => $rental->created_at->format('d F Y'),
+                    'status' => $rental->status ?? 'loading',
+                    'statusLabel' => $this->mapStatusLabel($rental->status ?? 'loading'),
 
                     // ambil status dari payment
                     'url_payment' => $rental->payment->checkout_link ?? null,
-                    'status' => $rental->payment->status ?? 'unpaid',
-                    'statusLabel' => $this->mapStatusLabel($rental->payment->status ?? 'unpaid'),
+                    'status0' => $rental->payment->status ?? 'unpaid',
+                    'statusLabel0' => $this->mapStatusLabel($rental->payment->status ?? 'unpaid'),
 
                     // data mobil dari relasi
                     'car' => [
                         'brand' => $rental->car->brand->name ?? 'Unknown',
                         'model' => $rental->car->model->name ?? '',
                         'type'  => $rental->car->type->name ?? '',
-                        'image' => $rental->car->main_image 
-                            ? asset('storage/' . $rental->car->main_image) 
-                            : '/images/default-car.png',
+                        'image' => $rental->car->main_image ?? '',
                     ],
 
                     // durasi & harga
@@ -52,12 +52,6 @@ class RentalController extends Controller
                     'totalPayment' => $rental->total_price,
                 ];
             });
-
-        // dd($rentals);
-
-        // $payment = Payment::with()'payment')->get();
-
-        // dd($payment);
 
         return Inertia::render('Customer/Rental', [
             'rentals' => $rentals,
@@ -70,12 +64,14 @@ class RentalController extends Controller
         return match ($status) {
             'pending_payment' => 'Pending Payment',
             'confirmed_payment' => 'Confirmed Payment',
+            'payment_received' => 'Payment Received',
             'on_rent' => 'On Rent',
             'waiting_for_check' => 'Waiting for Check',
             'waiting_for_fines_payment' => 'Waiting for Fines Payment',
             'completed' => 'Completed',
             'cancelled' => 'Cancelled',
             'expired' => 'Expired',
+            'failed' => 'Failed',
             default => ucfirst($status),
         };
     }

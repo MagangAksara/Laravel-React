@@ -39,12 +39,21 @@ const Rental = ({ rentals = [] }) => {
               <p className="self-center ml-2 font-semibold">Order Status</p>
               <Tabs value={status} onValueChange={setStatus}>
                 <TabsList className="grid grid-cols-5 gap-2">
-                  {/* ngikut status dari tb payment */}
-                  <TabsTrigger value="all">All Orders</TabsTrigger>
-                  <TabsTrigger value="pending">Pending Payment</TabsTrigger>
-                  <TabsTrigger value="paid">Confirmed</TabsTrigger>
-                  <TabsTrigger value="on_rent">On Rent</TabsTrigger>
-                  <TabsTrigger value="waiting_for_check">Waiting for Check</TabsTrigger>
+                  {[
+                    { value: "all", label: "All Orders" },
+                    { value: "pending", label: "Pending Payment" },
+                    { value: "paid", label: "Confirmed" },
+                    { value: "on_rent", label: "On Rent" },
+                    { value: "waiting_for_check", label: "Waiting for Check" },
+                  ].map((tab) => (
+                    <TabsTrigger
+                      key={tab.value}
+                      value={tab.value}
+                      className="border border-blue-500 data-[state=active]:bg-blue-500 data-[state=active]:text-white"
+                    >
+                      {tab.label}
+                    </TabsTrigger>
+                  ))}
                 </TabsList>
               </Tabs>
             </div>
@@ -78,13 +87,18 @@ const Rental = ({ rentals = [] }) => {
                     </CardHeader>
 
                     {/* Content */}
-                    <CardContent className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <CardContent className="flex flex-col md:flex-row justify-between items-start md:items-center border-t">
+                      
                       {/* Car Info */}
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-4 mt-3">
                         <img
-                          src={order.car?.image}
+                          src={
+                            order.car?.image?.startsWith("http")
+                              ? order.car.image
+                              : `/storage/${order.car.image}`
+                          }
                           alt={order.car?.model}
-                          className="w-20 h-14 object-cover rounded-lg"
+                          className="w-20 h-20 object-cover rounded-full self-center"
                         />
                         <div>
                           <p className="font-semibold">
@@ -110,7 +124,8 @@ const Rental = ({ rentals = [] }) => {
 
                       {/* Actions */}
                       <div className="flex flex-row gap-2 w-full md:w-auto">
-                        {order.status === "pending" && (
+                        <Button variant="outline">See Details</Button>
+                        {order.status === "pending_payment" && (
                           <Button 
                             className="bg-blue-500 hover:bg-blue-600 text-white"
                             onClick={() => window.location.href = order.url_payment}
@@ -118,13 +133,12 @@ const Rental = ({ rentals = [] }) => {
                             Pay Now
                           </Button>
                         )}
-                        {order.status === "confirmed payment" && (
+                        {order.status === "confirmed_payment" && (
                           <Button variant="destructive">Cancelled</Button>
                         )}
                         {order.status === "completed" && (
                           <Button variant="outline">Give Review</Button>
                         )}
-                        <Button variant="outline">See Details</Button>
                       </div>
                     </CardContent>
                   </Card>
