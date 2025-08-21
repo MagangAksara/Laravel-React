@@ -74,18 +74,19 @@ class RentalController extends Controller
             'cancelled' => 'Cancelled',
             'expired' => 'Expired',
             'failed' => 'Failed',
+            // 'return' => 'Return',
             default => ucfirst($status),
         };
     }
     
     public function success()
     {
-        return Inertia::render('Customer/Konten/RentalComponent/Success');
+        return Inertia::render('Customer/Konten/RentalComponent/Modals/Success');
     }
 
     public function failed()
     {
-        return Inertia::render('Customer/Konten/RentalComponent/Failed');
+        return Inertia::render('Customer/Konten/RentalComponent/Modals/Failed');
     }
 
     

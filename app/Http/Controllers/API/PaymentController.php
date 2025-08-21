@@ -126,73 +126,53 @@ class PaymentController extends Controller
         return response()->json(['message' => 'Webhook processed']);
     }
 
-
-    // public function showPayments()
-    // {
-    //     $payments = Payment::all();
-    //     return response()->json($payments);
-    // }
+/*
+    public function showPayments()
+    {
+        $payments = Payment::all();
+        return response()->json($payments);
+    }
     
-    // public function notification(Request $request)
-    // {
-    //     $result = $this->apiInstance->getInvoices(null, $request->external_id);
+    public function notification(Request $request)
+    {
+        $result = $this->apiInstance->getInvoices(null, $request->external_id);
 
-    //     // get data dari DB
-    //     $payment = Payment::where('external_id', $request->external_id)->first();
+        // get data dari DB
+        $payment = Payment::where('external_id', $request->external_id)->first();
 
-    //     if (!$payment) {
-    //         return response()->json(['message' => 'Payment tidak ditemukan'], 404);
-    //     }
+        if (!$payment) {
+            return response()->json(['message' => 'Payment tidak ditemukan'], 404);
+        }
 
-    //     if ($payment->status == 'settled') {
-    //         return response()->json('Payment telah diproses');
-    //     }
+        if ($payment->status == 'settled') {
+            return response()->json('Payment telah diproses');
+        }
 
-    //     // update status
-    //     $payment->status = strtolower($result[0]['status']);
+        // update status
+        $payment->status = strtolower($result[0]['status']);
 
-    //     // update paid_at jika ada dari Xendit
-    //     if (!empty($result[0]['paid_at'])) {
-    //         $payment->paid_at = $result[0]['paid_at'];
-    //     }
+        // update paid_at jika ada dari Xendit
+        if (!empty($result[0]['paid_at'])) {
+            $payment->paid_at = $result[0]['paid_at'];
+        }
 
-    //     // simpan perubahan
-    //     $payment->save();
+        // simpan perubahan
+        $payment->save();
 
-    //     return response()->json([
-    //         'message' => 'Payment status updated successfully',
-    //         'updated_payment' => [
-    //             'id' => $payment->id,
-    //             'external_id' => $payment->external_id,
-    //             'status' => $payment->status,
-    //             'paid' => $payment->status === 'settled' || $payment->status === 'paid',
-    //             'paid_at' => $payment->paid_at,
-    //             'description' => $payment->description,
-    //             'payer_email' => $payment->payer_email,
-    //             'checkout_link' => $payment->checkout_link,
-    //         ]
-    //     ]);
-    
-
-    //     // $data = $request->all();
-    //     // Log::info('Payment notification received', $data);
-
-    //     // if (isset($data['id']) && isset($data['status'])) {
-    //     //     $payment = Payment::where('xendit_payment_id', $data['id'])->first();
-
-    //     //     if ($payment) {
-    //     //         $payment->status = $data['status'];
-    //     //         if ($data['status'] === 'PAID') {
-    //     //             $payment->paid_at = now();
-    //     //         }
-    //     //         $payment->save();
-
-    //     //         return response()->json(['message' => 'Payment status updated successfully'], 200);
-    //     //     }
-    //     // }
-
-    //     // return response()->json(['error' => 'Invalid notification data'], 400);
-    // }
-
+        return response()->json([
+            'message' => 'Payment status updated successfully',
+            'updated_payment' => [
+                'id' => $payment->id,
+                'external_id' => $payment->external_id,
+                'status' => $payment->status,
+                'paid' => $payment->status === 'settled' || $payment->status === 'paid',
+                'paid_at' => $payment->paid_at,
+                'description' => $payment->description,
+                'payer_email' => $payment->payer_email,
+                'checkout_link' => $payment->checkout_link,
+            ]
+        ]);
+    }
+*/
 }
 
