@@ -18,11 +18,11 @@ export default function CarsDraft({ cars }) {
         <section id="rent-car" className="p-12 bg-white">
             <h2 className="text-3xl font-bold mt-10 mb-10 text-center">Choose your car</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
                 {displayedCars.map((car, idx) => (
                     <div
                         key={car.id || idx}
-                        className="bg-gray-200 rounded-xl overflow-hidden shadow-md"
+                        className="bg-gray-200 rounded-xl overflow-hidden shadow-md flex flex-col h-full"
                     >
                         <img
                             src={car.image_url || "https://i.pinimg.com/1200x/56/8d/fd/568dfd7a80533c41873113576f5791fb.jpg"}

@@ -7,7 +7,8 @@ export default function AboutUsDraft() {
             <h2 className="text-[32px] font-semibold mt-10 mb-3 text-center">About Us</h2>
             <div className="flex flex-col md:flex-row items-center gap-8 bg-white">
                 <img
-                    src="https://i.pinimg.com/1200x/5b/4c/3b/5b4c3b419c8eecbedd2b5f351e9b7c1b.jpg"
+                    src="/pictures/welcome/about_us.png"
+                    // src="https://i.pinimg.com/1200x/5b/4c/3b/5b4c3b419c8eecbedd2b5f351e9b7c1b.jpg"
                     alt="About Us"
                     className="rounded-xl shadow-md w-full md:w-1/2 object-cover"
                 />

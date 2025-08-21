@@ -26,7 +26,7 @@ const Dashboard = () => {
             <div className="flex-1 flex flex-col">
 
               {/* Grid Cars Card */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 flex-1">
+              <div className="grid gap-6 flex-1 items-stretch grid-cols-[repeat(auto-fit,minmax(280px,1fr))]">
                 {cars.data && cars.data.length > 0 ? (
                   cars.data.map((car, idx) => (
                     <InertiaLink
