@@ -17,7 +17,9 @@ const Header = () => {
     return (
         <>
             <header className="flex justify-between items-center px-6 py-4 border-b bg-white shadow-sm">
-                <div></div>
+                <div>
+                    <h1 className="text-2xl font-bold">Eazy<span className="text-blue-200">Ride</span></h1>
+                </div>
                 <div className="flex items-center gap-4 relative">
                     <p className="text-sm text-gray-600">{date}, {time}</p>
                     <div className="relative">

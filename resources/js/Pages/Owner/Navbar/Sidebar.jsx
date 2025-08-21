@@ -12,9 +12,8 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="w-60 bg-blue-600 text-white min-h-screen p-4">
-      <h1 className="text-2xl font-bold mb-8">Eazy<span className="text-blue-200">Ride</span></h1>
-      <nav className="flex flex-col gap-2">
+    <aside className="w-60 bg-blue-600 text-white min-h-screen p-4 rounded-tr-[65px]">
+      <nav className="flex flex-col gap-2 mt-5">
         {menu.map((item, idx) => (
           <Link
             key={idx}
