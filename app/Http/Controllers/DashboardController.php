@@ -30,7 +30,7 @@ class DashboardController extends Controller
 
         // dd($cars);
 
-        return Inertia::render('Customer/Dashboard', [
+        return Inertia::render('Customer/Konten/Dashboard', [
             'cars' => $cars,
         ]);
     }

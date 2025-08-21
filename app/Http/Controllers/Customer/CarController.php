@@ -1,9 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Customer;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+
 use App\Models\Car;
+
 use Inertia\Inertia;
 
 class CarController extends Controller
@@ -23,7 +26,7 @@ class CarController extends Controller
     {
         $car = Car::with(['user.address'])->findOrFail($id);
 
-        return Inertia::render('Customer/CarDetail', [
+        return Inertia::render('Customer/Konten/CarDetail', [
             'car' => $this->transformCar($car)
         ]);
     }

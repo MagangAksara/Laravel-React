@@ -1,7 +1,6 @@
 import { Head, Link } from "@inertiajs/react";
-import Navbar from "../ComponetGlobal/Navbar";
+import Layout from "../Layout";
 import React, { useState } from "react";
-import PageHeader from "../ComponetGlobal/PageHeader";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +18,7 @@ const Rental = ({ rentals = [] }) => {
   return (
     <>
       <Head title="Rentals" />
-      <Navbar header={<PageHeader />}>
+      <Layout>
         <div className="p-6 max-w-7xl mx-auto">
           <div className="space-y-6">
             {/* Search & Filter */}
@@ -149,7 +148,7 @@ const Rental = ({ rentals = [] }) => {
             </div>
           </div>
         </div>
-      </Navbar>
+      </Layout>
     </>
   );
 };

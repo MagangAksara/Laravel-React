@@ -1,17 +1,20 @@
 <?php
 
 use App\Http\Controllers\API\PaymentController;
-use App\Http\Controllers\BookingController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\WelcomeController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\CarController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProfileController;
+
 use App\Http\Controllers\Owner\CarManagementController;
 use App\Http\Controllers\Owner\OrderManagementController;
-use App\Http\Controllers\RentalController;
+
+use App\Http\Controllers\Customer\CarController;
+use App\Http\Controllers\Customer\BookingController;
+use App\Http\Controllers\Customer\RentalController;
+
 use Inertia\Inertia;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');

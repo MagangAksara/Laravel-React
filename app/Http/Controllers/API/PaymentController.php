@@ -26,12 +26,6 @@ class PaymentController extends Controller
         $this->apiInstance = new InvoiceApi();
     }
 
-    public function showPayments()
-    {
-        $payments = Payment::all();
-        return response()->json($payments);
-    }
-
     // fungsi untuk membuat pembayaran baru
     public function store(Request $request)
     {
@@ -133,6 +127,11 @@ class PaymentController extends Controller
     }
 
 
+    // public function showPayments()
+    // {
+    //     $payments = Payment::all();
+    //     return response()->json($payments);
+    // }
     
     // public function notification(Request $request)
     // {

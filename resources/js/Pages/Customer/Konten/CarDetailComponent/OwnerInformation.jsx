@@ -4,7 +4,7 @@ import { Star } from "lucide-react";
 const OwnerInformation = ({ car, imageUrl, owner_name, city, rating, reviews }) => {
     // const { car } = usePage().props;
     return (
-        <div className="flex items-center bg-white rounded-xl shadow-md p-4 w-full max-w-md">
+        <div className="flex items-center bg-white rounded-xl shadow-md p-4 mt-6 w-full max-w-md">
         {/* Foto profil bulat */}
         <img
             src={car.owner_picture}

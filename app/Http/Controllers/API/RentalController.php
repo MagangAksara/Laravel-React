@@ -10,12 +10,6 @@ use Illuminate\Support\Facades\Auth;
 
 class RentalController extends Controller
 {
-    public function show(Rental $rental)
-    {
-        // Retrieve a specific rental by its ID
-        return response()->json($rental);
-    }
-
     public function store(Request $request) 
     {
         $request->validate([
@@ -52,26 +46,26 @@ class RentalController extends Controller
         
     }
 
-    public function update(Request $request, Rental $rental)
-    {
-        // Validate the request data
-        $validated = $request->validate([
-            'start_date' => 'sometimes|required|date',
-            'end_date' => 'sometimes|required|date|after_or_equal:start_date',
-            'status' => 'sometimes|required|string',
-        ]);
+    // public function update(Request $request, Rental $rental)
+    // {
+    //     // Validate the request data
+    //     $validated = $request->validate([
+    //         'start_date' => 'sometimes|required|date',
+    //         'end_date' => 'sometimes|required|date|after_or_equal:start_date',
+    //         'status' => 'sometimes|required|string',
+    //     ]);
 
-        // Update the rental record
-        $rental->update($validated);
+    //     // Update the rental record
+    //     $rental->update($validated);
 
-        return response()->json($rental);
-    }
+    //     return response()->json($rental);
+    // }
 
-    public function destroy(Rental $rental)
-    {
-        // Delete the rental record
-        $rental->delete();
+    // public function destroy(Rental $rental)
+    // {
+    //     // Delete the rental record
+    //     $rental->delete();
 
-        return response()->json(['message' => 'Rental deleted successfully.']);
-    }   
+    //     return response()->json(['message' => 'Rental deleted successfully.']);
+    // }   
 }

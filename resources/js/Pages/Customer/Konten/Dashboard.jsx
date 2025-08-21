@@ -1,6 +1,5 @@
 import React from "react";
-import Navbar from '@/Pages/ComponetGlobal/Navbar';
-import PageHeader from '../ComponetGlobal/PageHeader';
+import Layout from "../Layout";
 import FilterSidebar from "./DashboardComponent/FilterSidebar";
 import CarCard from "./DashboardComponent/CarCard";
 import { Head, Link as InertiaLink, usePage } from '@inertiajs/react';
@@ -19,9 +18,7 @@ const Dashboard = () => {
   return (
     <>
       <Head title="Dashboard" />
-      <Navbar
-        header={<PageHeader />}
-      >
+      <Layout>
         <div className="flex items-start gap-6 p-6 bg-gray-50 min-h-screen">
 
           <FilterSidebar />
@@ -79,7 +76,7 @@ const Dashboard = () => {
 
             </div>
         </div>
-      </Navbar>
+      </Layout>
     </>
   );
 }

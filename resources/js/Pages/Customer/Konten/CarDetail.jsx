@@ -1,7 +1,6 @@
 import React from "react";
+import Layout from "../Layout";
 import { Head, Link, usePage } from "@inertiajs/react";
-import Navbar from "@/Pages/ComponetGlobal/Navbar";
-import PageHeader from "@/Pages/ComponetGlobal/PageHeader";
 
 import Pictures from "./CarDetailComponent/Pictures.jsx";
 import Information from "./CarDetailComponent/Information.jsx";
@@ -15,7 +14,7 @@ export default function CarDetail() {
   return (
     <>
       <Head title={`${car.brand} ${car.model} ${car.type}`} />
-      <Navbar header={<PageHeader />}>
+      <Layout>
         <div className="p-6 bg-gray-50 min-h-screen">
           {/* Bagian Atas - Gambar & Info */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -46,7 +45,7 @@ export default function CarDetail() {
           <Reviews />
           
         </div>
-      </Navbar>
+      </Layout>
     </>
   );
 }

@@ -1,14 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Customer;
+
+use App\Http\Controllers\Controller;
+use App\Services\OpenRouteService;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 use App\Models\Car;
 use App\Models\Rental;
-use App\Services\OpenRouteService;
+
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
-use Illuminate\Http\Request;
 use Xendit\Customer\Customer;
 
 class BookingController extends Controller
@@ -56,7 +59,7 @@ class BookingController extends Controller
 
         // Total pembayaran akan dihitung dalam view
 
-        return Inertia::render('Customer/Booking', [
+        return Inertia::render('Customer/Konten/Booking', [
             'car' => [
                 'id'            => $car->id,
                 'owner_id'      => $car->user_id,

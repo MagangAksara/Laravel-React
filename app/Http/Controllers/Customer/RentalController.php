@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Customer;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 use App\Models\Payment;
 use App\Models\Rental;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 
 use Inertia\Inertia;
 use Inertia\Response;
@@ -53,7 +55,7 @@ class RentalController extends Controller
                 ];
             });
 
-        return Inertia::render('Customer/Rental', [
+        return Inertia::render('Customer/Konten/Rental', [
             'rentals' => $rentals,
         ]);
     }
@@ -78,12 +80,12 @@ class RentalController extends Controller
     
     public function success()
     {
-        return Inertia::render('Customer/RentalComponent/Success');
+        return Inertia::render('Customer/Konten/RentalComponent/Success');
     }
 
     public function failed()
     {
-        return Inertia::render('Customer/RentalComponent/Failed');
+        return Inertia::render('Customer/Konten/RentalComponent/Failed');
     }
 
     

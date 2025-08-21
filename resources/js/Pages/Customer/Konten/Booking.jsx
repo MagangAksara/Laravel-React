@@ -1,13 +1,12 @@
 // resources/js/Pages/Customer/Booking.jsx
 import React, { useState, useEffect } from "react";
 import { Head, usePage } from "@inertiajs/react";
+import Layout from "../Layout";
 
 import DateTime from "./BookingComponent/DateTime";
 import ConfirmFilter from "./BookingComponent/ConfirmFilter";
 import DetailPrice from "./BookingComponent/DetailPrice";
 import ReadyToPay from "./BookingComponent/ReadyToPay";
-import Navbar from "../ComponetGlobal/Navbar";
-import PageHeader from "../ComponetGlobal/PageHeader";
 import { Card } from "@/Components/ui/card";
 
 export default function Booking() {
@@ -42,7 +41,7 @@ export default function Booking() {
     <>
       <Head title="Booking" />
       <div className="min-h-screen bg-[#f8fcff]">
-        <Navbar header={<PageHeader />} >
+        <Layout>
           {/* Main Content */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 max-w-7xl mx-auto">
             {/* Left Column */}
@@ -95,7 +94,7 @@ export default function Booking() {
               </div>
             </Card>
           </div>
-        </Navbar>
+        </Layout>
       </div>
     </>
   );
