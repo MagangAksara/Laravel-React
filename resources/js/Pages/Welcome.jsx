@@ -5,7 +5,7 @@ import HeroClip from "./WelcomeComponent/HeroClip.jsx";
 // import HeroClip_D from "./WelcomeComponent/HeroClip_D.jsx";
 import AboutUsDraft from "./WelcomeComponent/AboutUsDraft.jsx";
 import CarsDraft from "./WelcomeComponent/CarsDraft.jsx";
-import FooterDraft from "./ComponetGlobal/FooterDraft.jsx";
+import FooterDraft from "./WelcomeComponent/FooterDraft.jsx";
 
 const Welcome = ({ cars }) => {
   return (
