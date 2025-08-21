@@ -37,6 +37,6 @@ class DashboardController extends Controller
 
     public function indexOwner()
     {
-        return Inertia::render('Owner/Dashboard');
+        return Inertia::render('Owner/Konten/Dashboard');
     }
 }

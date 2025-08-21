@@ -9,6 +9,8 @@ use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Owner\CarManagementController;
+use App\Http\Controllers\Owner\OrderManagementController;
 use App\Http\Controllers\RentalController;
 use Inertia\Inertia;
 
@@ -50,6 +52,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/rental/failed', [RentalController::class, 'failed'])->name('rental.failed');
 });
 
-Route::middleware(['auth','role:owner'])->group(function () { });
+Route::middleware(['auth','role:owner'])->group(function () {
+    Route::get('/cars', [CarManagementController::class, 'index'])->name('owner.cars.management');
+    Route::get('/orders', [OrderManagementController::class, 'index'])->name('owner.orders.management');
+ });
 
 require __DIR__.'/auth.php';
