@@ -15,6 +15,7 @@ class DashboardController extends Controller
         // Transform hanya pada data, pagination meta tetap ada
         $cars->getCollection()->transform(function ($car) {
             return [
+                // komponen utama
                 'id' => $car->id,
                 'brand' => $car->brand->name ?? '-',
                 'model' => $car->model->name ?? '-',
@@ -25,6 +26,18 @@ class DashboardController extends Controller
                 'color' => $car->color->name ?? '-',
                 'capacity' => $car->capacity,
                 'price' => $car->price_per_day,
+                // komponen filter
+                'is_available' => $car->is_available,
+                // komponen filter terhubung dengan rental
+                'rentals' => $car->rentals->map(function ($rental) {
+                    return [
+                        'start_date' => $rental->start_date?->toDateTimeString(),
+                        'end_date'   => $rental->end_date?->toDateTimeString(),
+                        'status'     => $rental->status,
+                    ];
+                }),
+                // komponen filter terhubung dengan user
+                'owner_city' => $car->user?->firstAddress?->city ?? '-',
             ];
         });
 
@@ -35,7 +48,7 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function indexOwner()
+    public function indexOwner(Request $request)
     {
         return Inertia::render('Owner/Konten/Dashboard');
     }

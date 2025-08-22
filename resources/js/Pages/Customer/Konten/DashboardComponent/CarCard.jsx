@@ -1,7 +1,7 @@
 import React from "react";
 import { MapPin } from "lucide-react";
 
-export default function CarCard({ image_url, brand, model, type, price, type_transmisi, capacity, fuel_type }) {
+export default function CarCard({ image_url, brand, model, type, price, type_transmisi, capacity, fuel_type, owner_city }) {
   return (
     <div className="bg-white rounded-xl shadow-sm border overflow-hidden h-full max-w-sm">
       <img 
@@ -19,7 +19,7 @@ export default function CarCard({ image_url, brand, model, type, price, type_tra
           }).format(price)}/day
         </p>
         <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
-          <MapPin size={16} /> Malang
+          <MapPin size={16} /> {owner_city}
         </div>
         <div className="flex-grow" />
           <div className="flex justify-between items-center mt-3 text-sm font-medium">

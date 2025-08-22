@@ -82,24 +82,24 @@ class BookingController extends Controller
         ]);
     }
 
-    public function store(Request $request)
-    {
-        // Validasi input
-        $request->validate([
-            'car_id' => 'required|exists:cars,id',
-            'start_date' => 'required|date|after_or_equal:today',
-            'end_date' => 'required|date|after:start_date',
-        ]);
+    // public function store(Request $request)
+    // {
+    //     // Validasi input
+    //     $request->validate([
+    //         'car_id' => 'required|exists:cars,id',
+    //         'start_date' => 'required|date|after_or_equal:today',
+    //         'end_date' => 'required|date|after:start_date',
+    //     ]);
 
-        $rental = Rental::create([
-            'user_id' => Auth::id(),
-            'car_id' => $request->car_id,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'total_price' => 0, // Akan dihitung kemudian
-            'status' => 'pending',
-        ]);
+    //     $rental = Rental::create([
+    //         'user_id' => Auth::id(),
+    //         'car_id' => $request->car_id,
+    //         'start_date' => $request->start_date,
+    //         'end_date' => $request->end_date,
+    //         'total_price' => 0, // Akan dihitung kemudian
+    //         'status' => 'pending',
+    //     ]);
 
-        return redirect()->route('bookings.show', $rental->id);
-    }
+    //     return redirect()->route('bookings.show', $rental->id);
+    // }
 }

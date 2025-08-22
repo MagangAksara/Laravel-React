@@ -1,12 +1,12 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
 import { CalendarIcon } from "lucide-react"
 
-export default function RentalDateRange() {
-  const [startDate, setStartDate] = useState(null)
-  const [endDate, setEndDate] = useState(null)
+const RentalDateRange = ({ startDate: initialStart = null, endDate: initialEnd = null, onChange }) => {
+  const [startDate, setStartDate] = useState(initialStart);
+  const [endDate, setEndDate] = useState(initialEnd);
 
   const formatDateTime = (date) => {
     if (!date) return "Date & Time"
@@ -18,6 +18,16 @@ export default function RentalDateRange() {
       minute: "2-digit",
     })
   }
+
+  // when local dates change, emit ISO strings (or null) to parent
+  useEffect(() => {
+    if (typeof onChange === "function") {
+      onChange({
+        start_date: startDate ? startDate.toISOString() : null,
+        end_date: endDate ? endDate.toISOString() : null,
+      });
+    }
+  }, [startDate, endDate, onChange]);
 
   const handleTimeChange = (date, setDate) => (e) => {
     if (date) {
@@ -93,3 +103,5 @@ export default function RentalDateRange() {
     </div>
   )
 }
+
+export default RentalDateRange;

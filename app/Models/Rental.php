@@ -32,8 +32,8 @@ class Rental extends Model
     // const STATUS_RETURNED                  = 'returned'; // status untuk owner -> diatur manual, tampil saat customer melakukan cencelled
 
     protected $casts = [
-        'start_date'  => 'date',
-        'end_date'    => 'date',
+        'start_date'  => 'datetime:Y-m-d H:i:s',
+        'end_date'    => 'datetime:Y-m-d H:i:s',
         'total_price' => 'integer',
     ];
 
