@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-const plugin = require("@tailwindcss/forms");
+import plugin from "@tailwindcss/forms";
 
 module.export = {
     mode: "jit",
@@ -40,7 +40,8 @@ module.export = {
                 gradient2: "linear-gradient(90deg, #4d8eb7, #223F51)"
             },
             fontFamily: {
-                quicksand1: "Quicksand"
+                quicksand1: "Quicksand",
+                playfair: ['PlayfairDisplay', 'serif'],
             },
             textShadow: {
                 ts2: "0px 0px 1px #373e837f",
