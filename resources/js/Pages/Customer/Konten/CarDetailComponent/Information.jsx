@@ -12,17 +12,17 @@ const Information = () => {
                 <p className="text-2xl font-semibold text-gray-700 mt-1">
                     {new Intl.NumberFormat('id-ID', {
                         style: 'currency',
-                        currency: 'IDR',
+                        currency: 'IDR',    
                         minimumFractionDigits: 0
                     }).format(car.price_per_day)}/day
                 </p>
                 <div className="flex items-center gap-2 mt-2 text-gray-600">
-                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">Available</span>
-                    {/* <div className="flex items-center gap-1 text-sm">
-                        <MapPin size={16} /> {car.location ?? "Malang"}
-                    </div> */}
+                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+                        {car.is_available ? "Available" : "Not Available"}
+                    </span>
                     <div className="flex items-center gap-1 text-sm">
-                        <MapPin size={16} /> Malang
+                        <MapPin size={16} />
+                        {car.owner_city}
                     </div>
                 </div>
             </div>

@@ -17,14 +17,17 @@ class CarController extends Controller
             ->get()
             ->map(fn($car) => $this->transformCar($car));
 
-        return Inertia::render('CarList', [
-            'cars' => $cars
+            
+            return Inertia::render('CarList', [
+                'cars' => $cars
         ]);
     }
-
+    
     public function show($id)
     {
         $car = Car::with(['user.address'])->findOrFail($id);
+        
+        // dd($car);
 
         return Inertia::render('Customer/Konten/CarDetail', [
             'car' => $this->transformCar($car)
@@ -38,7 +41,7 @@ class CarController extends Controller
             // dari relasi
             'brand' => $car->brand->name ?? '-',
             'model' => $car->model->name ?? '-',
-            'tyoe' => $car->type->name ?? '-',
+            'type' => $car->type->name ?? '-',
             'fuel_type' => $car->fuelType->name ?? '-',
             'type_transmisi' => $car->transmission->name ?? '-',
             'thumbnails' => $car->imagePath->pluck('image_path'),
@@ -52,7 +55,7 @@ class CarController extends Controller
             // dari user
             'owner_name' => $car->user->name ?? '-',
             'owner_picture' => $car->user->profile_picture ?? '/default-avatar.png',
-            'city' => $car->user->firstAddress->city ?? '-',
+            'owner_city' => $car->user->firstAddress->city ?? '-',
             'rating' => $car->rating ?? 4.5, // Bisa diganti query rating asli
             'reviews' => $car->reviews_count ?? 1094 // Bisa diganti hitungan review asli
         ];

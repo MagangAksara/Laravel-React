@@ -186,24 +186,44 @@ const FilterSidebar = ({ brands, models, types, transmissions, seats, fuels, cit
           <div className="mb-4">
             <Label className="text-base font-semibold">Price</Label>
             <div className="flex gap-2 mt-2">
-              <Input 
-                type="number" 
-                placeholder="Min" 
-                min={1}
-                max={99}
-                onChange={(e) => setFilters(f => ({ ...f, min_price: Number(e.target.value) }))}
+              <Input
+                type="text"
+                placeholder="Min"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/\D/g, "");
+                  const formatted = raw
+                    ? "Rp " + raw.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                    : "";
+                  e.target.value = formatted;
+                  setFilters(f => ({
+                    ...f,
+                    min_price: raw ? Number(raw) : undefined,
+                  }));
+                }}
               />
-              <Input 
-                type="number" 
+              <Input
+                type="text"
                 placeholder="Max"
-                min={1}
-                max={99}
-                onChange={(e) => setFilters(f => ({ ...f, max_price: Number(e.target.value) }))}
+                inputMode="numeric"
+                pattern="[0-9]*"
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/\D/g, "");
+                  const formatted = raw
+                    ? "Rp " + raw.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                    : "";
+                  e.target.value = formatted;
+                  setFilters(f => ({
+                    ...f,
+                    max_price: raw ? Number(raw) : undefined,
+                  }));
+                }}
               />
             </div>
           </div>
 
-          {/* Clear Button */}
+          {/* Clear Filters */}
           <div className="mt-6 flex justify-end">
             <Button
               variant="destructive"

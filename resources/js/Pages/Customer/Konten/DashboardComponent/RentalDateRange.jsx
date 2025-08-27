@@ -5,18 +5,21 @@ import { Button } from "@/components/ui/button"
 import { CalendarIcon } from "lucide-react"
 
 const RentalDateRange = ({ startDate: initialStart = null, endDate: initialEnd = null, onChange }) => {
-  const [startDate, setStartDate] = useState(initialStart);
-  const [endDate, setEndDate] = useState(initialEnd);
+  const now = new Date()
+  now.setSeconds(0, 0)
+
+  const [startDate, setStartDate] = useState(initialStart ? new Date(initialStart) : now)
+  const [endDate, setEndDate] = useState(initialEnd ? new Date(initialEnd) : null)
 
   const formatDateTime = (date) => {
     if (!date) return "Date & Time"
-    return date.toLocaleString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    })
+    const d = date
+    const day = String(d.getDate()).padStart(2, "0")
+    const month = String(d.getMonth() + 1).padStart(2, "0")
+    const year = String(d.getFullYear()).slice(-2)
+    const hour = String(d.getHours()).padStart(2, "0")
+    const minute = String(d.getMinutes()).padStart(2, "0")
+    return `${day}/${month}/${year}, ${hour}:${minute}`
   }
 
   // when local dates change, emit ISO strings (or null) to parent
@@ -34,9 +37,22 @@ const RentalDateRange = ({ startDate: initialStart = null, endDate: initialEnd =
       const [h, m] = e.target.value.split(":")
       const newDate = new Date(date)
       newDate.setHours(h, m)
+
+      // if (isEnd && startDate) {
+      //   // pastikan endDate >= startDate + 2 jam
+      //   const minEnd = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
+      //   if (newDate < minEnd) {
+      //     alert("End time must be at least 2 hours after start time.");
+      //     return;
+      //   }
+      // }
+
       setDate(newDate)
     }
   }
+
+  // Helper untuk time input value
+  const formatTimeValue = (date) => (date ? date.toTimeString().slice(0, 5) : "")
 
   return (
     <div className="w-64 p-4 bg-white rounded-xl shadow-sm border">
@@ -51,7 +67,7 @@ const RentalDateRange = ({ startDate: initialStart = null, endDate: initialEnd =
                 variant="outline"
                 className="justify-center text-left font-normal text-xs truncate p-0 m-0"
               >
-                <CalendarIcon />
+                {!startDate ? <CalendarIcon /> : null}
                 {formatDateTime(startDate)}
               </Button>
             </PopoverTrigger>
@@ -60,11 +76,17 @@ const RentalDateRange = ({ startDate: initialStart = null, endDate: initialEnd =
                 mode="single"
                 selected={startDate}
                 onSelect={setStartDate}
+                disabled={(date) => {
+                  const today = new Date()
+                  today.setHours(0, 0, 0, 0)
+                  return date < today
+                }}
                 initialFocus
               />
               <input
                 type="time"
                 className="mt-2 w-full border rounded p-1 text-sm"
+                // value={formatTimeValue(startDate)}
                 onChange={handleTimeChange(startDate, setStartDate)}
               />
             </PopoverContent>
@@ -80,7 +102,7 @@ const RentalDateRange = ({ startDate: initialStart = null, endDate: initialEnd =
                 variant="outline"
                 className="justify-center text-left font-normal text-xs truncate p-0 m-0"
               >
-                <CalendarIcon />
+                {!endDate ? <CalendarIcon /> : null}
                 {formatDateTime(endDate)}
               </Button>
             </PopoverTrigger>
@@ -88,13 +110,32 @@ const RentalDateRange = ({ startDate: initialStart = null, endDate: initialEnd =
               <Calendar
                 mode="single"
                 selected={endDate}
-                onSelect={setEndDate}
+                onSelect={(date) => {setEndDate(date)}}
+                // onSelect={(date) => {
+                //   if (date) {
+                //     const newDate = new Date(date)
+                //     // jika belum ada startDate, jam default 2 jam dari sekarang
+                //     if (startDate) {
+                //       newDate.setDate(startDate.getDate() + 1)
+                //       newDate.setHours(startDate.getHours() + 2, startDate.getMinutes(), 0, 0)
+                //     } else {
+                //       newDate.setHours(now.getHours() + 2, now.getMinutes(), 0, 0)
+                //     }
+                //     setEndDate(newDate)
+                //   }
+                // }}
+                disabled={(date) => {
+                  const today = new Date()
+                  today.setHours(0, 0, 0, 0)
+                  return date < today || (startDate && date < startDate)
+                }}
                 initialFocus
               />
               <input
                 type="time"
                 className="mt-2 w-full border rounded p-1 text-sm"
-                onChange={handleTimeChange(endDate, setEndDate)}
+                // value={formatTimeValue(endDate)}
+                onChange={handleTimeChange(endDate, setEndDate, true)}
               />
             </PopoverContent>
           </Popover>

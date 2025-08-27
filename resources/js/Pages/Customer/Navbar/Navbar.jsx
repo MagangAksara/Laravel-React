@@ -1,7 +1,7 @@
 import { SearchBox } from '@/assets/SearchBox';
 import Dropdown from '@/Components/Dropdown';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import FooterDraft from './FooterDraft';
 
@@ -20,15 +20,17 @@ export default function Navbar({ header, children }) {
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="flex h-16 justify-between">
                             <div className="flex flex-1 justify-center items-center">
-                                <div 
-                                    className='flex text-2xl font-semibold sm:justify-center sm:items-center lg:mr-40 '
-                                    style={{
-                                        fontFamily: "'Playfair Display', serif"
-                                    }}
-                                >
-                                    <span className='text-black'>Eazy</span>
-                                    <span className='text-blue-600'>Ride</span>
-                                </div>
+                                <Link href={route("dashboard")}>
+                                    <div
+                                        className='flex text-2xl font-semibold sm:justify-center sm:items-center lg:mr-40 '
+                                        style={{
+                                            fontFamily: "'Playfair Display', serif"
+                                        }}
+                                    >
+                                        <span className='text-black'>Eazy</span>
+                                        <span className='text-blue-600'>Ride</span>
+                                    </div>
+                                </Link>
                                 {/* <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"> */}
                                 <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex w-full">
                                     <SearchBox
@@ -142,9 +144,9 @@ export default function Navbar({ header, children }) {
                         <div className="space-y-1 pb-3 pt-2">
                             <ResponsiveNavLink as="div">
                                 <SearchBox
-                                value={searchValue}
-                                onChange={(e) => setSearchValue(e.target.value)}
-                                placeholder="Search"
+                                    value={searchValue}
+                                    onChange={(e) => setSearchValue(e.target.value)}
+                                    placeholder="Search"
                                 />
                             </ResponsiveNavLink>
                         </div>
@@ -187,7 +189,7 @@ export default function Navbar({ header, children }) {
                 <main>{children}</main>
             </div>
 
-            <FooterDraft/>
+            <FooterDraft />
         </>
     );
 }

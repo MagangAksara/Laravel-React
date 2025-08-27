@@ -19,6 +19,7 @@ class Rental extends Model
         'status',
     ];
 
+    // daftar status
     const STATUS_PENDING_PAYMENT            = 'pending_payment'; // status awal, kondisi status payment pending
     const STATUS_CONFIRMED_PAYMENT          = 'confirmed_payment'; // kondisi status payment paid
     const STATUS_PAYMENT_RECEIVED           = 'payment_received'; // kondisi status payment settled, status untuk owner memberitahu bahwa pembayaran telah diterima

@@ -5,7 +5,7 @@ import { useForm } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
 export default function AddressModal({ show, onClose, address = null }) {
-    const { data, setData, post, put, processing, reset, errors  } = useForm({
+    const { data, setData, post, put, processing, reset, errors } = useForm({
         city: '',
         district: '',
         regency: '',
@@ -75,21 +75,30 @@ export default function AddressModal({ show, onClose, address = null }) {
                         type="text"
                         placeholder="Kota"
                         value={data.city}
-                        onChange={(e) => setData('city', e.target.value)}
+                        onChange={(e) => {
+                            const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                            setData('city', value);
+                        }}
                         className="w-full border rounded p-2"
                     />
                     <Input
                         type="text"
                         placeholder="Kecamatan"
                         value={data.district}
-                        onChange={(e) => setData('district', e.target.value)}
+                        onChange={(e) => {
+                            const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                            setData('district', value);
+                        }}
                         className="w-full border rounded p-2"
                     />
                     <Input
                         type="text"
                         placeholder="Kabupaten"
                         value={data.regency}
-                        onChange={(e) => setData('regency', e.target.value)}
+                        onChange={(e) => {
+                            const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                            setData('regency', value);
+                        }}
                         className="w-full border rounded p-2"
                     />
                     <div className='justify-between flex gap-2'>
@@ -97,14 +106,20 @@ export default function AddressModal({ show, onClose, address = null }) {
                             type="text"
                             placeholder="Provinsi"
                             value={data.province}
-                            onChange={(e) => setData('province', e.target.value)}
+                            onChange={(e) => {
+                                const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                                setData('province', value);
+                            }}
                             className="w-full border rounded p-2"
                         />
                         <Input
                             type="text"
                             placeholder="Postal Code"
                             value={data.postal_code}
-                            onChange={(e) => setData('postal_code', e.target.value)}
+                            onChange={(e) => {
+                                const value = e.target.value.replace(/[^0-9]/g, '');
+                                setData('postal_code', value);
+                            }}
                             className="w-full border rounded p-2"
                         />
                     </div>

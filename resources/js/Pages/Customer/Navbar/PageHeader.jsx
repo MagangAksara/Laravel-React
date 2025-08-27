@@ -27,7 +27,7 @@ export default function PageHeader() {
   return (
     <h2 className="text-l font-semibold leading-tight text-gray-800 flex items-center gap-2">
       {/* Home link */}
-      <Link href="/dashboard" className="text-blue-500 hover:underline">
+      <Link href={route("dashboard")} className="text-blue-500 hover:underline">
         Dashboard
       </Link>
 

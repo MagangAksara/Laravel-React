@@ -12,7 +12,7 @@ class WelcomeController extends Controller
 {
     public function index()
     {
-        $cars = Car::all()->map(function ($car) {
+        $cars = Car::with(['brand', 'model', 'type', 'transmission', 'fuelType', 'color'])->get()->map(function ($car) {
             return [
                 'id' => $car->id,
                 'brand' => $car->brand->name ?? '-',

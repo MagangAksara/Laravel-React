@@ -15,7 +15,7 @@ const OwnerInformation = ({ car, imageUrl, owner_name, city, rating, reviews }) 
         {/* Info teks */}
         <div className="ml-4 flex-1">
             <h2 className="text-lg font-semibold">{car.owner_name}</h2>
-            <p className="text-sm text-gray-500">{car.city}</p>
+            <p className="text-sm text-gray-500">{car.owner_city}</p>
         </div>
 
         {/* Rating */}
@@ -27,7 +27,6 @@ const OwnerInformation = ({ car, imageUrl, owner_name, city, rating, reviews }) 
             </span>
             <span className="ml-1 text-xs text-gray-500">
             {/* ({reviews.toLocaleString()}) */}
-            qweq
             </span>
         </div>
         </div>

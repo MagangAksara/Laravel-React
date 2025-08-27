@@ -57,6 +57,7 @@ const NavigationTabsInformation = () => {
                         >
                             <span className="font-medium">Brand</span>         <span className="text-gray-600">: {car.brand}</span>
                             <span className="font-medium">Model</span>         <span className="text-gray-600">: {car.model}</span>
+                            <span className="font-medium">Type</span>         <span className="text-gray-600">: {car.type}</span>
                             <span className="font-medium">Fuel</span>          <span className="text-gray-600">: {car.fuel_type}</span>
                             <span className="font-medium">Seat</span>          <span className="text-gray-600">: {car.capacity}</span>
                             <span className="font-medium">Transmission</span>  <span className="text-gray-600">: {car.type_transmisi}</span>

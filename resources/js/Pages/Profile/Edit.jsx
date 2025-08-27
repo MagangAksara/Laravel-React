@@ -1,15 +1,22 @@
 import { useState } from 'react'; // ✅ Tambahkan ini
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import DeleteUserForm from './Partials/DeleteUserForm';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformation from './Partials/UpdateProfileInformationForm';
 import UpdateAddressInformation from './Partials/UpdateAddressInformation';
-import Navbar from '../ComponetGlobal/Navbar';
-import PageHeader from '../ComponetGlobal/PageHeader';
+
 import TabsProfile from '@/assets/TabsProfile'; // ✅ Pastikan path sesuai lokasi file Tabs
 
+import OwnerLayout from '../Owner/Layout';
+import CustomerLayout from '../Customer/Layout';
+
 export default function Edit({ mustVerifyEmail, status, addresses }) {
+    const { auth } = usePage().props; // Ambil props auth dari inertia
+    const role = auth?.user?.role; // contoh: 'owner' atau 'customer'
+
+    const Layout = role === 'owner' ? OwnerLayout : CustomerLayout;
+
     const [activeTab, setActiveTab] = useState('profile'); // ✅ useState sudah aman
 
     const tabs = [
@@ -17,12 +24,14 @@ export default function Edit({ mustVerifyEmail, status, addresses }) {
         { id: 'address', label: 'Address' },
     ];
 
+    // Tentukan className dinamis berdasarkan role
+    const containerClass = role === 'customer' ? 'py-6' : '';
+
     return (
         <>
-            <Navbar header={<PageHeader />}>
+            <Layout>
                 <Head title="Profile" />
-
-                <div className="py-12">
+                <div className={containerClass}>
                     <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
                         <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
                             {/* Tabs */}
@@ -38,7 +47,7 @@ export default function Edit({ mustVerifyEmail, status, addresses }) {
                                 )}
 
                                 {activeTab === 'address' && (
-                                    <UpdateAddressInformation addresses={addresses}/>
+                                    <UpdateAddressInformation addresses={addresses} />
                                 )}
                             </div>
                         </div>
@@ -53,7 +62,7 @@ export default function Edit({ mustVerifyEmail, status, addresses }) {
                         </div>
                     </div>
                 </div>
-            </Navbar>
+            </Layout>
         </>
     );
 }

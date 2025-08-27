@@ -23,14 +23,6 @@ Route::get('/choose-role', function () {
     return Inertia::render('Auth/ChooseRole');
 })->name('chooseRole');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::post('/profile/address', [ProfileController::class, 'storeAddress'])->name('address.store');
-    Route::put('/profile/address/{id}', [ProfileController::class, 'updateAddress'])->name('address.update');
-});
-
 Route::middleware('auth')->get('/dashboard', function () {
     $user = Auth::user();
 
@@ -55,9 +47,17 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/rental/failed', [RentalController::class, 'failed'])->name('rental.failed');
 });
 
-Route::middleware(['auth','role:owner'])->group(function () {
+Route::middleware(['auth', 'role:owner'])->group(function () {
     Route::get('/cars', [CarManagementController::class, 'index'])->name('owner.cars.management');
     Route::get('/orders', [OrderManagementController::class, 'index'])->name('owner.orders.management');
- });
+});
 
-require __DIR__.'/auth.php';
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/address', [ProfileController::class, 'storeAddress'])->name('address.store');
+    Route::put('/profile/address/{id}', [ProfileController::class, 'updateAddress'])->name('address.update');
+});
+
+require __DIR__ . '/auth.php';
