@@ -1,4 +1,4 @@
-import { Head, Link } from "@inertiajs/react";
+import { Head } from "@inertiajs/react";
 import Layout from "../Layout";
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";

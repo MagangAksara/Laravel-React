@@ -24,6 +24,9 @@ class BookingController extends Controller
             'end_date'   => 'nullable|date|after:start_date',
         ]);
 
+        $rental = null;
+        $blockedRange = null;
+
         $car = Car::with([
             'brand',
             'model',
@@ -31,8 +34,27 @@ class BookingController extends Controller
             'user.addresses',
         ])->findOrFail($id);
 
+        if (!$car->is_available) {
+            // ambil rental aktif terkait mobil ini
+            $rental = Rental::where('car_id', $car->id)
+                // ->whereNull('returned_at') // kalau ada kolom returned
+                // ->orWhere('status', 'ongoing') // sesuaikan kalau ada status
+                ->latest('start_date')
+                ->first();
+
+            if ($rental) {
+                $start = Carbon::parse($rental->start_date)->subWeek()->subDay();
+                $end   = Carbon::parse($rental->end_date)->addWeek()->addDay();
+
+                $blockedRange = [
+                    'start' => $start->toIso8601String(),
+                    'end'   => $end->toIso8601String(),
+                ];
+            }
+        }
+
         $priceDay = $car->price_per_day;
-        
+
         // Owner info
         $ownerId       = $car->user;
         $owner         = ($ownerId && $ownerId->hasRole('owner')) ? $ownerId : null;
@@ -41,7 +63,7 @@ class BookingController extends Controller
         $ownerPhone     = $owner?->phone_number;
         $isDriver      = (bool) ($owner?->is_driver);
         $ownerAddress  = $owner?->addresses()->where('is_active', true)->first();
-        
+
         // Customer info
         $customer       = Auth::user()->hasRole('customer') ? Auth::user() : null;
         $customerName     = $customer?->name;
@@ -67,7 +89,7 @@ class BookingController extends Controller
                 'owner_name'    => $ownerName,
                 'owner_phone'   => $ownerPhone,
                 'customer_name' => $customerName,
-                'customer_phone'=> $customerPhone,
+                'customer_phone' => $customerPhone,
                 'brand'         => $car->brand->name ?? '-',
                 'model'         => $car->model->name ?? '-',
                 'type'          => $car->type->name ?? '-',
@@ -75,31 +97,11 @@ class BookingController extends Controller
                 'driver_fee'    => $driverFee,
                 'is_driver'     => $isDriver,
             ],
+            'blockedRange'      => $blockedRange,
             'ownerAddress'       => $ownerAddress,
             'customerAddress'    => $customerAddress,
             'customer_addresses' => Auth::user()->addresses()->get(),
             'csrf_token'         => csrf_token(),
         ]);
     }
-
-    // public function store(Request $request)
-    // {
-    //     // Validasi input
-    //     $request->validate([
-    //         'car_id' => 'required|exists:cars,id',
-    //         'start_date' => 'required|date|after_or_equal:today',
-    //         'end_date' => 'required|date|after:start_date',
-    //     ]);
-
-    //     $rental = Rental::create([
-    //         'user_id' => Auth::id(),
-    //         'car_id' => $request->car_id,
-    //         'start_date' => $request->start_date,
-    //         'end_date' => $request->end_date,
-    //         'total_price' => 0, // Akan dihitung kemudian
-    //         'status' => 'pending',
-    //     ]);
-
-    //     return redirect()->route('bookings.show', $rental->id);
-    // }
 }

@@ -3,19 +3,53 @@ import React, { useState, useEffect } from "react";
 import { Head, usePage } from "@inertiajs/react";
 import Layout from "../Layout";
 
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import DateTime from "./BookingComponent/DateTime";
 import ConfirmFilter from "./BookingComponent/ConfirmFilter";
 import DetailPrice from "./BookingComponent/DetailPrice";
 import ReadyToPay from "./BookingComponent/ReadyToPay";
 import { Card } from "@/Components/ui/card";
 
-export default function Booking() {
+import HandlePayNow from "./BookingComponent/Handle/HandlePayNow";
+
+
+const Booking = () => {
   // Ambil data dari Laravel controller lewat Inertia props
-  const { car, ownerAddress, customerAddress } = usePage().props;
+  const { car, ownerAddress, customerAddress, blockedRange } = usePage().props;
 
   // State untuk tanggal
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [loading, setLoading] = useState(false);
+  // state untuk popup dialog
+  const [showDialog, setShowDialog] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState("");
+
+  const handlePayNowClick = () => {
+    if (!startDate || !endDate) {
+      setDialogMessage("Silakan isi tanggal mulai dan tanggal selesai terlebih dahulu.");
+      setShowDialog(true);
+      return;
+    }
+
+    if (blockedRange) {
+      const rangeStart = new Date(blockedRange.start);
+      const rangeEnd = new Date(blockedRange.end);
+
+      // cek overlap dengan rentang terblokir
+      if (
+        (startDate >= rangeStart && startDate <= rangeEnd) ||
+        (endDate >= rangeStart && endDate <= rangeEnd)
+      ) {
+        setDialogMessage("Mobil sedang sibuk pada rentang tanggal ini. Ubah waktu atau pilih mobil lain.");
+        setShowDialog(true);
+        return;
+      }
+    }
+
+    // Jika semua valid, panggil HandlePayNow
+    HandlePayNow({ car, setLoading, totalPayment, startDate, endDate });
+  };
 
   // State untuk driver dan pickup (dipindahkan dari ConfirmFilter)
   const [pickupOption, setPickupOption] = useState("owner");
@@ -34,7 +68,7 @@ export default function Booking() {
       setDriverOption("self-drive");
     }
   }, [car.is_driver]);
-  
+
   const [totalPayment, setTotalPayment] = useState(0);
 
   return (
@@ -53,6 +87,7 @@ export default function Booking() {
                 setStartDate={setStartDate}
                 endDate={endDate}
                 setEndDate={setEndDate}
+                blockedRange={blockedRange}
               />
 
               {/* Driver */}
@@ -72,7 +107,7 @@ export default function Booking() {
             <Card>
               <div>
                 {/* Summary */}
-                <DetailPrice 
+                <DetailPrice
                   car={car}
                   startDate={startDate}
                   endDate={endDate}
@@ -85,17 +120,26 @@ export default function Booking() {
                 />
 
                 {/* Payment */}
-                <ReadyToPay 
-                  car={car} 
-                  totalPayment={totalPayment}
-                  startDate={startDate}
-                  endDate={endDate}
+                <ReadyToPay
+                  loading={loading}
+                  onPayNow={handlePayNowClick}
                 />
               </div>
             </Card>
           </div>
         </Layout>
       </div>
+      {/* Dialog popup */}
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Perhatian</DialogTitle>
+          </DialogHeader>
+          <p>{dialogMessage}</p>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
+
+export default Booking;
