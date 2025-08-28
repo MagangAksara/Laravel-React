@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Payment;
 use App\Models\Rental;
 
+use Carbon\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -17,16 +18,28 @@ class RentalController extends Controller
     public function show(Request $request)
     {
         $rentals = Rental::with([
-                'payment',
-                'car.brand',
-                'car.model',
-                'car.type',
-            ])
+            'payment',
+            'car.brand',
+            'car.model',
+            'car.type',
+        ])
             ->where('user_id', $request->user()->id)
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($rental) {
-                $duration = $rental->start_date->diffInDays($rental->end_date) ?: 1;
+                $start = Carbon::parse($rental->start_date);
+                $end   = Carbon::parse($rental->end_date);
+
+                $diffInMinutes = $start->diffInMinutes($end);
+                $days  = floor($diffInMinutes / (24 * 60));
+                $hours = floor(($diffInMinutes % (24 * 60)) / 60);
+                $mins  = $diffInMinutes % 60;
+
+                $durationLabel = sprintf('%d day %02d hour %02d minute', $days, $hours, $mins);
+
+                $pricePerDay = $days > 0
+                    ? $rental->total_price / $days
+                    : $rental->total_price; // fallback kalau kurang dari 1 hari
 
                 return [
                     'id' => $rental->id,
@@ -49,8 +62,8 @@ class RentalController extends Controller
                     ],
 
                     // durasi & harga
-                    'duration' => $duration,
-                    'price' => $rental->total_price / $duration,
+                    'duration' => $durationLabel,
+                    'price' => $pricePerDay,
                     'totalPayment' => $rental->total_price,
                 ];
             });
@@ -78,7 +91,7 @@ class RentalController extends Controller
             default => ucfirst($status),
         };
     }
-    
+
     public function success()
     {
         return Inertia::render('Customer/Konten/RentalComponent/Modals/Success');
@@ -88,6 +101,4 @@ class RentalController extends Controller
     {
         return Inertia::render('Customer/Konten/RentalComponent/Modals/Failed');
     }
-
-    
 }

@@ -53,7 +53,7 @@ const RentalList = ({ rentals }) => {
                             {order.car?.type}
                             </p>
                             <p className="text-sm text-gray-500">
-                            Duration Rental: {order.duration} day
+                            Duration Rental: {order.duration}
                             </p>
                             <p className="text-sm text-gray-500">
                             Price per day: Rp {order.price.toLocaleString()}
