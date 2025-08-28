@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 import {  Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import RentalDateRange from "./RentalDateRange";
-import { se } from "date-fns/locale";
 
 const FilterSidebar = ({ brands, models, types, transmissions, seats, fuels, cities, setFilters }) => {
   const [selectedTransmission, setSelectedTransmission] = useState("");

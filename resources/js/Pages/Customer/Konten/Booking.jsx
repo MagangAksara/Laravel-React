@@ -4,10 +4,10 @@ import { Head, usePage } from "@inertiajs/react";
 import Layout from "../Layout";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import DateTime from "./BookingComponent/DateTime";
 import ConfirmFilter from "./BookingComponent/ConfirmFilter";
 import DetailPrice from "./BookingComponent/DetailPrice";
 import ReadyToPay from "./BookingComponent/ReadyToPay";
+import DateTime from "./BookingComponent/DateTime";
 import { Card } from "@/Components/ui/card";
 
 import HandlePayNow from "./BookingComponent/Handle/HandlePayNow";

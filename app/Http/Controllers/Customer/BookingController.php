@@ -68,9 +68,10 @@ class BookingController extends Controller
         // Customer info
         $customer       = Auth::user()->hasRole('customer') ? Auth::user() : null;
         $customerName     = $customer?->name;
-        $customerEmail    = $customer?->email;
         $customerPhone     = $customer?->phone_number;
         $customerAddress  = $customer?->addresses()->get();
+        $customerEmail    = $customer?->email;
+        
 
         // durasi dihitung langsung dalam view
 

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { MapPin, Star } from "lucide-react";
-import { Head, Link, usePage } from "@inertiajs/react";
+import { usePage } from "@inertiajs/react";
 
 const NavigationTabsInformation = () => {
     const { car } = usePage().props;

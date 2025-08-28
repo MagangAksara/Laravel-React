@@ -1,12 +1,8 @@
-import React, { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import React from "react";
+import { CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { usePage } from "@inertiajs/react";
-
-// import HandlePayNow from "./Handle/HandlePayNow";
 
 const ReadyToPay = ({ loading, onPayNow }) => {
-    // const [loading, setLoading] = useState(false);
 
     return (
         <>
