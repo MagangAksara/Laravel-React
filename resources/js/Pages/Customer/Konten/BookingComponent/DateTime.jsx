@@ -14,10 +14,11 @@ const DateTime = ({ startDate, setStartDate, endDate, setEndDate, blockedRange }
   useEffect(() => {
     if (!startDate) {
       const now = new Date();
-      setStartDate(now);
+      const plus2h = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+      setStartDate(plus2h);
 
       if (!endDate) {
-        const plus24h = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+        const plus24h = new Date(now.getTime() + 28 * 60 * 60 * 1000);
         setEndDate(plus24h);
       }
     }
@@ -46,12 +47,33 @@ const DateTime = ({ startDate, setStartDate, endDate, setEndDate, blockedRange }
   };
 
   // jika date null, buat new Date() agar time bisa di-set dulu
-  const handleTimeChange = (currentDate, setDate) => (e) => {
+  const handleTimeChange = (currentDate, setDate, isStart = false) => (e) => {
     const val = e.target.value; // "HH:MM"
     if (!val) return;
     const [h, m] = val.split(":").map((v) => parseInt(v, 10));
     const newDate = currentDate ? new Date(currentDate) : new Date();
     newDate.setHours(h, m, 0, 0);
+    setDate(newDate);
+
+    // Jika ini perubahan di startDate, endDate ikut maju 1 jam dari startDate
+    if (isStart) {
+      const newEnd = new Date(newDate);
+      newEnd.setHours(newDate.getHours() + 1);
+      setEndDate(newEnd);
+    }
+  };
+
+  const handleDateSelect = (currentDate, setDate) => (selectedDate) => {
+    if (!selectedDate) return;
+    const newDate = new Date(selectedDate);
+    if (currentDate) {
+      // Ambil jam & menit dari date lama
+      newDate.setHours(currentDate.getHours(), currentDate.getMinutes());
+    } else {
+      // Kalau belum ada date lama, pakai jam sekarang
+      const now = new Date();
+      newDate.setHours(now.getHours(), now.getMinutes());
+    }
     setDate(newDate);
   };
 
@@ -71,18 +93,18 @@ const DateTime = ({ startDate, setStartDate, endDate, setEndDate, blockedRange }
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-2">
-                <Calendar 
-                  mode="single" 
-                  selected={startDate} 
-                  onSelect={setStartDate} 
-                  initialFocus 
+                <Calendar
+                  mode="single"
+                  selected={startDate}
+                  onSelect={handleDateSelect(startDate, setStartDate)}
+                  initialFocus
                   disabled={(date) => isBlockedDate(date) || date < new Date()}
                 />
                 <input
                   type="time"
                   className="mt-2 w-full border rounded p-1 text-sm"
                   value={timeValue(startDate)}
-                  onChange={handleTimeChange(startDate, setStartDate)}
+                  onChange={handleTimeChange(startDate, setStartDate, true)}
                 />
               </PopoverContent>
             </Popover>
@@ -99,11 +121,11 @@ const DateTime = ({ startDate, setStartDate, endDate, setEndDate, blockedRange }
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-2">
-                <Calendar 
-                  mode="single" 
-                  selected={endDate} 
-                  onSelect={setEndDate} 
-                  initialFocus 
+                <Calendar
+                  mode="single"
+                  selected={endDate}
+                  onSelect={handleDateSelect(endDate, setEndDate)}
+                  initialFocus
                   disabled={(date) => isBlockedDate(date) || date < new Date() || (endDate && date < endDate)}
                 />
                 <input
