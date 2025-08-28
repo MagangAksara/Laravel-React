@@ -44,6 +44,10 @@ class PaymentController extends Controller
             'payer_email' => $request->payer_email,
             'success_redirect_url' => url('/rental'), // halaman sukses
             'failure_redirect_url' => url('/rental/failed'),  // halaman gagal
+            // 'payment_methods' => [
+            //     'credit_card',
+            //     'bank_transfer',
+            // ],
         ]);
 
         try {

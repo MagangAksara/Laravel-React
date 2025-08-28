@@ -31,6 +31,7 @@ class BookingController extends Controller
             'brand',
             'model',
             'type',
+            'user',
             'user.addresses',
         ])->findOrFail($id);
 
@@ -67,6 +68,7 @@ class BookingController extends Controller
         // Customer info
         $customer       = Auth::user()->hasRole('customer') ? Auth::user() : null;
         $customerName     = $customer?->name;
+        $customerEmail    = $customer?->email;
         $customerPhone     = $customer?->phone_number;
         $customerAddress  = $customer?->addresses()->get();
 
@@ -99,6 +101,7 @@ class BookingController extends Controller
             ],
             'blockedRange'      => $blockedRange,
             'ownerAddress'       => $ownerAddress,
+            'customerEmail'      => $customerEmail,
             'customerAddress'    => $customerAddress,
             'customer_addresses' => Auth::user()->addresses()->get(),
             'csrf_token'         => csrf_token(),

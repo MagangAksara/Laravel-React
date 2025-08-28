@@ -15,7 +15,7 @@ import HandlePayNow from "./BookingComponent/Handle/HandlePayNow";
 
 const Booking = () => {
   // Ambil data dari Laravel controller lewat Inertia props
-  const { car, ownerAddress, customerAddress, blockedRange } = usePage().props;
+  const { car, ownerAddress, customerEmail, customerAddress, blockedRange } = usePage().props;
 
   // State untuk tanggal
   const [startDate, setStartDate] = useState(null);
@@ -48,7 +48,7 @@ const Booking = () => {
     }
 
     // Jika semua valid, panggil HandlePayNow
-    HandlePayNow({ car, setLoading, totalPayment, startDate, endDate });
+    HandlePayNow({ car, customerEmail, setLoading, totalPayment, startDate, endDate });
   };
 
   // State untuk driver dan pickup (dipindahkan dari ConfirmFilter)

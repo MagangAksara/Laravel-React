@@ -1,5 +1,5 @@
 // resources/js/Pages/Customer/BookingComponent/HandlePayNow.jsx
-export default async function HandlePayNow({ car, setLoading, totalPayment, startDate, endDate }) {
+export default async function HandlePayNow({ car, customerEmail, setLoading, totalPayment, startDate, endDate }) {
   function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -30,7 +30,7 @@ export default async function HandlePayNow({ car, setLoading, totalPayment, star
       body: JSON.stringify({
         amount: totalPayment, // ⬅️ pakai dari props
         description: `Rental ${car.brand} ${car.model}`,
-        payer_email: "customer@email.com",
+        payer_email: customerEmail,
       }),
     });
 
