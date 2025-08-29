@@ -71,7 +71,7 @@ export default function Register() {
                 <div className="mt-4">
                     <FloatingLabelPassword
                         id="password_confirmation"
-                        label="password_confirmation"
+                        label="Password Confirmation"
                         value={data.password_confirmation}
                         onChange={(e) => setData("password_confirmation", e.target.value)}
                     />

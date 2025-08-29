@@ -25,6 +25,7 @@ class Rental extends Model
     const STATUS_PAYMENT_RECEIVED           = 'payment_received'; // kondisi status payment settled, status untuk owner memberitahu bahwa pembayaran telah diterima
     const STATUS_EXPIRED                    = 'expired'; // kondisi status payment expired
     const STATUS_CANCELLED                  = 'cancelled'; // kondisi status payment unpaid
+    const STATUS_REFUNDED                   = 'refunded'; // kondisi status payment refunded 
     const STATUS_ON_RENT                    = 'on_rent'; // status yang diatur manual, bukan berasal dari status xendit
     const STATUS_WAITING_FOR_CHECK          = 'waiting_for_check'; // status yang diatur manual, bukan berasal dari status xendit
     const STATUS_WAITING_FOR_FINES_PAYMENT  = 'waiting_for_fines_payment'; // status yang diatur manual, bukan berasal dari status xendit

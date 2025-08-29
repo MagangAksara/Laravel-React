@@ -61,11 +61,9 @@ const Booking = () => {
 
   useEffect(() => {
     if (car.is_driver) {
-      // Kalau owner bisa jadi driver, default with-driver
       setDriverOption("self-drive");
     } else {
-      // Kalau owner bukan driver, default self-drive
-      setDriverOption("with-driver");
+      setDriverOption("self-drive");
     }
   }, [car.is_driver]);
 

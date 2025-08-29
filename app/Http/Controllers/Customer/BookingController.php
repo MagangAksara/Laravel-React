@@ -104,7 +104,7 @@ class BookingController extends Controller
             'ownerAddress'       => $ownerAddress,
             'customerEmail'      => $customerEmail,
             'customerAddress'    => $customerAddress,
-            'customer_addresses' => Auth::user()->addresses()->get(),
+            // 'customer_addresses' => Auth::user()->addresses()->get(),
             'csrf_token'         => csrf_token(),
         ]);
     }

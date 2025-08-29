@@ -22,3 +22,8 @@ class UpdateRentalStatus extends Command
         $this->info("Rental updated: {$updated}");
     }
 }
+
+/*
+    Cara menggunakannya adalah dengan menuliskan pada terminal perintah
+    php artisan rentals:update-status
+*/
