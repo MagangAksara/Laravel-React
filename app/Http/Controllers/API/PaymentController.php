@@ -10,6 +10,7 @@ use Xendit\XenditSdkException;
 
 use Xendit\invoice\InvoiceApi;
 use Xendit\Invoice\CreateInvoiceRequest;
+use Xendit\PaymentRequest\PaymentRequest;
 use Xendit\Refund\RefundApi;
 use Xendit\Refund\CreateRefund;
 
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Log;
 
 use App\Models\Payment;
 use App\Models\Rental;
+use Xendit\PaymentRequest\PaymentRequestApi;
 
 class PaymentController extends Controller
 {
@@ -30,6 +32,7 @@ class PaymentController extends Controller
         Configuration::setXenditKey(config('services.xendit.secret_key'));
         $this->apiInstance = new InvoiceApi();
         $this->refundInstance = new RefundApi();
+        // $this->apiInstance = new PaymentRequestApi();
     }
 
     // fungsi untuk membuat pembayaran baru
@@ -98,6 +101,64 @@ class PaymentController extends Controller
         }
     }
 
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'amount' => 'required|numeric|min:1000',
+    //         'description' => 'required|string|max:255',
+    //         'payer_email' => 'required|email',
+    //     ]);
+
+    //     $external_id = (string) Str::uuid();
+
+    //     $createPaymentRequest = new PaymentRequest([
+    //         'reference_id' => $external_id,
+    //         'currency' => 'IDR',
+    //         'amount' => (int) $request->amount,
+    //         'payment_method' => [
+    //             'type' => 'EWALLET', // contoh, bisa ganti VA, CC, dll.
+    //             'ewallet' => [
+    //                 'channel_code' => 'OVO', // contoh OVO
+    //                 'channel_properties' => [
+    //                     'success_redirect_url' => url('/rental'),
+    //                     'failure_redirect_url' => url('/rental/failed'),
+    //                 ]
+    //             ]
+    //         ]
+    //     ]);
+
+    //     try {
+    //         $result = $this->apiInstance->createPaymentRequest($createPaymentRequest);
+
+    //         $payment = new Payment();
+    //         $payment->status = Payment::STATUS_PENDING;
+    //         $payment->external_id = $external_id;
+    //         $payment->payment_request_id = $result->getId(); // ini yg dipakai refund
+    //         $payment->payer_email = $request->payer_email;
+    //         $payment->amount = (int) $request->amount;
+    //         $payment->checkout_link = $result->getActions()[0]->getUrl() ?? null; // link bayar
+    //         $payment->description = $request->description;
+    //         $payment->save();
+
+    //         Log::info("Xendit PaymentRequest Created", [
+    //             'id' => $result->getId(),
+    //             'status' => $result->getStatus(),
+    //         ]);
+
+    //         return response()->json([
+    //             'message' => 'Payment created successfully',
+    //             'data' => $payment,
+    //             'checkout_link' => $payment->checkout_link,
+    //         ], 201);
+    //     } catch (XenditSdkException $e) {
+    //         Log::error($e->getMessage());
+    //         return response()->json([
+    //             'error' => 'Failed to create payment',
+    //             'details' => $e->getMessage(),
+    //         ], 400);
+    //     }
+    // }
+
     public function webhook(Request $request)
     {
         $data = $request->all();
@@ -116,6 +177,9 @@ class PaymentController extends Controller
         // if (isset($data['payment_request_id'])) {
         //     $payment->payment_request_id = $data['payment_request_id'];
         // }
+        if (isset($data['id'])) {
+            $payment->invoice_id = $data['id'];
+        }
         if (isset($data['external_id'])) {
             $payment->payment_request_id = $data['external_id'];
         }
@@ -161,6 +225,28 @@ class PaymentController extends Controller
     }
 
     public function cancel(Request $request, $paymentId)
+    {
+        $payment = Payment::where('id', $paymentId)->with('rental')->first();
+
+        if (!$payment) {
+            return response()->json(['error' => 'Payment not found'], 404);
+        }
+
+        // cek apakah sudah paid/settled
+        if (!in_array($payment->status, [Payment::STATUS_PAID, Payment::STATUS_SETTLED])) {
+            // Belum bayar → cukup cancel rental aja
+            if ($payment->rental) {
+                $payment->rental->status = Rental::STATUS_CANCELLED;
+                $payment->rental->save();
+            }
+            $payment->status = Payment::STATUS_CANCELLED;
+            $payment->save();
+
+            return response()->json(['message' => 'Rental cancelled (unpaid)'], 200);
+        }
+    }
+
+    public function cancelRefund($paymentId)
     {
         $payment = Payment::where('id', $paymentId)->with('rental')->first();
 
