@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import { X } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import React from "react";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 
 const RentalDetailModal = ({ open, onClose, order }) => {
 
@@ -8,26 +7,18 @@ const RentalDetailModal = ({ open, onClose, order }) => {
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="max-w-lg p-6 rounded-lg shadow-lg">
-                <div className="flex flex-col border-b pb-1">
-                    <div className="flex justify-end">
-                        <button onClick={onClose}>
-                            <X className="w-5 h-5" />
-                        </button>
+            <DialogContent className="max-w-[32%] p-6 rounded-lg shadow-lg">
+
+                <DialogTitle className="flex justify-center  font-bold text-2xl">Order Details</DialogTitle>
+                <DialogDescription className="flex flex-row justify-between">
+                    <div className="font-medium">
+                        <span className=" text-gray-500 mr-2">Booking ID</span>
+                        <span>{order.booking_id}</span>
                     </div>
-                    <div className="flex justify-center">
-                        <h2 className="text-xl font-semibold">Order Details</h2>
-                    </div>
-                </div>
+                    <span className="text-gray-500">{order.date}</span>
+                </DialogDescription>
 
                 <div className="mt-2 text-sm space-y-1">
-                    <div className="flex justify-between mb-4">
-                        <div>
-                            <span className="text-gray-500 mr-2">Booking ID</span>
-                            <span>{order.booking_id}</span>
-                        </div>
-                        <span className="text-gray-500">{order.date}</span>
-                    </div>
 
                     {order.status === "cancelled" && (
                         <div className="bg-red-100 text-red-700 px-4 py-2 rounded mb-4 text-sm">
@@ -35,7 +26,7 @@ const RentalDetailModal = ({ open, onClose, order }) => {
                         </div>
                     )}
 
-                    <div className="flex justify-start py-2 font-medium">
+                    <div className="flex justify-start pb-2 font-medium">
                         <span>{order.car?.brand} {order.car?.model} {order.car?.type}</span>
                     </div>
 
@@ -53,8 +44,8 @@ const RentalDetailModal = ({ open, onClose, order }) => {
                         <div className="text-gray-500">: {order.city}</div>
 
                         <div>Pick Up Location</div>
-                        {/* <div>: {order.pickup_location}</div> */}
-                        <div className="text-gray-500">: -</div>
+                        <div className="text-gray-500">: {order.pickup_location}</div>
+                        {/* <div className="text-gray-500">: -</div> */}
 
                         <div>Date & Time Start</div>
                         <div className="text-gray-500">: {order.start_date}</div>
@@ -101,7 +92,7 @@ const RentalDetailModal = ({ open, onClose, order }) => {
 
                 </div>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     );
 };
 

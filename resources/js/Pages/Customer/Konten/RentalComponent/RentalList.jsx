@@ -3,15 +3,29 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-import RentalDetailModal from "./Modals/DetailRentalDetailModal";
+import RentalDetailModal from "./Modals/RentalDetailModal";
+import UploadImageModal from "./Modals/UploadImageModal";
+import CancelledModal from "./Modals/CancelledModal";
 
 const RentalList = ({ rentals }) => {
     const [selectedOrder, setSelectedOrder] = useState(null);
-    const [open, setOpen] = useState(false);
+    const [openDetail, setOpenDetail] = useState(false);
+    const [openUpload, setOpenUpload] = useState(false);
+    const [openCancelled, setOpenCancelled] = useState(false);
 
-    const handleOpen = (order) => {
+    const handleOpenDetail = (order) => {
         setSelectedOrder(order);
-        setOpen(true);
+        setOpenDetail(true);
+    };
+
+    const handleOpenUpload = (order) => {
+        setSelectedOrder(order);
+        setOpenUpload(true);
+    };
+
+    const handleOpenCancelled = (order) => {
+        setSelectedOrder(order);
+        setOpenCancelled(true);
     };
 
     return (
@@ -80,17 +94,17 @@ const RentalList = ({ rentals }) => {
 
                             {/* Actions */}
                             <div className="flex flex-row gap-2 w-full md:w-auto">
-                                <Button 
+                                <Button
                                     variant="outline"
-                                    onClick={() => handleOpen(order)}
+                                    onClick={() => handleOpenDetail(order)}
                                 >
                                     See Details
                                 </Button>
                                 {order.status === "pending_payment" && (
                                     <>
-                                        <Button 
+                                        <Button
                                             variant="destructive"
-                                            onClick={() => alert('Cancel order functionality to be implemented')}
+                                            onClick={() => handleOpenCancelled(order)}
                                         >
                                             Cancelled
                                         </Button>
@@ -102,8 +116,17 @@ const RentalList = ({ rentals }) => {
                                         </Button>
                                     </>
                                 )}
+                                {/* masih belum fungsi di bagian refund */}
                                 {order.status === "confirmed_payment" && (
-                                    <Button variant="destructive">Cancelled</Button>
+                                    <Button variant="destructive">Cancel and Refund</Button>
+                                )}
+                                {order.status === "on_rent" && (
+                                    <Button
+                                        className="bg-green-500 hover:bg-green-300 text-white hover:text-black"
+                                        onClick={() => handleOpenUpload(order)}
+                                    >
+                                        Upload Image
+                                    </Button>
                                 )}
                                 {order.status === "completed" && (
                                     <Button variant="outline">Give Review</Button>
@@ -117,7 +140,9 @@ const RentalList = ({ rentals }) => {
             )}
 
             {/* Modal dipanggil di bawah */}
-            <RentalDetailModal open={open} onClose={() => setOpen(false)} order={selectedOrder} />
+            <RentalDetailModal open={openDetail} onClose={() => setOpenDetail(false)} order={selectedOrder} />
+            <UploadImageModal open={openUpload} onClose={() => setOpenUpload(false)} order={selectedOrder} />
+            <CancelledModal open={openCancelled} onClose={() => setOpenCancelled(false)} order={selectedOrder} />
         </div>
     );
 }

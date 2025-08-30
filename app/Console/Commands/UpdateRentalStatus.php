@@ -25,5 +25,5 @@ class UpdateRentalStatus extends Command
 
 /*
     Cara menggunakannya adalah dengan menuliskan pada terminal perintah
-    php artisan rentals:update-status
+    php artisan schedule:work
 */
