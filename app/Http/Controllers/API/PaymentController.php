@@ -101,6 +101,7 @@ class PaymentController extends Controller
         }
     }
 
+    // yang ini error tapi bisa
     // public function store(Request $request)
     // {
     //     $request->validate([
@@ -246,6 +247,7 @@ class PaymentController extends Controller
         }
     }
 
+    // masih error
     public function cancelRefund($paymentId)
     {
         $payment = Payment::where('id', $paymentId)->with('rental')->first();

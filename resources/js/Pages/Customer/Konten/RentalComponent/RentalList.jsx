@@ -1,9 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
+import RentalDetailModal from "./Modals/DetailRentalDetailModal";
+
 const RentalList = ({ rentals }) => {
+    const [selectedOrder, setSelectedOrder] = useState(null);
+    const [open, setOpen] = useState(false);
+
+    const handleOpen = (order) => {
+        setSelectedOrder(order);
+        setOpen(true);
+    };
 
     return (
         <div className="space-y-4">
@@ -71,7 +80,12 @@ const RentalList = ({ rentals }) => {
 
                             {/* Actions */}
                             <div className="flex flex-row gap-2 w-full md:w-auto">
-                                <Button variant="outline">See Details</Button>
+                                <Button 
+                                    variant="outline"
+                                    onClick={() => handleOpen(order)}
+                                >
+                                    See Details
+                                </Button>
                                 {order.status === "pending_payment" && (
                                     <>
                                         <Button 
@@ -101,6 +115,9 @@ const RentalList = ({ rentals }) => {
             ) : (
                 <p className="text-center text-gray-500">Tidak ada data rental</p>
             )}
+
+            {/* Modal dipanggil di bawah */}
+            <RentalDetailModal open={open} onClose={() => setOpen(false)} order={selectedOrder} />
         </div>
     );
 }
