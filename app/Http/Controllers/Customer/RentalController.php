@@ -22,6 +22,9 @@ class RentalController extends Controller
             'car.brand',
             'car.model',
             'car.type',
+            'car.imagePath',
+            'user',
+            'user.firstAddress',
         ])
             ->where('user_id', $request->user()->id)
             ->orderBy('created_at', 'desc')
@@ -35,7 +38,27 @@ class RentalController extends Controller
                 $hours = floor(($diffInMinutes % (24 * 60)) / 60);
                 $mins  = $diffInMinutes % 60;
 
-                $durationLabel = sprintf('%d day %02d hour %02d minute', $days, $hours, $mins);
+                $parts = [];
+
+                if ($days > 0) {
+                    $parts[] = $days . ' day' . ($days > 1 ? 's' : '');
+                }
+                if ($hours > 0) {
+                    $parts[] = $hours . ' hour' . ($hours > 1 ? 's' : '');
+                }
+                if ($mins > 0) {
+                    $parts[] = $mins . ' minute' . ($mins > 1 ? 's' : '');
+                }
+
+                $durationLabel = implode(' ', $parts);
+
+                // jika semua 0, misalnya tampilkan "0 minute"
+                if (empty($durationLabel)) {
+                    $durationLabel = '0 minute';
+                }
+
+                // pickup location
+                // akan diatur ulang selanjutnya
 
                 $pricePerDay = $days > 0
                     ? $rental->total_price / $days
@@ -53,6 +76,8 @@ class RentalController extends Controller
                     'status0' => $rental->payment->status ?? 'unpaid',
                     'statusLabel0' => $this->mapStatusLabel($rental->payment->status ?? 'unpaid'),
 
+                    'payment_method' => $rental->payment->payment_method ?? '-',
+
                     // data mobil dari relasi
                     'car' => [
                         'brand' => $rental->car->brand->name ?? 'Unknown',
@@ -62,11 +87,22 @@ class RentalController extends Controller
                     ],
 
                     // durasi & harga
+                    'start_date' => Carbon::parse($rental->start_date)->format('d M Y, H:i'),
+                    'end_date' => Carbon::parse($rental->end_date)->format('d M Y, H:i'),
                     'duration' => $durationLabel,
                     'price' => $pricePerDay,
                     'totalPayment' => $rental->total_price,
+                    'pickup_location' => $rental->pickup_location ?? '-',
+
+                    // data user
+                    'name' => $rental->user->name ?? '-',
+                    'email' => $rental->user->email ?? '-',
+                    'phone' => $rental->user->phone_number ?? '-',
+                    'city' => $rental->user->firstAddress->city ?? '-',
                 ];
             });
+
+        // dd($rentals);
 
         return Inertia::render('Customer/Konten/Rental', [
             'rentals' => $rentals,
