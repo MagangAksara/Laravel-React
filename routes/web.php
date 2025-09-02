@@ -43,8 +43,8 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('rental/booking/{id}', [BookingController::class, 'show'])->name('booking');
 
     Route::get('/rental', [RentalController::class, 'show'])->name('rental');
-    Route::get('/rental/success', [RentalController::class, 'success'])->name('rental.success');
-    Route::get('/rental/failed', [RentalController::class, 'failed'])->name('rental.failed');
+    Route::get('/rental/success', [RentalController::class, 'show'])->name('rental.success');
+    Route::get('/rental/failed', [RentalController::class, 'show'])->name('rental.failed');
 });
 
 Route::middleware(['auth', 'role:owner'])->group(function () {

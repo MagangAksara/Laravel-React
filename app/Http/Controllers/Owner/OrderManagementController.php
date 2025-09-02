@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Payment;
 use App\Models\Rental;
-
+use Carbon\Carbon;
 use Inertia\Response;
 use Inertia\Inertia;
 
@@ -21,17 +21,55 @@ class OrderManagementController extends Controller
 
     public function index(Request $request)
     {
-        $user = Auth::user();
-        $rentals = Rental::with([
-                'payment',
-                'car.brand',
-                'car.model',
-                'car.type',
-            ])
+        $userId = Auth::id();
+        $orders = Rental::with([
+            'payment',
+            'car.brand',
+            'car.model',
+            'car.type',
+            'car.imagePath',
+            'user',
+            'user.firstAddress',
+        ])
+            ->whereHas('car.user', function ($query) use ($userId) {
+                $query->where('id', $userId);
+            })
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($rental) {
-                $duration = $rental->start_date->diffInDays($rental->end_date) ?: 1;
+                $start = Carbon::parse($rental->start_date);
+                $end   = Carbon::parse($rental->end_date);
+
+                $diffInMinutes = $start->diffInMinutes($end);
+                $days  = floor($diffInMinutes / (24 * 60));
+                $hours = floor(($diffInMinutes % (24 * 60)) / 60);
+                $mins  = $diffInMinutes % 60;
+
+                $parts = [];
+
+                if ($days > 0) {
+                    $parts[] = $days . ' day' . ($days > 1 ? 's' : '');
+                }
+                if ($hours > 0) {
+                    $parts[] = $hours . ' hour' . ($hours > 1 ? 's' : '');
+                }
+                if ($mins > 0) {
+                    $parts[] = $mins . ' minute' . ($mins > 1 ? 's' : '');
+                }
+
+                $durationLabel = implode(' ', $parts);
+
+                // jika semua 0, misalnya tampilkan "0 minute"
+                if (empty($durationLabel)) {
+                    $durationLabel = '0 minute';
+                }
+
+                // pickup location
+                // akan diatur ulang selanjutnya
+
+                $pricePerDay = $days > 0
+                    ? $rental->total_price / $days
+                    : $rental->total_price; // fallback kalau kurang dari 1 hari
 
                 return [
                     'id' => $rental->id,
@@ -45,6 +83,8 @@ class OrderManagementController extends Controller
                     'status0' => $rental->payment->status ?? 'unpaid',
                     'statusLabel0' => $this->mapStatusLabel($rental->payment->status ?? 'unpaid'),
 
+                    'payment_method' => $rental->payment->payment_method ?? '-',
+
                     // data mobil dari relasi
                     'car' => [
                         'brand' => $rental->car->brand->name ?? 'Unknown',
@@ -54,14 +94,23 @@ class OrderManagementController extends Controller
                     ],
 
                     // durasi & harga
-                    'duration' => $duration,
-                    'price' => $rental->total_price / $duration,
+                    'start_date' => Carbon::parse($rental->start_date)->format('d M Y, H:i'),
+                    'end_date' => Carbon::parse($rental->end_date)->format('d M Y, H:i'),
+                    'duration' => $durationLabel,
+                    'price' => $pricePerDay,
                     'totalPayment' => $rental->total_price,
+                    'pickup_location' => $rental->pickup_location ?? '-',
+
+                    // data user
+                    'name' => $rental->user->name ?? '-',
+                    'email' => $rental->user->email ?? '-',
+                    'phone' => $rental->user->phone_number ?? '-',
+                    'city' => $rental->user->firstAddress->city ?? '-',
                 ];
             });
 
         return Inertia::render('Owner/Konten/OrdersManagement', [
-            'rentals' => $rentals,
+            'orders' => $orders,
         ]);
     }
 

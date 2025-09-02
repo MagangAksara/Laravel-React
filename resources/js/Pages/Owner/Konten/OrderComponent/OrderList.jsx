@@ -7,7 +7,8 @@ import RentalDetailModal from "./Modals/RentalDetailModal";
 import UploadImageModal from "./Modals/UploadImageModal";
 import CancelledModal from "./Modals/CancelledModal";
 
-const RentalList = ({ rentals }) => {
+const OrderList = ({ orders }) => {
+
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [openDetail, setOpenDetail] = useState(false);
     const [openUpload, setOpenUpload] = useState(false);
@@ -30,8 +31,8 @@ const RentalList = ({ rentals }) => {
 
     return (
         <div className="space-y-4">
-            {rentals.length > 0 ? (
-                rentals.map((order) => (
+            {orders.length > 0 ? (
+                orders.map((order) => (
                     <Card key={order.id} className="shadow-md">
                         {/* Header */}
                         <CardHeader className="flex flex-col md:flex-row md:justify-between md:items-center">
@@ -76,7 +77,7 @@ const RentalList = ({ rentals }) => {
                                         {order.car?.type}
                                     </p>
                                     <p className="text-sm text-gray-500">
-                                        Duration Rental: {order.duration}
+                                        Duration order: {order.duration} day
                                     </p>
                                     <p className="text-sm text-gray-500">
                                         Price per day: Rp {order.price.toLocaleString()}
@@ -100,43 +101,23 @@ const RentalList = ({ rentals }) => {
                                 >
                                     See Details
                                 </Button>
-                                {order.status === "pending_payment" && (
-                                    <>
-                                        <Button
-                                            variant="destructive"
-                                            onClick={() => handleOpenCancelled(order)}
-                                        >
-                                            Cancelled
-                                        </Button>
-                                        <Button
-                                            className="bg-blue-500 hover:bg-blue-600 text-white"
-                                            onClick={() => window.open(order.url_payment, "_blank")}
-                                        >
-                                            Pay Now
-                                        </Button>
-                                    </>
-                                )}
-                                {/* masih belum fungsi di bagian refund */}
-                                {order.status === "confirmed_payment" && (
-                                    <Button variant="destructive">Cancel and Refund</Button>
-                                )}
                                 {order.status === "on_rent" && (
                                     <Button
-                                        className="bg-green-500 hover:bg-green-300 text-white hover:text-black"
-                                        onClick={() => handleOpenUpload(order)}
-                                    >
-                                        Upload Image
-                                    </Button>
+                                        className="bg-blue-400 hover:bg-blue-700 text-white"
+                                    >Finish Now</Button>
                                 )}
-                                {order.status === "completed" && (
-                                    <Button variant="outline">Give Review</Button>
+                                {order.status === "waiting_for_check" && (
+                                    <>
+                                        <Button variant="outline">Complete</Button>
+                                        <Button variant="outline">Extra Payment</Button>
+                                    </>
                                 )}
                             </div>
                         </CardContent>
                     </Card>
                 ))
             ) : (
-                <p className="text-center text-gray-500">Tidak ada data rental</p>
+                <p className="text-center text-gray-500">Tidak ada data order</p>
             )}
 
             {/* Modal dipanggil di bawah */}
@@ -147,4 +128,4 @@ const RentalList = ({ rentals }) => {
     );
 }
 
-export default RentalList;
+export default OrderList;

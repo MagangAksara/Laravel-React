@@ -52,8 +52,8 @@ class PaymentController extends Controller
             'description' => $request->description,
             'payer_email' => $request->payer_email,
             'invoice_duration' => 86400, // 24 jam dalam detik
-            'success_redirect_url' => url('/rental'), // halaman sukses
-            'failure_redirect_url' => url('/rental'),  // halaman gagal
+            'success_redirect_url' => url('/rental/success'), // halaman sukses
+            'failure_redirect_url' => url('/rental/failed'),  // halaman gagal
             // 'payment_methods' => [
             //     'credit_card',
             //     'bank_transfer',
@@ -173,6 +173,8 @@ class PaymentController extends Controller
 
         // Ambil status asli dari Xendit
         $xenditStatus = strtolower($data['status'] ?? '');
+
+        Log::info("Webhook status: " . $xenditStatus, $data);
 
         // Simpan payment_request_id & payment_method_id kalau ada
         // if (isset($data['payment_request_id'])) {

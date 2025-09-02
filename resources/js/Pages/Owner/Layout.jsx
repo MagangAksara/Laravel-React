@@ -5,17 +5,21 @@ import { usePage } from "@inertiajs/react";
 
 const Layout = ({ children }) => {
     const { url, component } = usePage();
-    const hideSidebar = component === "Profile/Edit"; 
+    const hideSidebar = component === "Profile/Edit";
 
     return (
-        <div className="flex flex-col bg-gray-50">
-            {/* Sidebar */}
+        <div className="flex flex-col h-screen bg-gray-50">
+            {/* header */}
             <Header />
 
-            {/* Main Content */}
-            <div className="flex flex-row">
+            <div className="flex flex-1 overflow-hidden">
+                {/* Sidebar tetap */}
                 {!hideSidebar && <Sidebar />}
-                <main className="p-6 w-full">{children}</main>
+
+                {/* Konten yang bisa discroll */}
+                <main className="flex-1 overflow-y-auto p-6">
+                    {children}
+                </main>
             </div>
         </div>
     );

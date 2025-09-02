@@ -27,7 +27,7 @@ class RentalController extends Controller
             'user.firstAddress',
         ])
             ->where('user_id', $request->user()->id)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'desc') 
             ->get()
             ->map(function ($rental) {
                 $start = Carbon::parse($rental->start_date);

@@ -5,14 +5,14 @@ import { Calendar } from "lucide-react";
 
 import Layout from "../Layout";
 import StatusTabs from "./OrderComponent/StatusTabs.jsx";
-import RentalList from "./OrderComponent/RentalList";
+import OrderList from "./OrderComponent/OrderList";
 
-const OrdersManagement = ({ rentals = [] }) => {
+const OrdersManagement = ({ orders = [] }) => {
   const [status, setStatus] = useState("all");
 
   // filter berdasarkan status
-  const filteredRentals =
-    status === "all" ? rentals : rentals.filter((o) => o.status === status);
+  const filteredorders =
+    status === "all" ? orders : orders.filter((o) => o.status === status);
 
   return (
     <>
@@ -35,8 +35,8 @@ const OrdersManagement = ({ rentals = [] }) => {
             {/* Tabs */}
             <StatusTabs status={status} setStatus={setStatus} />
 
-            {/* Rentals List */}
-            <RentalList rentals={filteredRentals} />
+            {/* orders List */}
+            <OrderList orders={filteredorders} />
           </div>
         </div>
       </Layout>

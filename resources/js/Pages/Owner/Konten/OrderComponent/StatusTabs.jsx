@@ -10,7 +10,7 @@ const StatusTabs = ({ status, setStatus }) => {
             <TabsList className="grid grid-cols-5 gap-2">
                 {[
                 { value: "all", label: "All Orders" },
-                { value: "pending_payment", label: "Pending Payment" },
+                { value: "pending_payment", label: "Waiting Payment" },
                 { value: "confirmed_payment", label: "Confirmed" },
                 { value: "on_rent", label: "On Rent" },
                 { value: "waiting_for_check", label: "Waiting for Check" },
