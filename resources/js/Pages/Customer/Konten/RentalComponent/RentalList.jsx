@@ -57,10 +57,10 @@ const RentalList = ({ rentals }) => {
                         </CardHeader>
 
                         {/* Content */}
-                        <CardContent className="flex flex-col md:flex-row justify-between items-start md:items-center border-t">
+                        <CardContent className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-t p-4">
 
                             {/* Car Info */}
-                            <div className="flex items-center gap-4 mt-3">
+                            <div className="flex items-center gap-4 mt-3 flex-1">
                                 <img
                                     src={
                                         order.car?.image?.startsWith("http")
@@ -85,7 +85,7 @@ const RentalList = ({ rentals }) => {
                             </div>
 
                             {/* Payment Info */}
-                            <div className="text-right space-y-1">
+                            <div className="flex flex-col text-right w-full md:justify-center md:text-center md:min-w-[350px] md:w-auto">
                                 <p className="text-sm text-gray-500">Total Payment</p>
                                 <p className="font-semibold text-lg">
                                     Rp {order.totalPayment.toLocaleString()}
@@ -93,7 +93,7 @@ const RentalList = ({ rentals }) => {
                             </div>
 
                             {/* Actions */}
-                            <div className="flex flex-row gap-2 w-full md:w-auto">
+                            <div className="flex flex-col gap-2 justify-end w-full md:flex-row md:flex-wrap md:w-auto md:min-w-[350px]">
                                 <Button
                                     variant="outline"
                                     onClick={() => handleOpenDetail(order)}

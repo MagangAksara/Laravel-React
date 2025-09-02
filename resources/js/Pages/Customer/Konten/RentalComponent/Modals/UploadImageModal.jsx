@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/Components/ui/button";
-import { X } from "lucide-react";
+import { X, ArrowUpFromLine, Camera } from "lucide-react";
 
 const UploadImageModal = ({ open, onClose, order }) => {
     const [images, setImages] = useState([]);
@@ -35,14 +35,17 @@ const UploadImageModal = ({ open, onClose, order }) => {
                     <span className="text-gray-500">{order.date}</span>
                 </DialogDescription>
 
-                <div className="mt-2 text-sm space-y-1">
-                    <div className="bg-blue-200 text-gray-600 px-4 py-2 rounded mb-4 text-sm">
+                <div className="text-sm space-y-1">
+                    <div className="bg-sky-100 text-gray-600 px-4 py-2 rounded-xl mb-4 text-sm">
                         Please upload several photos of the car, such as front, back, side views, wheels, trunk, interior, and more. Once uploaded, the photos cannot be edited or deleted, so make sure everything is correct before submitting.
                     </div>
 
                     {/* alert Section */}
-                    <label className="w-full h-40 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                        <span className="text-gray-500">Upload Picture ⬆️</span>
+                    <label className="w-full h-40 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                        <span className="text-gray-500 flex items-center">
+                            Upload Picture
+                            <ArrowUpFromLine className="ml-1 w-4" />
+                        </span>
                         <input
                             type="file"
                             accept="image/*"
@@ -76,14 +79,15 @@ const UploadImageModal = ({ open, onClose, order }) => {
                                 key={i}
                                 className="w-16 h-16 flex items-center justify-center border-2 border-dashed border-gray-300 rounded text-gray-400"
                             >
-                                📷
+                                <Camera />
                             </div>
                         ))}
-                        <div className="flex justify-end pt-2">
-                            <Button className="w-auto px-8 bg-blue-500 hover:bg-blue-600 text-white">
-                                Upload
-                            </Button>
-                        </div>
+                    </div>
+
+                    <div className="flex justify-end pt-3">
+                        <Button className="w-auto px-8 bg-blue-400 hover:bg-blue-600 text-white">
+                            Upload
+                        </Button>
                     </div>
                 </div>
             </DialogContent>

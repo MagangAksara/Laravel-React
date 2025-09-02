@@ -45,7 +45,7 @@ const CancelledModal = ({ open, onClose, order }) => {
                         </div>
                         <div className="flex justify-end w-full px-4">
                             <Button
-                                className="mt-2 w-[20%] border border-gray-600 text-gray-600"
+                                className="mt-2 w-[25%] border border-gray-600 text-gray-600"
                                 variant="outline"
                             >
                                 Yes
