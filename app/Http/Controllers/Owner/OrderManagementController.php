@@ -66,13 +66,13 @@ class OrderManagementController extends Controller
                 $parts = [];
 
                 if ($days > 0) {
-                    $parts[] = $days . ' day' . ($days > 1 ? 's' : '');
+                    $parts[] = $days . ' d' . ($days > 1 ? 's' : '');
                 }
                 if ($hours > 0) {
-                    $parts[] = $hours . ' hour' . ($hours > 1 ? 's' : '');
+                    $parts[] = $hours . ' h' . ($hours > 1 ? 'rs' : '');
                 }
                 if ($mins > 0) {
-                    $parts[] = $mins . ' minute' . ($mins > 1 ? 's' : '');
+                    $parts[] = $mins . ' m' . ($mins > 1 ? 'inutes' : '');
                 }
 
                 $durationLabel = implode(' ', $parts);

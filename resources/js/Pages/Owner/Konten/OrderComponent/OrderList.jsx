@@ -38,12 +38,13 @@ const OrderList = ({ orders }) => {
                     <Card key={order.id} className="shadow-md">
                         {/* Header */}
                         <CardHeader className="flex flex-col md:flex-row md:justify-between md:items-center">
-                            <div className="text-sm text-gray-500">
+                            <div className="text-xs md:text-sm text-gray-500">
                                 Booking ID {order.booking_id}
                             </div>
                             <div className="flex items-center gap-2">
-                                <span className="text-sm">{order.date}</span>
+                                <span className="text-xs md:text-sm">{order.date}</span>
                                 <Badge
+                                    className="text-xs md:text-sm"
                                     variant={
                                         order.status === "pending_payment"
                                             ? "outline"
@@ -71,17 +72,17 @@ const OrderList = ({ orders }) => {
                                             : `/storage/${order.car.image}`
                                     }
                                     alt={order.car?.model}
-                                    className="w-20 h-20 object-cover rounded-full self-center"
+                                    className="w-10 h-10 md:w-20 md:h-20 object-cover rounded-full self-center"
                                 />
-                                <div>
-                                    <p className="font-semibold">
+                                <div className="">
+                                    <p className="text-sm md:text-md lg:text-lg font-semibold">
                                         {order.car?.brand} {order.car?.model}{" "}
                                         {order.car?.type}
                                     </p>
-                                    <p className="text-sm text-gray-500">
-                                        Duration order: {order.duration} day
+                                    <p className="text-xs md:text-sm text-gray-500">
+                                        Duration order: {order.duration}
                                     </p>
-                                    <p className="text-sm text-gray-500">
+                                    <p className="text-xs md:text-sm text-gray-500">
                                         Price per day: Rp {order.price.toLocaleString()}
                                     </p>
                                 </div>
@@ -89,8 +90,8 @@ const OrderList = ({ orders }) => {
 
                             {/* Payment Info */}
                             <div className="flex flex-col gap-2 justify-center items-center">
-                                <p className="text-sm text-gray-500">Total Payment</p>
-                                <p className="font-semibold text-lg">
+                                <p className="text-xs md:text-sm text-gray-500">Total Payment</p>
+                                <p className="font-semibold text-md md:text-lg">
                                     Rp {order.totalPayment.toLocaleString()}
                                 </p>
                             </div>
