@@ -19,6 +19,24 @@ class OrderManagementController extends Controller
     //     return Inertia::render('Owner/Konten/OrdersManagement');
     // }
 
+    private function mapStatusLabel($status)
+    {
+        return match ($status) {
+            'pending_payment' => 'Pending Payment',
+            'confirmed_payment' => 'Confirmed Payment',
+            'payment_received' => 'Payment Received',
+            'on_rent' => 'On Rent',
+            'waiting_for_check' => 'Waiting for Check',
+            'waiting_for_fines_payment' => 'Waiting for Fines Payment',
+            'completed' => 'Completed',
+            'cancelled' => 'Cancelled',
+            'expired' => 'Expired',
+            'failed' => 'Failed',
+            // 'return' => 'Return',
+            default => ucfirst($status),
+        };
+    }
+
     public function index(Request $request)
     {
         $userId = Auth::id();
@@ -114,22 +132,35 @@ class OrderManagementController extends Controller
         ]);
     }
 
-
-    private function mapStatusLabel($status)
+    /* 
+        fungsi untuk update status jika
+        1. button finish di tekan maka status menjadi waiting_for_check dari yang sebelumnya on_rent
+        2. button complete di tekan maka status menjadi completed dari yang sebelumnya waiting_for_check
+    */
+    public function updateStatus(Request $requet, $id)
     {
-        return match ($status) {
-            'pending_payment' => 'Pending Payment',
-            'confirmed_payment' => 'Confirmed Payment',
-            'payment_received' => 'Payment Received',
-            'on_rent' => 'On Rent',
-            'waiting_for_check' => 'Waiting for Check',
-            'waiting_for_fines_payment' => 'Waiting for Fines Payment',
-            'completed' => 'Completed',
-            'cancelled' => 'Cancelled',
-            'expired' => 'Expired',
-            'failed' => 'Failed',
-            // 'return' => 'Return',
-            default => ucfirst($status),
-        };
+        $rental = Rental::findOrFail($id);
+
+        switch ($rental->status) {
+            case Rental::STATUS_ON_RENT:
+                // Jika tekan Finish → status jadi waiting_for_check
+                $rental->status = Rental::STATUS_WAITING_FOR_CHECK;
+                break;
+
+            case Rental::STATUS_WAITING_FOR_CHECK:
+                // Jika tekan Complete → status jadi completed
+                $rental->status = Rental::STATUS_COMPLETED;
+                break;
+
+            default:
+                return response()->json(['message' => 'Status tidak valid untuk update'], 400);
+        }
+
+        $rental->save();
+
+        return redirect()->back()->with('success', 'Status updated successfully');
     }
+    
+
+    
 }

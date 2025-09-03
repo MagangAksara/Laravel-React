@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { router } from "@inertiajs/react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 import RentalDetailModal from "./Modals/RentalDetailModal";
 import UploadImageModal from "./Modals/UploadImageModal";
@@ -11,22 +13,10 @@ const OrderList = ({ orders }) => {
 
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [openDetail, setOpenDetail] = useState(false);
-    const [openUpload, setOpenUpload] = useState(false);
-    const [openCancelled, setOpenCancelled] = useState(false);
 
     const handleOpenDetail = (order) => {
         setSelectedOrder(order);
         setOpenDetail(true);
-    };
-
-    const handleOpenUpload = (order) => {
-        setSelectedOrder(order);
-        setOpenUpload(true);
-    };
-
-    const handleOpenCancelled = (order) => {
-        setSelectedOrder(order);
-        setOpenCancelled(true);
     };
 
     return (
@@ -104,11 +94,28 @@ const OrderList = ({ orders }) => {
                                 {order.status === "on_rent" && (
                                     <Button
                                         className="bg-blue-400 hover:bg-blue-700 text-white"
-                                    >Finish Now</Button>
+                                        onClick={() =>
+                                            router.patch(route("rentals.updateStatus", order.id), {}, {
+                                                preserveState: true,
+                                                onSuccess: () => toast.success("Status updated successfully"),
+                                                onError: () => toast.error("Gagal update status"),
+                                            })
+                                        }
+                                    >
+                                        Finish
+                                    </Button>
                                 )}
+
                                 {order.status === "waiting_for_check" && (
                                     <>
-                                        <Button variant="outline">Complete</Button>
+                                        <Button
+                                            variant="outline"
+                                            onClick={() =>
+                                                router.patch(route("rentals.updateStatus", order.id))
+                                            }
+                                        >
+                                            Complete
+                                        </Button>
                                         <Button variant="outline">Extra Payment</Button>
                                     </>
                                 )}
@@ -122,9 +129,7 @@ const OrderList = ({ orders }) => {
 
             {/* Modal dipanggil di bawah */}
             <RentalDetailModal open={openDetail} onClose={() => setOpenDetail(false)} order={selectedOrder} />
-            <UploadImageModal open={openUpload} onClose={() => setOpenUpload(false)} order={selectedOrder} />
-            <CancelledModal open={openCancelled} onClose={() => setOpenCancelled(false)} order={selectedOrder} />
-        </div>
+        </div >
     );
 }
 
