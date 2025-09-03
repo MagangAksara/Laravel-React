@@ -107,7 +107,6 @@ const Dashboard = ({
                             <p className="text-gray-500 text-sm">Earning / month</p>
                         </CardContent>
                     </Card>
-
                     <Card className="shadow-md rounded-xl col-span-3 sm:col-span-1">
                         {/* menghitung banyak sewa yang dilakukan terhadap mobil yang dimiliki oleh user yang login */}
                         <CardContent className="p-6 flex flex-col items-center text-center">
@@ -121,8 +120,8 @@ const Dashboard = ({
                 {/* Bottom Grid */}
                 <div className="grid lg:grid-cols-3 sm:grid-cols-1 gap-6 items-stretch">
                     {/* Left Section (chart) */}
-                    <Card className="shadow-md rounded-xl col-span-1 lg:col-span-2 max-h-[390px]">
-                        <CardContent className="p-6 h-fit flex flex-col">
+                    <Card className="shadow-md rounded-xl col-span-1 lg:col-span-2 h-full lg:h-[390px]">
+                        <CardContent className="p-6 h-full flex flex-col">
                             {/* Bisa taruh grafik di sini */}
                             <div className="flex flex-row justify-between mb-3">
                                 <div>
@@ -162,9 +161,9 @@ const Dashboard = ({
                                     </Popover>
                                 </div>
                             </div>
-                            <div className="flex-1 mt-5">
-                                <BarCharts 
-                                    chartData={chartData} 
+                            <div className="flex justify-center w-full md:h-[calc(100%-12%)]">
+                                <BarCharts
+                                    chartData={chartData}
                                     period={selectedPeriod}
                                 />
                             </div>
