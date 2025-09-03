@@ -60,10 +60,10 @@ const OrderList = ({ orders }) => {
                         </CardHeader>
 
                         {/* Content */}
-                        <CardContent className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-t p-4">
+                        <CardContent className="grid grid-cols-1 lg:grid-cols-3 items-start md:items-center gap-4 border-t p-4">
 
                             {/* Car Info */}
-                            <div className="flex items-center gap-4 mt-3 flex-1">
+                            <div className="flex flex-row justify-center lg:justify-start items-center gap-4">
                                 <img
                                     src={
                                         order.car?.image?.startsWith("http")
@@ -88,7 +88,7 @@ const OrderList = ({ orders }) => {
                             </div>
 
                             {/* Payment Info */}
-                            <div className="flex flex-col text-right w-full md:justify-center md:text-center md:min-w-[350px] md:w-auto">
+                            <div className="flex flex-col gap-2 justify-center items-center">
                                 <p className="text-sm text-gray-500">Total Payment</p>
                                 <p className="font-semibold text-lg">
                                     Rp {order.totalPayment.toLocaleString()}
@@ -96,7 +96,16 @@ const OrderList = ({ orders }) => {
                             </div>
 
                             {/* Actions */}
-                            <div className="flex flex-col gap-2 justify-end w-full md:flex-row md:flex-wrap md:w-auto md:min-w-[350px]">
+                            <div
+                                className={`${
+                                    // cek kondisi tombol
+                                    (order.status !== "waiting_for_check" && order.status !== "on_rent")
+                                        ? "grid grid-cols-1 lg:flex lg:justify-end" // hanya ada 1 tombol → geser kanan
+                                        : order.status === "on_rent"
+                                            ? "grid grid-cols-1 lg:grid-cols-2 gap-2 justify-end" // ada 2 tombol (Details + Finish)
+                                            : "grid grid-cols-1 lg:grid-cols-2 gap-2 justify-end" // waiting_for_check (Complete + Extra Payment)
+                                    }`}
+                            >
                                 {order.status !== "waiting_for_check" && (
                                     <Button
                                         variant="outline"
@@ -108,18 +117,11 @@ const OrderList = ({ orders }) => {
                                 {order.status === "on_rent" && (
                                     <Button
                                         className="bg-blue-400 hover:bg-blue-700 text-white"
-                                        onClick={() => handleOpenFinishNow(order)
-                                            // router.patch(route("rentals.updateStatus", order.id), {}, {
-                                            //     preserveState: true,
-                                            //     onSuccess: () => toast.success("Status updated successfully"),
-                                            //     onError: () => toast.error("Gagal update status"),
-                                            // })
-                                        }
+                                        onClick={() => handleOpenFinishNow(order)}
                                     >
                                         Finish
                                     </Button>
                                 )}
-
                                 {order.status === "waiting_for_check" && (
                                     <>
                                         <Button

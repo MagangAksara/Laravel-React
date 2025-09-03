@@ -18,10 +18,10 @@ const OrdersManagement = ({ orders = [] }) => {
     <>
       <Head title="Orders Management" />
       <Layout>
-        <div className="p-6 max-w-7xl mx-auto">
+        <div className="p-6 max-w-7xl mx-auto ">
           <div className="space-y-6">
             {/* Search & Filter */}
-            <div className="flex flex-row justify-between gap-10">
+            <div className="flex flex-col lg:flex-row justify-between gap-3 lg:gap-10">
               <Input
                 placeholder="Search order history"
                 className="md:w-full"

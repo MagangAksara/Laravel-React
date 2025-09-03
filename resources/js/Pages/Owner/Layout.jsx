@@ -18,12 +18,12 @@ const Layout = ({ children }) => {
                 {!hideSidebar && <Sidebar />}
 
                 {/* Konten yang bisa discroll */}
-                <main className="flex-1 overflow-y-auto p-6">
+                <main className="flex-1 overflow-y-auto p-6" style={{ scrollbarWidth: 'none' }}>
                     {children}
                 </main>
 
             </div>
-            
+
             {/* Toaster biar notifikasi muncul di semua halaman */}
             <Toaster position="top-right" richColors />
         </div>
