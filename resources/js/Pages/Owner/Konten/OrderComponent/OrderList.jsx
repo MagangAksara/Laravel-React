@@ -166,7 +166,7 @@ const OrderList = ({ orders }) => {
                     });
                 }}
             />
-            < ExtraPaymentModal open={openExtraPayment} onClose={() => setOpenExtraPayment(false)} order={selectedOrder} />
+            <ExtraPaymentModal open={openExtraPayment} onClose={() => setOpenExtraPayment(false)} order={selectedOrder} />
         </div >
     );
 }
