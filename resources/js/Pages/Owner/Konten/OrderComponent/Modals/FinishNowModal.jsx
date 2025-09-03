@@ -1,9 +1,8 @@
 import React from "react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
-import { Textarea } from "@/Components/ui/textarea";
 import { Button } from "@/Components/ui/button";
 
-const CancelledModal = ({ open, onClose, order }) => {
+const FinishNowModal = ({ open, onClose, order, onConfirm }) => {
 
     if (!order) return null;
 
@@ -19,34 +18,23 @@ const CancelledModal = ({ open, onClose, order }) => {
                 </DialogDescription>
                 <DialogTitle className="flex justify-center font-bold text-2xl">
                     <div className="flex flex-col items-center">
-                        <img src="/mini-icon/x-moji.png" alt="x" className="w-15" />
-                        <div className="flex flex-col justify-center items-center px-8">
-                            <span>Are you sure you want to cancel this</span>
-                            <span>order?</span>
+                        {/* icon */}
+                        <img src="/mini-icon/car-clock.png" alt="x" className="w-15" />
+                        {/* title */}
+                        <div className="flex flex-col justify-center items-center">
+                            <span>Are you sure want to end the rental now?</span>
                         </div>
                     </div>
                 </DialogTitle>
 
                 <div className="mt-2 text-sm space-y-1">
-                    <div className="flex justify-center text-gray-400 px-4 py-2 rounded mb-4 text-lg">
-                        Your payment will not be refunded once cancelled
-                    </div>
 
-                    {/* give reason section */}
                     <div className="flex flex-col">
-                        <div className="py-3">
-                            <span className="px-4 py-2 text-gray-400 font-medium">Give your reason</span>
-                        </div>
-                        <div className="flex flex-row px-4">
-                            <Textarea
-                                type="text"
-                                className="w-full border rounded p-2"
-                            />
-                        </div>
                         <div className="flex justify-end w-full px-4">
                             <Button
-                                className="mt-2 w-[25%] border border-gray-600 text-gray-600"
-                                variant="outline"
+                                className="mt-2 w-[25%] bg-blue-500 hover:bg-blue-700 text-white"
+                                // variant="outline"
+                                onClick={onConfirm}
                             >
                                 Yes
                             </Button>
@@ -58,4 +46,4 @@ const CancelledModal = ({ open, onClose, order }) => {
     );
 };
 
-export default CancelledModal;
+export default FinishNowModal;

@@ -6,17 +6,29 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 import RentalDetailModal from "./Modals/RentalDetailModal";
-import UploadImageModal from "./Modals/UploadImageModal";
-import CancelledModal from "./Modals/CancelledModal";
+import FinishNowModal from "./Modals/FinishNowModal";
+import ExtraPaymentModal from "./Modals/ExtraPaymentModal";
 
 const OrderList = ({ orders }) => {
 
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [openDetail, setOpenDetail] = useState(false);
+    const [openFinishNow, setOpenFinishNow] = useState(false);
+    const [openExtraPayment, setOpenExtraPayment] = useState(false);
 
     const handleOpenDetail = (order) => {
         setSelectedOrder(order);
         setOpenDetail(true);
+    };
+
+    const handleOpenFinishNow = (order) => {
+        setSelectedOrder(order);
+        setOpenFinishNow(true);
+    };
+
+    const handleOpenExtraPayment = (order) => {
+        setSelectedOrder(order);
+        setOpenExtraPayment(true);
     };
 
     return (
@@ -85,21 +97,23 @@ const OrderList = ({ orders }) => {
 
                             {/* Actions */}
                             <div className="flex flex-col gap-2 justify-end w-full md:flex-row md:flex-wrap md:w-auto md:min-w-[350px]">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => handleOpenDetail(order)}
-                                >
-                                    See Details
-                                </Button>
+                                {order.status !== "waiting_for_check" && (
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => handleOpenDetail(order)}
+                                    >
+                                        See Details
+                                    </Button>
+                                )}
                                 {order.status === "on_rent" && (
                                     <Button
                                         className="bg-blue-400 hover:bg-blue-700 text-white"
-                                        onClick={() =>
-                                            router.patch(route("rentals.updateStatus", order.id), {}, {
-                                                preserveState: true,
-                                                onSuccess: () => toast.success("Status updated successfully"),
-                                                onError: () => toast.error("Gagal update status"),
-                                            })
+                                        onClick={() => handleOpenFinishNow(order)
+                                            // router.patch(route("rentals.updateStatus", order.id), {}, {
+                                            //     preserveState: true,
+                                            //     onSuccess: () => toast.success("Status updated successfully"),
+                                            //     onError: () => toast.error("Gagal update status"),
+                                            // })
                                         }
                                     >
                                         Finish
@@ -111,12 +125,21 @@ const OrderList = ({ orders }) => {
                                         <Button
                                             variant="outline"
                                             onClick={() =>
-                                                router.patch(route("rentals.updateStatus", order.id))
+                                                router.patch(route("rentals.updateStatus", order.id), {}, {
+                                                    preserveState: true,
+                                                    onSuccess: () => toast.success("Status updated successfully"),
+                                                    onError: () => toast.error("Gagal update status"),
+                                                })
                                             }
                                         >
                                             Complete
                                         </Button>
-                                        <Button variant="outline">Extra Payment</Button>
+                                        <Button
+                                            className="bg-blue-400 hover:bg-blue-700 text-white"
+                                            onClick={() => handleOpenExtraPayment(order)}
+                                        >
+                                            Extra Payment
+                                        </Button>
                                     </>
                                 )}
                             </div>
@@ -129,6 +152,21 @@ const OrderList = ({ orders }) => {
 
             {/* Modal dipanggil di bawah */}
             <RentalDetailModal open={openDetail} onClose={() => setOpenDetail(false)} order={selectedOrder} />
+            <FinishNowModal
+                open={openFinishNow}
+                onClose={() => setOpenFinishNow(false)}
+                order={selectedOrder}
+                onConfirm={() => {
+                    if (!selectedOrder) return;
+                    router.patch(route("rentals.updateStatus", selectedOrder.id), {}, {
+                        preserveState: true,
+                        onSuccess: () => toast.success("Status updated successfully"),
+                        onError: () => toast.error("Gagal update status"),
+                        onFinish: () => setOpenFinishNow(false),
+                    });
+                }}
+            />
+            < ExtraPaymentModal open={openExtraPayment} onClose={() => setOpenExtraPayment(false)} order={selectedOrder} />
         </div >
     );
 }

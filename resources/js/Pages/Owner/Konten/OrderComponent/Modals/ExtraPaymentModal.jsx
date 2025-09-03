@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { Button } from "@/Components/ui/button";
 import { X, ArrowUpFromLine, Camera } from "lucide-react";
 
-const UploadImageModal = ({ open, onClose, order }) => {
+const ExtraPaymentModal = ({ open, onClose, order }) => {
     const [images, setImages] = useState([]);
 
     if (!order) return null;
@@ -95,4 +95,4 @@ const UploadImageModal = ({ open, onClose, order }) => {
     );
 };
 
-export default UploadImageModal;
+export default ExtraPaymentModal;
