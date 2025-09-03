@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Car;
 use App\Models\Rental;
 use Carbon\Carbon;
+use DB;
 
 class DashboardController extends Controller
 {
@@ -52,34 +53,78 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function indexOwner()
+    public function indexOwner(Request $request)
     {
         $userId = Auth::id();
         $now = Carbon::now();
+        $period = $request->query('period', 'month');
 
         $name = Auth::user()->name;
 
         // Total Cars milik user
         $totalCars = Car::where('user_id', $userId)->count();
 
-        // Total Earning bulan ini (status confirmed_payment)
-        $startOfMonth = $now->copy()->startOfMonth();
-        $endOfMonth = $now->copy()->endOfMonth();
-        $earning = Rental::whereHas('car', function ($q) use ($userId) {
+        // Query dasar
+        $baseQuery = Rental::whereHas('car', function ($q) use ($userId) {
             $q->where('user_id', $userId);
         })
-            ->where('status', Rental::STATUS_CONFIRMED_PAYMENT)
+            ->whereNotIn('status', [
+                Rental::STATUS_EXPIRED,
+                Rental::STATUS_CANCELLED,
+                Rental::STATUS_REFUNDED,
+                Rental::STATUS_FAILED,
+            ]);
+
+        if ($period === 'year') {
+            $earningData = (clone $baseQuery)->select(
+                DB::raw('YEAR(start_date) as year'),
+                DB::raw('SUM(total_price) as total')
+            )
+                ->groupBy('year')
+                ->orderByRaw('year ASC')
+                ->get();
+
+            $chartData = $earningData->map(function ($data) {
+                return [
+                    'month' => $data->year,
+                    'total' => $data->total,
+                    'total_formatted' => 'Rp ' . number_format($data->total, 0, ',', '.'),
+                ];
+            });
+        } else {
+            $earningData = (clone $baseQuery)->select(
+                DB::raw('MONTH(start_date) as month'),
+                DB::raw('YEAR(start_date) as year'),
+                DB::raw('SUM(total_price) as total')
+            )
+                ->groupBy('year', 'month')
+                ->orderByRaw('year ASC, month ASC')
+                ->get();
+
+            $chartData = $earningData->map(function ($data) {
+                return [
+                    'month' => Carbon::create($data->year, $data->month, 1)->format('F'),
+                    'total' => $data->total,
+                    'total_formatted' => 'Rp ' . number_format($data->total, 0, ',', '.'),
+                ];
+            });
+        }
+
+        // Earning bulan ini (pakai clone lagi biar bersih)
+        $startOfMonth = $now->copy()->startOfMonth();
+        $endOfMonth = $now->copy()->endOfMonth();
+        $earning = (clone $baseQuery)
             ->whereBetween('start_date', [$startOfMonth, $endOfMonth])
             ->sum('total_price');
 
-        // On Rent (status on_rent)
+        // On Rent
         $onRent = Rental::whereHas('car', function ($q) use ($userId) {
             $q->where('user_id', $userId);
         })
             ->where('status', Rental::STATUS_ON_RENT)
             ->count();
 
-        // Upcoming booking (ambil 5 teratas)
+        // Upcoming
         $upcoming = Rental::with(['user', 'car'])
             ->whereHas('car', function ($q) use ($userId) {
                 $q->where('user_id', $userId);
@@ -96,7 +141,7 @@ class DashboardController extends Controller
             });
 
         // log semua
-        // dd($totalCars, $earning, $onRent, $upcoming);
+        // dd($totalCars, $earning, $onRent, $upcoming, $chartData);
 
         return Inertia::render('Owner/Konten/Dashboard', [
             'name' => $name,
@@ -104,6 +149,8 @@ class DashboardController extends Controller
             'earning' => $earning,
             'onRent' => $onRent,
             'upcoming' => $upcoming,
+            'chartData' => $chartData,
+            'period' => $period,
         ]);
     }
 }

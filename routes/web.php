@@ -23,19 +23,24 @@ Route::get('/choose-role', function () {
     return Inertia::render('Auth/ChooseRole');
 })->name('chooseRole');
 
-Route::middleware('auth')->get('/dashboard', function () {
-    $user = Auth::user();
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', function () {
+        $user = Auth::user();
 
-    if ($user->hasRole('owner')) {
-        return app(DashboardController::class)->indexOwner();
-    }
+        if ($user->hasRole('owner')) {
+            return redirect()->route('owner.dashboard');
+        }
 
-    if ($user->hasRole('customer')) {
-        return app(DashboardController::class)->indexCustomer();
-    }
+        if ($user->hasRole('customer')) {
+            return redirect()->route('customer.dashboard');
+        }
 
-    abort(403);
-})->name('dashboard');
+        abort(403);
+    })->name('dashboard');
+
+    Route::get('/owner/dashboard', [DashboardController::class, 'indexOwner'])->name('owner.dashboard');
+    Route::get('/customer/dashboard', [DashboardController::class, 'indexCustomer'])->name('customer.dashboard');
+});
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');

@@ -1,20 +1,28 @@
 import React, { useMemo, useState } from "react";
 import Layout from "../Layout";
-import { Head } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { toast } from "sonner";
 
 // Icons
-import { Calendar, Car, User, Wallet } from "lucide-react";
+import { Car, Wallet, ChevronsUpDown } from "lucide-react";
 
 // ExtraComponent
 import StatusCombobox from "./DashboardComponent/StatusCombobox";
 import TopCard from "./DashboardComponent/TopCard";
 import BarCharts from "./DashboardComponent/BarCharts";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ChevronsUpDown, Check } from "lucide-react";
 
-const Dashboard = ({ name, totalCars, earning, onRent, upcoming = [] }) => {
+const Dashboard = ({ 
+    name, 
+    totalCars, 
+    earning, 
+    onRent, 
+    upcoming = [] ,
+    chartData, 
+    period,
+}) => {
 
     const today = new Date();
     const date = today.toLocaleDateString("en-GB", {
@@ -32,15 +40,38 @@ const Dashboard = ({ name, totalCars, earning, onRent, upcoming = [] }) => {
     }, [upcoming, statusFilter]);
 
     const [open, setOpen] = useState(false);
-    const [selectedPeriod, setSelectedPeriod] = useState("month");
+    const [selectedPeriod, setSelectedPeriod] = useState(period || "month");
 
     const periodOptions = [
-        { label: "Minggu", value: "week" },
         { label: "Bulan", value: "month" },
         { label: "Tahun", value: "year" },
     ]
 
     const selectedChart = periodOptions.find(s => s.value === selectedPeriod);
+
+    const handlePeriodChange = (value) => {
+        setSelectedPeriod(value);
+        setOpen(false);
+
+        toast.loading("Memuat data...");
+
+        router.get(
+            route("owner.dashboard"),
+            { period: value },
+            {
+                preserveState: true,
+                replace: true,
+                onSuccess: () => {
+                    toast.success(
+                        `Filter diubah ke ${value === "month" ? "Bulan" : "Tahun"}`
+                    );
+                },
+                onError: () => {
+                    toast.error("Gagal memuat data");
+                },
+            }
+        );
+    };
 
     return (
         <>
@@ -67,15 +98,16 @@ const Dashboard = ({ name, totalCars, earning, onRent, upcoming = [] }) => {
                         <CardContent className="p-6 flex flex-col items-center text-center">
                             <Wallet className="w-8 h-8 text-green-600 mb-2" />
                             <h3 className="text-2xl font-bold">
-                                {new Intl.NumberFormat('id-ID', {
-                                    style: 'currency',
-                                    currency: 'IDR',
-                                    minimumFractionDigits: 0
+                                {new Intl.NumberFormat("id-ID", {
+                                    style: "currency",
+                                    currency: "IDR",
+                                    minimumFractionDigits: 0,
                                 }).format(earning)}
                             </h3>
                             <p className="text-gray-500 text-sm">Earning / month</p>
                         </CardContent>
                     </Card>
+
                     <Card className="shadow-md rounded-xl col-span-3 sm:col-span-1">
                         {/* menghitung banyak sewa yang dilakukan terhadap mobil yang dimiliki oleh user yang login */}
                         <CardContent className="p-6 flex flex-col items-center text-center">
@@ -87,10 +119,10 @@ const Dashboard = ({ name, totalCars, earning, onRent, upcoming = [] }) => {
                 </div>
 
                 {/* Bottom Grid */}
-                <div className="grid lg:grid-cols-3 sm:grid-cols-1 gap-6">
-                    {/* Left Section (chart/empty) */}
-                    <Card className="shadow-md rounded-xl col-span-1 lg:col-span-2 min-h-auto">
-                        <CardContent className="p-6">
+                <div className="grid lg:grid-cols-3 sm:grid-cols-1 gap-6 items-stretch">
+                    {/* Left Section (chart) */}
+                    <Card className="shadow-md rounded-xl col-span-1 lg:col-span-2 max-h-[390px]">
+                        <CardContent className="p-6 h-fit flex flex-col">
                             {/* Bisa taruh grafik di sini */}
                             <div className="flex flex-row justify-between mb-3">
                                 <div>
@@ -115,9 +147,12 @@ const Dashboard = ({ name, totalCars, earning, onRent, upcoming = [] }) => {
                                                 {periodOptions.map(option => (
                                                     <button
                                                         key={option.value}
-                                                        className={`px-4 py-2 text-left hover:bg-gray-100 text-sm ${selectedPeriod === option.value ? "font-semibold text-blue-600" : ""
-                                                            }`}
-                                                        onClick={() => setSelectedPeriod(option.value)}
+                                                        className={`px-4 py-2 text-left hover:bg-gray-100 text-sm ${
+                                                            selectedPeriod === option.value
+                                                                ? "font-semibold text-blue-600"
+                                                                : ""
+                                                        }`}
+                                                        onClick={() => handlePeriodChange(option.value)}
                                                     >
                                                         {option.label}
                                                     </button>
@@ -127,42 +162,49 @@ const Dashboard = ({ name, totalCars, earning, onRent, upcoming = [] }) => {
                                     </Popover>
                                 </div>
                             </div>
-                            <BarCharts />
+                            <div className="flex-1 mt-5">
+                                <BarCharts 
+                                    chartData={chartData} 
+                                    period={selectedPeriod}
+                                />
+                            </div>
                         </CardContent>
                     </Card>
 
                     {/* Right Section (Upcoming Booking) */}
-                    <Card className="shadow-md rounded-xl col-span-1">
-                        <CardContent className="p-6">
+                    <Card className="shadow-md rounded-xl col-span-1 max-h-[390px]">
+                        <CardContent className="p-6 h-full flex flex-col">
                             <div className="flex flex-col items-center justify-between mb-4 gap-2">
                                 <h4 className="font-semibold">Bookings</h4>
                                 <StatusCombobox value={statusFilter} onChange={setStatusFilter} />
                             </div>
                             {/* akan menampilkan user siapa saja yang sedang menyewa, dilihat dari id car dari user yang login daam tabe rental lalu dari dabel rental dilihat user id yang merupakan customer lalu akan diambil nama user dari tb user dan dari tb rental akan diambil start date*/}
-                            {filteredUpcoming.length > 0 ? (
-                                <div className="flex flex-col gap-4">
-                                    {filteredUpcoming.map((item, idx) => (
-                                        <div key={idx} className="flex items-center gap-3">
-                                            <img
-                                                src={item.profile_picture}
-                                                alt="avatar"
-                                                className="w-10 h-10 rounded-full"
-                                            />
-                                            <div>
-                                                <p className="font-medium">{item.customer_name}</p>
-                                                <p className="text-sm text-gray-500">{item.start_date}</p>
-                                                <p className="text-[11px] text-gray-400">Status: {item.status}</p>
+                            <div className="overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
+                                {filteredUpcoming.length > 0 ? (
+                                    <div className="flex flex-col gap-4">
+                                        {filteredUpcoming.map((item, idx) => (
+                                            <div key={idx} className="flex items-center gap-3">
+                                                <img
+                                                    src={item.profile_picture}
+                                                    alt="avatar"
+                                                    className="w-10 h-10 rounded-full"
+                                                />
+                                                <div>
+                                                    <p className="font-medium">{item.customer_name}</p>
+                                                    <p className="text-sm text-gray-500">{item.start_date}</p>
+                                                    <p className="text-[11px] text-gray-400">Status: {item.status}</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p className="text-gray-400 text-sm">No upcoming bookings</p>
-                            )}
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-gray-400 text-sm">No upcoming bookings</p>
+                                )}
+                            </div>
                         </CardContent>
                     </Card>
                 </div>
-            </Layout>
+            </Layout >
         </>
     );
 };
