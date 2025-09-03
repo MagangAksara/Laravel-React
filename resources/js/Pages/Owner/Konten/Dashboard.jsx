@@ -14,13 +14,13 @@ import StatusCombobox from "./DashboardComponent/StatusCombobox";
 import TopCard from "./DashboardComponent/TopCard";
 import BarCharts from "./DashboardComponent/BarCharts";
 
-const Dashboard = ({ 
-    name, 
-    totalCars, 
-    earning, 
-    onRent, 
-    upcoming = [] ,
-    chartData, 
+const Dashboard = ({
+    name,
+    totalCars,
+    earning,
+    onRent,
+    upcoming = [],
+    chartData,
     period,
 }) => {
 
@@ -31,6 +31,8 @@ const Dashboard = ({
         year: "numeric",
     });
     const time = today.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+    const memoizedChartData = useMemo(() => chartData, [chartData]);
 
     const [statusFilter, setStatusFilter] = useState("all");
 
@@ -146,11 +148,10 @@ const Dashboard = ({
                                                 {periodOptions.map(option => (
                                                     <button
                                                         key={option.value}
-                                                        className={`px-4 py-2 text-left hover:bg-gray-100 text-sm ${
-                                                            selectedPeriod === option.value
+                                                        className={`px-4 py-2 text-left hover:bg-gray-100 text-sm ${selectedPeriod === option.value
                                                                 ? "font-semibold text-blue-600"
                                                                 : ""
-                                                        }`}
+                                                            }`}
                                                         onClick={() => handlePeriodChange(option.value)}
                                                     >
                                                         {option.label}
@@ -161,9 +162,9 @@ const Dashboard = ({
                                     </Popover>
                                 </div>
                             </div>
-                            <div className="flex justify-center w-full md:h-[calc(100%-12%)]">
+                            <div className="flex justify-center w-full flex-1 min-h-[300px]">
                                 <BarCharts
-                                    chartData={chartData}
+                                    chartData={memoizedChartData}
                                     period={selectedPeriod}
                                 />
                             </div>
