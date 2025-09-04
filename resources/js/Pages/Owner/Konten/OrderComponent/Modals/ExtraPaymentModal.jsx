@@ -50,14 +50,16 @@ const ExtraPaymentModal = ({ open, onClose, order }) => {
         setImages((prev) => [...prev, ...newImages]);
     };
 
-
     const removeImage = (index) => {
         setImages((prev) => prev.filter((_, i) => i !== index));
     };
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="max-w-lg p-6 rounded-lg shadow-lg">
+            <DialogContent 
+                className="max-w-lg p-6 rounded-lg shadow-lg overflow-y-auto" 
+                style={{ scrollbarWidth: 'none' }}
+            >
 
                 <DialogTitle className="flex justify-center  font-bold text-2xl">Extra Payment</DialogTitle>
                 <DialogDescription className="flex flex-row justify-between">

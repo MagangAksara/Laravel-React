@@ -27,7 +27,7 @@ const Header = ({ name }) => {
                     </Link>
                 </div>
                 <div className="flex items-center gap-4 relative">
-                    {url !== "/dashboard" && (
+                    {url !== "/dashboard" || "owner/dashboard" && (
                         <p className="text-sm text-gray-600">{date}, {time}</p>
                     )}
                     <div className="relative">
