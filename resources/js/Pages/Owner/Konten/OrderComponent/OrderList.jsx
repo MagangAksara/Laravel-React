@@ -32,12 +32,12 @@ const OrderList = ({ orders }) => {
     };
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-2">
             {orders.length > 0 ? (
                 orders.map((order) => (
                     <Card key={order.id} className="shadow-md">
                         {/* Header */}
-                        <CardHeader className="flex flex-col md:flex-row md:justify-between md:items-center">
+                        <CardHeader className="flex flex-col md:flex-row md:justify-between md:items-center ">
                             <div className="text-xs md:text-sm text-gray-500">
                                 Booking ID {order.booking_id}
                             </div>

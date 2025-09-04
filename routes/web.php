@@ -53,10 +53,10 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:owner'])->group(function () {
-    Route::get('/cars', [CarManagementController::class, 'index'])->name('owner.cars.management');
     Route::get('/orders', [OrderManagementController::class, 'index'])->name('owner.orders.management');
-    
-    Route::patch('/rentals/{id}/status', [OrderManagementController::class, 'updateStatus'])->name('rentals.updateStatus');
+    Route::patch('/orders/{id}/status', [OrderManagementController::class, 'updateStatus'])->name('rentals.updateStatus');
+
+    Route::get('/cars', [CarManagementController::class, 'index'])->name('owner.cars.management');
 });
 
 Route::middleware('auth')->group(function () {

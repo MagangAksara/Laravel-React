@@ -37,10 +37,20 @@ class OrderManagementController extends Controller
         };
     }
 
+    /* 
+        fungsi awal untuk penampilan data order di page ordermanagement
+
+        Fungsi untuk mencari order berdasarkan
+        - booking id
+        - nama car (brand, model, type)
+        - start date dan end date
+        - minimal total price (dalam hal ini jika ada yang lebih atau kurang 50.000 berdasarkan yang dicari dibanding dengan total price yang tercatat dalam tb)
+    */
     public function index(Request $request)
     {
         $userId = Auth::id();
-        $orders = Rental::with([
+        
+        $query = Rental::with([
             'payment',
             'car.brand',
             'car.model',
@@ -49,10 +59,45 @@ class OrderManagementController extends Controller
             'user',
             'user.firstAddress',
         ])
-            ->whereHas('car.user', function ($query) use ($userId) {
-                $query->where('id', $userId);
-            })
-            ->orderBy('created_at', 'desc')
+            ->whereHas('car.user', function ($q) use ($userId) {
+                $q->where('id', $userId);
+            });
+
+        // 🔎 Logika Search (gabungan dari searchOrders)
+        if ($request->search) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                // booking id
+                $q->where('id', 'like', "%{$search}%")
+
+                    // nama mobil
+                    ->orWhereHas('car.brand', function ($carQuery) use ($search) {
+                        $carQuery->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('car.model', function ($carQuery) use ($search) {
+                        $carQuery->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('car.type', function ($carQuery) use ($search) {
+                        $carQuery->where('name', 'like', "%{$search}%");
+                    });
+
+                // total price (cek kalau input numeric)
+                if (is_numeric($search)) {
+                    $min = $search - 50000;
+                    $max = $search + 50000;
+                    $q->orWhereBetween('total_price', [$min, $max]);
+                }
+            });
+        }
+
+        // filter tanggal
+        if ($request->start_date && $request->end_date) {
+            $query->whereBetween('start_date', [$request->start_date, $request->end_date]);
+        }
+
+        // ambil data
+        $orders = $query->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($rental) {
                 $start = Carbon::parse($rental->start_date);
@@ -129,6 +174,7 @@ class OrderManagementController extends Controller
 
         return Inertia::render('Owner/Konten/OrdersManagement', [
             'orders' => $orders,
+            'filters' => $request->only(['search','start_date','end_date']),
         ]);
     }
 
@@ -160,7 +206,48 @@ class OrderManagementController extends Controller
 
         return redirect()->back()->with('success', 'Status updated successfully');
     }
-    
 
-    
+    /* 
+        Fungsi untuk mencari order berdasarkan
+        - booking id
+        - nama car (brand, model, type)
+        - start date dan end date
+        - minimal total price (dalam hal ini jika ada yang lebih atau kurang 50.000 berdasarkan yang dicari dibanding dengan total price yang tercatat dalam tb)
+    */
+    // public function searchOrders(Request $request)
+    // {
+    //     $query = Rental::with('car'); // supaya langsung ambil data mobil
+
+    //     if ($request->search) {
+    //         $search = $request->search;
+
+    //         $query->where(function ($q) use ($search) {
+    //             // booking id
+    //             $q->where('booking_id', 'like', "%{$search}%")
+
+    //                 // nama mobil
+    //                 ->orWhereHas('car', function ($carQuery) use ($search) {
+    //                     $carQuery->where('brand', 'like', "%{$search}%")
+    //                         ->orWhere('model', 'like', "%{$search}%")
+    //                         ->orWhere('type', 'like', "%{$search}%");
+    //                 });
+
+    //             // total price (cek kalau input numeric)
+    //             if (is_numeric($search)) {
+    //                 $min = $search - 50000;
+    //                 $max = $search + 50000;
+    //                 $q->orWhereBetween('total_price', [$min, $max]);
+    //             }
+    //         });
+    //     }
+
+    //     // filter tanggal tetap pakai input date
+    //     if ($request->start_date && $request->end_date) {
+    //         $query->whereBetween('start_date', [$request->start_date, $request->end_date]);
+    //     }
+
+    //     $orders = $query->latest()->get();
+
+    //     return response()->json($orders);
+    // }
 }

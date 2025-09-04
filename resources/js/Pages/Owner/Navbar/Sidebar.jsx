@@ -6,9 +6,9 @@ const Sidebar = () => {
   const { url } = usePage();
 
   const menu = [
-    { name: "Dashboard", icon: <Home size={20} />, link: "/dashboard" },
-    { name: "Orders Management", icon: <FileText size={20} />, link: "/orders" },
-    { name: "Cars Management", icon: <Car size={20} />, link: "/cars" },
+    { name: "Dashboard", icon: <Home size={20} />, link: route("owner.dashboard")},
+    { name: "Orders Management", icon: <FileText size={20} />, link: route("owner.orders.management") },
+    { name: "Cars Management", icon: <Car size={20} />, link: route("owner.cars.management") },
   ];
 
   return (
