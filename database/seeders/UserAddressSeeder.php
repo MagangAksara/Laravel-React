@@ -16,7 +16,7 @@ class UserAddressSeeder extends Seeder
     public function run()
     {
         // Hapus data lama untuk menghindari duplikasi saat seeding ulang
-        DB::table('user_addresses')->truncate();
+        DB::table('user_addresses')->delete();
 
         DB::table('user_addresses')->insert([
             // Alamat untuk user_id 1 di Jawa Barat

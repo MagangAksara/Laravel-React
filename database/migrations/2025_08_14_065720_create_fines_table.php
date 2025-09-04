@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('fines', function (Blueprint $table) {
             $table->id();
+            $table->string('damage_type');
+            $table->integer('amount');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
