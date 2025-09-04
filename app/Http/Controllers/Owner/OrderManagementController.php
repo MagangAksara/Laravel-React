@@ -49,7 +49,7 @@ class OrderManagementController extends Controller
     public function index(Request $request)
     {
         $userId = Auth::id();
-        
+
         $query = Rental::with([
             'payment',
             'car.brand',
@@ -82,10 +82,11 @@ class OrderManagementController extends Controller
                         $carQuery->where('name', 'like', "%{$search}%");
                     });
 
-                // total price (cek kalau input numeric)
+                // total price dengan tolerance 100000
                 if (is_numeric($search)) {
-                    $min = $search - 50000;
-                    $max = $search + 50000;
+                    $tolerance = request('tolerance') ?? 100000;
+                    $min = max(0, $search - $tolerance);
+                    $max = $search + $tolerance;
                     $q->orWhereBetween('total_price', [$min, $max]);
                 }
             });
@@ -174,7 +175,7 @@ class OrderManagementController extends Controller
 
         return Inertia::render('Owner/Konten/OrdersManagement', [
             'orders' => $orders,
-            'filters' => $request->only(['search','start_date','end_date']),
+            'filters' => $request->only(['search', 'start_date', 'end_date']),
         ]);
     }
 
