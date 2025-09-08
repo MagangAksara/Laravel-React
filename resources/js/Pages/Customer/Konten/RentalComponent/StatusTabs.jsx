@@ -7,7 +7,7 @@ const StatusTabs = ({ status, setStatus }) => {
         <div className="flex flex-row gap-6">
             <p className="self-center ml-2 font-semibold">Order Status</p>
             <Tabs value={status} onValueChange={setStatus}>
-            <TabsList className="grid grid-cols-5 gap-2">
+            <TabsList className="grid grid-cols-5 gap-2 bg-transparent">
                 {[
                 { value: "all", label: "All Orders" },
                 { value: "pending_payment", label: "Pending Payment" },

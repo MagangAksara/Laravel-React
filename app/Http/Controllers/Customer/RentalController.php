@@ -25,9 +25,10 @@ class RentalController extends Controller
             'car.imagePath',
             'user',
             'user.firstAddress',
+            'pickupLocation'
         ])
             ->where('user_id', $request->user()->id)
-            ->orderBy('created_at', 'desc') 
+            ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($rental) {
                 $start = Carbon::parse($rental->start_date);
@@ -58,6 +59,16 @@ class RentalController extends Controller
                 }
 
                 // pickup location
+                $pickupLocation = $rental->pickupLocation
+                    ? [
+                        'city'   => $rental->pickupLocation->city ?? '-',
+                        'detail' => $rental->pickupLocation->detail ?? '-',
+                    ]
+                    : [
+                        'city'   => $rental->user->firstAddress->city ?? '-',
+                        'detail' => $rental->user->firstAddress->detail ?? '-',
+                    ];
+
                 // akan diatur ulang selanjutnya
 
                 $pricePerDay = $days > 0
@@ -92,7 +103,7 @@ class RentalController extends Controller
                     'duration' => $durationLabel,
                     'price' => $pricePerDay,
                     'totalPayment' => $rental->total_price,
-                    'pickup_location' => $rental->pickup_location ?? '-',
+                    'pickup_location' => $pickupLocation,
 
                     // data user
                     'name' => $rental->user->name ?? '-',

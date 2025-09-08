@@ -25,6 +25,26 @@ const Booking = () => {
   const [showDialog, setShowDialog] = useState(false);
   const [dialogMessage, setDialogMessage] = useState("");
 
+
+
+  // State untuk driver dan pickup (dipindahkan dari ConfirmFilter)
+  const [pickupOption, setPickupOption] = useState("owner");
+  const [selectedAddress, setSelectedAddress] = useState(
+    customerAddress?.[0]?.id?.toString() || ""
+  );
+
+  const [driverOption, setDriverOption] = useState("self-drive");
+
+  useEffect(() => {
+    if (car.is_driver) {
+      setDriverOption("self-drive");
+    } else {
+      setDriverOption("self-drive");
+    }
+  }, [car.is_driver]);
+
+  const [totalPayment, setTotalPayment] = useState(0);
+
   const handlePayNowClick = () => {
     if (!startDate || !endDate) {
       setDialogMessage("Silakan isi tanggal mulai dan tanggal selesai terlebih dahulu.");
@@ -48,26 +68,18 @@ const Booking = () => {
     }
 
     // Jika semua valid, panggil HandlePayNow
-    HandlePayNow({ car, customerEmail, setLoading, totalPayment, startDate, endDate });
+    HandlePayNow({
+      car,
+      customerEmail,
+      setLoading,
+      totalPayment,
+      startDate,
+      endDate,
+      pickupOption,
+      selectedAddress,
+      ownerAddress
+    });
   };
-
-  // State untuk driver dan pickup (dipindahkan dari ConfirmFilter)
-  const [pickupOption, setPickupOption] = useState("owner");
-  const [selectedAddress, setSelectedAddress] = useState(
-    customerAddress?.[0]?.id?.toString() || ""
-  );
-
-  const [driverOption, setDriverOption] = useState("self-drive");
-
-  useEffect(() => {
-    if (car.is_driver) {
-      setDriverOption("self-drive");
-    } else {
-      setDriverOption("self-drive");
-    }
-  }, [car.is_driver]);
-
-  const [totalPayment, setTotalPayment] = useState(0);
 
   return (
     <>

@@ -13,6 +13,7 @@ class Rental extends Model
         'user_id',
         'car_id',
         'payment_id',
+        'pickup_location_id',
         'start_date',
         'end_date',
         'total_price',
@@ -57,5 +58,10 @@ class Rental extends Model
     public function reviews()
     {
         return $this->hasMany(Review::class);
+    }
+
+    public function pickupLocation()
+    {
+        return $this->belongsTo(UserAddress::class);
     }
 }

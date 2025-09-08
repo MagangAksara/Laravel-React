@@ -28,4 +28,9 @@ class UserAddress extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function rental()
+    {
+        return $this->hasOne(Rental::class);
+    }
 }

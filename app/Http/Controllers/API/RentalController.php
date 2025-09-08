@@ -37,6 +37,7 @@ class RentalController extends Controller
             'user_id'     => $userId,
             'car_id'      => $request->car_id,
             'payment_id'  => $payment->id,
+            'pickup_location_id' => $request->pickup_location_id,
             'start_date'  => $startDate,
             'end_date'    => $endDate,
             'total_price' => $request->total_price,

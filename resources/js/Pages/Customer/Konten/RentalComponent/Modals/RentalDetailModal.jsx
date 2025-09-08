@@ -7,7 +7,7 @@ const RentalDetailModal = ({ open, onClose, order }) => {
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="max-w-[32%] p-6 rounded-lg shadow-lg">
+            <DialogContent className="min-w-[32%] p-6 rounded-lg shadow-lg">
 
                 <DialogTitle className="flex justify-center  font-bold text-2xl">Order Details</DialogTitle>
                 <DialogDescription className="flex flex-row justify-between">
@@ -42,10 +42,18 @@ const RentalDetailModal = ({ open, onClose, order }) => {
 
                         <div>Rental City</div>
                         <div className="text-gray-500">: {order.city}</div>
+                    </div>
 
-                        <div>Pick Up Location</div>
-                        <div className="text-gray-500">: {order.pickup_location}</div>
-                        {/* <div className="text-gray-500">: -</div> */}
+                    <div className="pt-3 font-medium">Pick Up Location</div>
+
+                    <div className="grid grid-cols-[180px_auto] gap-y-2 text-sm">
+
+                        {/* city */}
+                        <div>City</div>
+                        <div className="text-gray-500">: {order.pickup_location.city}</div>
+
+                        <div>Detail</div>
+                        <div className="text-gray-500">: {order.pickup_location.detail}</div>
 
                         <div>Date & Time Start</div>
                         <div className="text-gray-500">: {order.start_date}</div>
