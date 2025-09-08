@@ -1,17 +1,38 @@
+import { useState, useEffect } from 'react';
+import { Link, usePage } from '@inertiajs/react';
 import { SearchBox } from '@/assets/SearchBox';
+
 import Dropdown from '@/Components/Dropdown';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link, usePage } from '@inertiajs/react';
-import { useState } from 'react';
-// import FooterDraft from './FooterDraft';
 
-const Navbar = ({ header, children }) => {
+import useDebounce from '@/Pages/Customer/Hooks/useDebounce';
+
+const Navbar = ({ header }) => {
     const user = usePage().props.auth.user;
 
-    const [showingNavigationDropdown, setShowingNavigationDropdown] =
-        useState(false);
+    const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     const [searchValue, setSearchValue] = useState("");
+    
+    const [results, setResults] = useState([]); // 🔹 state untuk hasil search
+    const [showResults, setShowResults] = useState(false); 
+
+    const debouncedSearch = useDebounce(searchValue, 500);
+
+    useEffect(() => {
+        if (debouncedSearch.trim() !== "") {
+            fetch(`/cars/search?q=${debouncedSearch}`)
+                .then((res) => res.json())
+                .then((data) => {
+                    setResults(data);
+                    setShowResults(true);
+                })
+                .catch((err) => console.error("Search error:", err));
+        } else {
+            setResults([]);
+            setShowResults(false);
+        }
+    }, [debouncedSearch]);
 
     return (
         <>
@@ -31,13 +52,38 @@ const Navbar = ({ header, children }) => {
                                 </div>
                             </Link>
                             {/* <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"> */}
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex w-full">
+                            {/* <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex w-full"> */}
+                            {/* Search box */}
+                            <div className="hidden sm:flex w-full ms-10 relative">
                                 <SearchBox
                                     value={searchValue}
                                     onChange={(e) => setSearchValue(e.target.value)}
-                                    placeholder="Search"
+                                    placeholder="Search brand, model, type..."
                                 />
+
+                                {/* 🔹 Dropdown hasil search */}
+                                {showResults && results.length > 0 && (
+                                    <div className="absolute top-12 left-0 w-full max-w-lg bg-white shadow-lg rounded-lg z-50">
+                                        <ul>
+                                            {results.map((car) => (
+                                                <li
+                                                    key={car.id}
+                                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-none"
+                                                >
+                                                    <div className="font-semibold">
+                                                        {car.brand} {car.model}
+                                                    </div>
+                                                    <div className="text-sm text-gray-500">{car.type}</div>
+                                                    <div className="text-sm text-blue-600">
+                                                        Rp {car.price_per_day.toLocaleString()}/day
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
                             </div>
+                            {/* </div> */}
                         </div>
 
                         {/* Dropdown Profile */}
