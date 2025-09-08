@@ -12,7 +12,7 @@ class SearchController extends Controller
     {
         $query = $request->input('q'); // dari debounce React
 
-        $cars = Car::with('brand', 'model', 'type')
+        $cars = Car::with('brand', 'model', 'type', 'transmission', 'fuelType')
             ->whereHas('brand', function ($q) use ($query) {
                 $q->where('name', 'LIKE', "%{$query}%");
             })
@@ -20,6 +20,12 @@ class SearchController extends Controller
                 $q->where('name', 'LIKE', "%{$query}%");
             })
             ->orWhereHas('type', function ($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%");
+            })
+            ->orWhereHas('transmission', function ($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%");
+            })
+            ->orWhereHas('fuelType', function ($q) use ($query) {
                 $q->where('name', 'LIKE', "%{$query}%");
             })
             ->limit(10) // biar gak berat

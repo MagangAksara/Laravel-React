@@ -13,9 +13,9 @@ const Navbar = ({ header }) => {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     const [searchValue, setSearchValue] = useState("");
-    
+
     const [results, setResults] = useState([]); // 🔹 state untuk hasil search
-    const [showResults, setShowResults] = useState(false); 
+    const [showResults, setShowResults] = useState(false);
 
     const debouncedSearch = useDebounce(searchValue, 500);
 
@@ -66,24 +66,29 @@ const Navbar = ({ header }) => {
                                     <div className="absolute top-12 left-0 w-full max-w-lg bg-white shadow-lg rounded-lg z-50">
                                         <ul>
                                             {results.map((car) => (
-                                                <li
-                                                    key={car.id}
-                                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-none"
-                                                >
-                                                    <div className="font-semibold">
-                                                        {car.brand} {car.model}
-                                                    </div>
-                                                    <div className="text-sm text-gray-500">{car.type}</div>
-                                                    <div className="text-sm text-blue-600">
-                                                        Rp {car.price_per_day.toLocaleString()}/day
-                                                    </div>
+                                                <li key={car.id} className="border-b last:border-none">
+                                                    <Link
+                                                        href={route('cars.show', car.id)} // 🔗 ke detail mobil
+                                                        className="block px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                                        onClick={() => {
+                                                            setShowResults(false); // tutup dropdown setelah klik
+                                                            setSearchValue("");   // kosongkan input
+                                                        }}
+                                                    >
+                                                        <div className="font-semibold">
+                                                            {car.brand} {car.model}
+                                                        </div>
+                                                        <div className="text-sm text-gray-500">{car.type}</div>
+                                                        <div className="text-sm text-blue-600">
+                                                            Rp {car.price_per_day.toLocaleString()}/day
+                                                        </div>
+                                                    </Link>
                                                 </li>
                                             ))}
                                         </ul>
                                     </div>
                                 )}
                             </div>
-                            {/* </div> */}
                         </div>
 
                         {/* Dropdown Profile */}
