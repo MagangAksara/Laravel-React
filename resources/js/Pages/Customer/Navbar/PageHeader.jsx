@@ -35,6 +35,7 @@ export default function PageHeader() {
         const path = "/" + segments.slice(0, idx + 1).join("/");
         const isLast = idx === segments.length - 1;
 
+        if (seg.toLowerCase() === "customer") return null; // skip dashboard duplikat
         if (seg.toLowerCase() === "dashboard") return null; // skip dashboard duplikat
 
         return (

@@ -39,7 +39,7 @@ Route::middleware('auth')->group(function () {
     })->name('dashboard');
 
     Route::get('/owner/dashboard', [DashboardController::class, 'indexOwner'])->name('owner.dashboard');
-    // Route::get('/customer/dashboard', [DashboardController::class, 'indexCustomer'])->name('customer.dashboard');
+    Route::get('/customer/dashboard', [DashboardController::class, 'indexCustomer'])->name('customer.dashboard');
 });
 
 Route::middleware(['auth', 'role:customer'])->group(function () {

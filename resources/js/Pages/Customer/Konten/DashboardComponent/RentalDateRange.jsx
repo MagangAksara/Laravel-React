@@ -24,13 +24,16 @@ const RentalDateRange = ({ startDate: initialStart = null, endDate: initialEnd =
 
   // when local dates change, emit ISO strings (or null) to parent
   useEffect(() => {
-    if (typeof onChange === "function") {
+  if (typeof onChange === "function") {
+    // hanya emit kalau ada start_date atau end_date
+    if (startDate || endDate) {
       onChange({
         start_date: startDate ? startDate.toISOString() : null,
         end_date: endDate ? endDate.toISOString() : null,
       });
     }
-  }, [startDate, endDate, onChange]);
+  }
+}, [startDate, endDate]);
 
   const handleTimeChange = (date, setDate) => (e) => {
     if (date) {

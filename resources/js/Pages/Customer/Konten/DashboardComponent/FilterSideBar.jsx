@@ -105,7 +105,7 @@ const FilterSidebar = ({ brands, models, types, transmissions, seats, fuels, cit
                 <Button
                   variant="outline"
                   role="combobox"
-                  aria-expanded={open}
+                  aria-expanded={comboboxOpen}
                   className="w-full justify-between"
                 >
                   {selectedSeats
