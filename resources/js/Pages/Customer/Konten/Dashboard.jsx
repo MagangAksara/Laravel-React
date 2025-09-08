@@ -1,98 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Layout from "../Layout";
 import FilterSidebar from "./DashboardComponent/FilterSidebar";
 import CarCard from "./DashboardComponent/CarCard";
 import { Head, Link as InertiaLink, usePage } from '@inertiajs/react';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Menu } from "lucide-react";
+import useCarFilters from "../Hooks/useCarFilters";
 
 const Dashboard = () => {
   const { cars: initialCars } = usePage().props;
+  const carsData = initialCars.data ?? [];
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
   const [filters, setFilters] = useState({});
-  const [filteredCars, setFilteredCars] = useState(initialCars.data ?? []);
 
-  const uniqueBrands = [...new Set((initialCars.data ?? []).map(car => car.brand))].filter(Boolean);
-  const uniqueModels = [...new Set((initialCars.data ?? []).map(car => car.model))].filter(Boolean);
-  const uniqueTypes = [...new Set((initialCars.data ?? []).map(car => car.type))].filter(Boolean);
-  const uniqueTransmissions = [...new Set((initialCars.data ?? []).map(car => car.type_transmisi))].filter(Boolean);
-  const uniqueSeats = [...new Set((initialCars.data ?? []).map(car => car.capacity))]
-    .filter(Boolean)
-    .map(seat => ({
-      value: seat.toString(),   // string untuk combobox
-      label: `${seat} seats`    // label untuk ditampilkan
-    }));
-  const uniqueFuels = [...new Set((initialCars.data ?? []).map(car => car.fuel_type))].filter(Boolean);
-  const uniqueCities = [...new Set((initialCars.data ?? []).map(car => car.owner_city))].filter(Boolean);
-
-  useEffect(() => {
-    let data = [...(initialCars.data ?? [])]; // pastikan array
-
-    // Brand
-    if (filters.brand) {
-      data = data.filter(car => car.brand === filters.brand);
-    }
-
-    // Location (contoh pakai dummy dulu)
-    if (filters.city) {
-      data = data.filter(car => car.owner_city === filters.city);
-    }
-
-    // Transmission
-    if (filters.transmission) {
-      data = data.filter(car => car.type_transmisi === filters.transmission);
-    }
-
-    // Seat
-    if (filters.seats) {
-      data = data.filter(car => car.capacity === filters.seats);
-    }
-
-    // Fuel
-    if (filters.fuel) {
-      data = data.filter(car => car.fuel_type === filters.fuel);
-    }
-
-    // Available
-    if (filters.available) {
-      data = data.filter(car => car.is_available === true);
-    }
-
-    // Price
-    if (filters.min_price) {
-      data = data.filter(car => car.price >= filters.min_price);
-    }
-    if (filters.max_price) {
-      data = data.filter(car => car.price <= filters.max_price);
-    }
-
-    // Rental Date (cek overlap)
-    if (filters.start_date && filters.end_date) {
-      data = data.filter(car =>
-        !car.rentals.some(r => {
-          const start = new Date(r.start_date);
-          const end = new Date(r.end_date);
-          return (
-            (start <= new Date(filters.end_date) && end >= new Date(filters.start_date)) &&
-            ["on_rent", "waiting_for_check", "confirmed_payment"].includes(r.status)
-          );
-        })
-      );
-    }
-
-    setFilteredCars(data);
-  }, [filters, initialCars]);
-
-  // const uniqueBrands        = [...new Set(filteredCars.map(car => car.brand))].filter(Boolean);
-  // const uniqueModels        = [...new Set(filteredCars.map(car => car.model))].filter(Boolean);
-  // const uniqueTypes         = [...new Set(filteredCars.map(car => car.type))].filter(Boolean);
-  // const uniqueTransmissions = [...new Set(filteredCars.map(car => car.type_transmisi))].filter(Boolean);
-  // const uniqueSeats         = [...new Set(filteredCars.map(car => car.capacity))]
-  //   .filter(Boolean)
-  //   .map(seat => ({ value: seat.toString(), label: `${seat} seats` }));
-  // const uniqueFuels         = [...new Set(filteredCars.map(car => car.fuel_type))].filter(Boolean);
-  // const uniqueCities        = [...new Set(filteredCars.map(car => car.owner_city))].filter(Boolean);
+  const { filteredCars, filterOptions } = useCarFilters(carsData, filters);
 
   return (
     <>
@@ -113,13 +35,7 @@ const Dashboard = () => {
           >
             <div className="overflow-y-auto">
               <FilterSidebar
-                brands={uniqueBrands}
-                models={uniqueModels}
-                types={uniqueTypes}
-                transmissions={uniqueTransmissions}
-                seats={uniqueSeats}
-                fuels={uniqueFuels}
-                cities={uniqueCities}
+                {...filterOptions}
                 setFilters={setFilters}
               />
             </div>

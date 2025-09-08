@@ -21,7 +21,7 @@ const Navbar = ({ header }) => {
 
     useEffect(() => {
         if (debouncedSearch.trim() !== "") {
-            fetch(`/cars/search?q=${debouncedSearch}`)
+            fetch(`/search?q=${debouncedSearch}`)
                 .then((res) => res.json())
                 .then((data) => {
                     setResults(data);
