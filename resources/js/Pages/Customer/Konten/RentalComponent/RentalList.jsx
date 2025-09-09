@@ -20,9 +20,6 @@ const RentalList = ({ rentals }) => {
     const [openCancelled, setOpenCancelled] = useState(false);
     const [openCancelAndRefund, setOpenCancelAndRefund] = useState(false);
 
-    // const overdue = useOverdueTime(selectedOrder?.end_date, selectedOrder?.status);
-    const overdue = useOverdueTime(order.end_date, order.status);
-
     const handleOpenDetail = (order) => {
         setSelectedOrder(order);
         setOpenDetail(true);
@@ -46,7 +43,10 @@ const RentalList = ({ rentals }) => {
     return (
         <div className="space-y-4">
             {rentals.length > 0 ? (
-                rentals.map((order) => (
+                rentals.map((order) => {
+                    const overdue = useOverdueTime(order.end_date, order.status);
+
+                    return (
                     <Card key={order.id} className="shadow-md">
                         {/* Header */}
                         <CardHeader className="flex flex-col md:flex-row md:justify-between md:items-center">
@@ -162,7 +162,8 @@ const RentalList = ({ rentals }) => {
                             )}
                         </CardContent>
                     </Card>
-                ))
+                    );
+                })
             ) : (
                 <p className="text-center text-gray-500">Tidak ada data rental</p>
             )}

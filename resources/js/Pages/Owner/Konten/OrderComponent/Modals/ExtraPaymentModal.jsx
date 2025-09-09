@@ -56,24 +56,21 @@ const ExtraPaymentModal = ({ open, onClose, order }) => {
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent 
-                className="max-w-lg p-6 rounded-lg shadow-lg overflow-y-auto" 
+            <DialogContent
+                className="max-w-lg p-6 rounded-lg shadow-lg overflow-y-auto"
                 style={{ scrollbarWidth: 'none' }}
             >
 
                 <DialogTitle className="flex justify-center  font-bold text-2xl">Extra Payment</DialogTitle>
-                <DialogDescription className="flex flex-row justify-between">
-                    <div className="font-medium">
-                        <span className=" text-gray-500 mr-2">Booking ID</span>
-                        <span>{order.booking_id}</span>
-                    </div>
+                <DialogDescription className="flex flex-row justify-between font-medium">
+                    <span className=" text-gray-500 mr-2">Booking ID </span>
                     <span className="text-gray-500">{order.date}</span>
                 </DialogDescription>
 
                 <div className="text-sm space-y-1">
                     {/* alert Section */}
                     <div className="flex flex-row bg-sky-100 text-gray-600 px-4 py-2 rounded-xl mb-4 text-sm gap-3">
-                        <CircleAlert className="w-20"/>
+                        <CircleAlert className="w-20" />
                         <span>Please upload several photos of the car, such as front, back, side views, wheels, trunk, interior, and more. Once uploaded, the photos cannot be edited or deleted, so make sure everything is correct before submitting.</span>
                     </div>
 
