@@ -53,6 +53,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/rental', [RentalController::class, 'show'])->name('rental');
     Route::get('/rental/success', [RentalController::class, 'show'])->name('rental.success');
     Route::get('/rental/failed', [RentalController::class, 'show'])->name('rental.failed');
+    Route::patch('/rental/cancelled/{id}', [RentalController::class, 'cancel'])->name('rental.cancelled');
 });
 
 Route::middleware(['auth', 'role:owner'])->group(function () {

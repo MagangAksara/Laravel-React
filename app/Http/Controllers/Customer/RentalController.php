@@ -15,6 +15,24 @@ use Inertia\Response;
 
 class RentalController extends Controller
 {
+    private function mapStatusLabel($status)
+    {
+        return match ($status) {
+            'pending_payment' => 'Pending Payment',
+            'confirmed_payment' => 'Confirmed Payment',
+            'payment_received' => 'Payment Received',
+            'on_rent' => 'On Rent',
+            'waiting_for_check' => 'Waiting for Check',
+            'waiting_for_fines_payment' => 'Waiting for Fines Payment',
+            'completed' => 'Completed',
+            'cancelled' => 'Cancelled',
+            'expired' => 'Expired',
+            'failed' => 'Failed',
+            // 'return' => 'Return',
+            default => ucfirst($status),
+        };
+    }
+
     public function show(Request $request)
     {
         $rentals = Rental::with([
@@ -120,23 +138,61 @@ class RentalController extends Controller
         ]);
     }
 
+    // public function cancel(Request $request, $id)
+    // {
+    //     $rental = Rental::where('id', $id)->first();
 
-    private function mapStatusLabel($status)
+    //     if (!$rental) {
+    //         return response()->json(['error' => 'rental not found'], 404);
+    //     }
+
+    //     // ambil request reason
+    //     $reason = $request->input('reason', 'No reason provided');
+
+    //     // cek apakah sudah paid/settled
+    //     if (!in_array($rental->status, [Rental::STATUS_CONFIRMED_PAYMENT, Rental::STATUS_PAYMENT_RECEIVED])) {
+    //         // Belum bayar → cukup cancel rental aja
+    //         if ($rental) {
+    //             $rental->status = Rental::STATUS_CANCELLED;
+    //             $rental->cancelled_reason = $reason;
+    //             $rental->save();
+    //         }
+    //         $rental->status = Rental::STATUS_CANCELLED;
+    //         $rental->save();
+
+    //         return back()->with('success', 'Rental cancelled successfully');
+    //     }
+
+    //     return back()->withErrors(['error' => 'rental already processed, cannot cancel']);
+    // }
+
+    public function cancel(Request $request, $rentalId)
     {
-        return match ($status) {
-            'pending_payment' => 'Pending Payment',
-            'confirmed_payment' => 'Confirmed Payment',
-            'payment_received' => 'Payment Received',
-            'on_rent' => 'On Rent',
-            'waiting_for_check' => 'Waiting for Check',
-            'waiting_for_fines_payment' => 'Waiting for Fines Payment',
-            'completed' => 'Completed',
-            'cancelled' => 'Cancelled',
-            'expired' => 'Expired',
-            'failed' => 'Failed',
-            // 'return' => 'Return',
-            default => ucfirst($status),
-        };
+        $rental = Rental::with('payment')->find($rentalId);
+
+        if (!$rental) {
+            return back()->withErrors(['error' => 'Rental not found']);
+        }
+
+        $payment = $rental->payment;
+        $reason  = $request->input('reason', 'No reason provided');
+
+        // Jika payment belum paid/settled → boleh cancel
+        if ($payment && !in_array($payment->status, [Payment::STATUS_PAID, Payment::STATUS_SETTLED])) {
+            $payment->status = Payment::STATUS_CANCELLED;
+            $payment->save();
+        }
+
+        // Update rental
+        if (!in_array($rental->status, [Rental::STATUS_CONFIRMED_PAYMENT, Rental::STATUS_PAYMENT_RECEIVED])) {
+            $rental->status = Rental::STATUS_CANCELLED;
+            $rental->cancelled_reason = $reason;
+            $rental->save();
+
+            return back()->with('success', 'Rental cancelled successfully');
+        }
+
+        return back()->withErrors(['error' => 'Payment already processed, cannot cancel']);
     }
 
     public function success()

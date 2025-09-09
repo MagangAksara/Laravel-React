@@ -1,17 +1,21 @@
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import React, { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader } from "@/Components/ui/card";
+import { Badge } from "@/Components/ui/badge";
+import { Button } from "@/Components/ui/button";
+import { toast } from "sonner";
 
 import RentalDetailModal from "./Modals/RentalDetailModal";
 import UploadImageModal from "./Modals/UploadImageModal";
 import CancelledModal from "./Modals/CancelledModal";
+import CancelAndRefundModal from "./Modals/CancelAndRefundModal";
+import { router } from "@inertiajs/react";
 
 const RentalList = ({ rentals }) => {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [openDetail, setOpenDetail] = useState(false);
     const [openUpload, setOpenUpload] = useState(false);
     const [openCancelled, setOpenCancelled] = useState(false);
+    const [openCancelAndRefund, setOpenCancelAndRefund] = useState(false);
 
     const handleOpenDetail = (order) => {
         setSelectedOrder(order);
@@ -27,6 +31,11 @@ const RentalList = ({ rentals }) => {
         setSelectedOrder(order);
         setOpenCancelled(true);
     };
+
+    const handleOpenCancelAndRefund = (order) => {
+        setSelectedOrder(order);
+        setOpenCancelAndRefund(true);
+    }
 
     return (
         <div className="space-y-4">
@@ -110,7 +119,8 @@ const RentalList = ({ rentals }) => {
                                         </Button>
                                         <Button
                                             className="bg-blue-500 hover:bg-blue-600 text-white"
-                                            onClick={() => window.open(order.url_payment, "_blank")}
+                                            // onClick={() => window.open(order.url_payment, "_blank")}
+                                            onClick={() => order.url_payment && (window.location.href = order.url_payment)}
                                         >
                                             Pay Now
                                         </Button>
@@ -118,7 +128,12 @@ const RentalList = ({ rentals }) => {
                                 )}
                                 {/* masih belum fungsi di bagian refund */}
                                 {order.status === "confirmed_payment" && (
-                                    <Button variant="destructive">Cancel and Refund</Button>
+                                    <Button
+                                        variant="destructive"
+                                        onClick={() => handleOpenCancelAndRefund(order)}
+                                    >
+                                        Cancel and Refund
+                                    </Button>
                                 )}
                                 {order.status === "on_rent" && (
                                     <Button
@@ -141,8 +156,33 @@ const RentalList = ({ rentals }) => {
 
             {/* Modal dipanggil di bawah */}
             <RentalDetailModal open={openDetail} onClose={() => setOpenDetail(false)} order={selectedOrder} />
-            <UploadImageModal open={openUpload} onClose={() => setOpenUpload(false)} order={selectedOrder} />
-            <CancelledModal open={openCancelled} onClose={() => setOpenCancelled(false)} order={selectedOrder} />
+            <UploadImageModal 
+                open={openUpload} 
+                onClose={() => setOpenUpload(false)} 
+                order={selectedOrder} 
+            />
+            <CancelledModal
+                open={openCancelled}
+                onClose={() => setOpenCancelled(false)}
+                order={selectedOrder}
+                onConfirm={(reason) => {
+                    if (!selectedOrder) return;
+                    router.patch(route("rental.cancelled", selectedOrder.id),
+                        { reason },
+                        {
+                            preserveState: true,
+                            onSuccess: () => toast.success("Order cancelled successfully"),
+                            onError: () => toast.error("Failed to cancel order"),
+                            onFinish: () => setOpenCancelled(false),
+                        }
+                    );
+                }}
+            />
+            <CancelAndRefundModal 
+                open={openCancelAndRefund} 
+                onClose={() => setOpenCancelAndRefund(false)} 
+                order={selectedOrder} 
+            />
         </div>
     );
 }

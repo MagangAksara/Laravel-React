@@ -18,6 +18,7 @@ class Rental extends Model
         'end_date',
         'total_price',
         'status',
+        'cancelled_reason',
     ];
 
     // daftar status

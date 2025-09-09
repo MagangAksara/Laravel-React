@@ -55,6 +55,12 @@ const RentalDetailModal = ({ open, onClose, order }) => {
                         <div>Detail</div>
                         <div className="text-gray-500">: {order.pickup_location.detail}</div>
 
+                    </div>
+
+                    <div className="pt-3 font-medium">Detail Rentals Duration</div>
+
+                    <div className="grid grid-cols-[180px_auto] gap-y-2 text-sm">
+
                         <div>Date & Time Start</div>
                         <div className="text-gray-500">: {order.start_date}</div>
 
