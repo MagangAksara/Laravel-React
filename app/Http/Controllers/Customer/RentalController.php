@@ -75,7 +75,6 @@ class RentalController extends Controller
                 if (empty($durationLabel)) {
                     $durationLabel = '0 minute';
                 }
-
                 // pickup location
                 $pickupLocation = $rental->pickupLocation
                     ? [
@@ -137,34 +136,6 @@ class RentalController extends Controller
             'rentals' => $rentals,
         ]);
     }
-
-    // public function cancel(Request $request, $id)
-    // {
-    //     $rental = Rental::where('id', $id)->first();
-
-    //     if (!$rental) {
-    //         return response()->json(['error' => 'rental not found'], 404);
-    //     }
-
-    //     // ambil request reason
-    //     $reason = $request->input('reason', 'No reason provided');
-
-    //     // cek apakah sudah paid/settled
-    //     if (!in_array($rental->status, [Rental::STATUS_CONFIRMED_PAYMENT, Rental::STATUS_PAYMENT_RECEIVED])) {
-    //         // Belum bayar → cukup cancel rental aja
-    //         if ($rental) {
-    //             $rental->status = Rental::STATUS_CANCELLED;
-    //             $rental->cancelled_reason = $reason;
-    //             $rental->save();
-    //         }
-    //         $rental->status = Rental::STATUS_CANCELLED;
-    //         $rental->save();
-
-    //         return back()->with('success', 'Rental cancelled successfully');
-    //     }
-
-    //     return back()->withErrors(['error' => 'rental already processed, cannot cancel']);
-    // }
 
     public function cancel(Request $request, $rentalId)
     {

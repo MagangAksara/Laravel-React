@@ -29,11 +29,22 @@ const Booking = () => {
 
   // State untuk driver dan pickup (dipindahkan dari ConfirmFilter)
   const [pickupOption, setPickupOption] = useState("owner");
-  const [selectedAddress, setSelectedAddress] = useState(
-    customerAddress?.[0]?.id?.toString() || ""
-  );
+
+  const [selectedAddress, setSelectedAddress] = useState(() => {
+    if (pickupOption === "owner") {
+      return ownerAddress?.[0]?.id?.toString() || "";
+    }
+    return customerAddress?.[0]?.id?.toString() || "";
+  });
 
   const [driverOption, setDriverOption] = useState("self-drive");
+
+  useEffect(() => {
+    if (driverOption === "self-drive") {
+      setPickupOption("owner");
+      setSelectedAddress(ownerAddress?.[0]?.id?.toString() || "");
+    }
+  }, [driverOption, ownerAddress]);
 
   useEffect(() => {
     if (car.is_driver) {
@@ -41,7 +52,7 @@ const Booking = () => {
     } else {
       setDriverOption("self-drive");
     }
-  }, [car.is_driver]);
+  }, [car.is_driver, ownerAddress, customerAddress]);
 
   const [totalPayment, setTotalPayment] = useState(0);
 
@@ -103,6 +114,7 @@ const Booking = () => {
               {/* Driver */}
               <ConfirmFilter
                 car={car}
+                ownerAddress={ownerAddress}
                 customer_addresses={customerAddress}
                 driverOption={driverOption}
                 setDriverOption={setDriverOption}

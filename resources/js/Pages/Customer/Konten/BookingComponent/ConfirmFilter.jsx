@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 
 const ConfirmFilter = ({
     car,
+    ownerAddress,
     customer_addresses,
     driverOption,
     setDriverOption,
@@ -34,9 +35,8 @@ const ConfirmFilter = ({
 
                         {/* With Driver hanya kalau owner adalah driver */}
                         <div
-                            className={`flex items-center space-x-2 ${
-                                !car.is_driver ? "opacity-50 cursor-not-allowed" : ""
-                            }`}
+                            className={`flex items-center space-x-2 ${!car.is_driver ? "opacity-50 cursor-not-allowed" : ""
+                                }`}
                         >
                             <RadioGroupItem
                                 value="with-driver"
@@ -64,19 +64,26 @@ const ConfirmFilter = ({
                         onValueChange={(val) => {
                             if (driverOption === "self-drive" && val === "other") return;
                             setPickupOption(val);
+                            if (val === "owner") {
+                                setSelectedAddress(ownerAddress?.[0]?.id?.toString() || "");
+                            } else {
+                                setSelectedAddress(customer_addresses?.[0]?.id?.toString() || "");
+                            }
                         }}
                         className="flex gap-6"
                     >
                         {/* At owner Location */}
                         <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="owner" id="pickup-owner" />
+                            <RadioGroupItem
+                                value="owner"
+                                id="pickup-owner"
+                            />
                             <Label htmlFor="pickup-owner">At Owner’s Location</Label>
                         </div>
                         {/* At Other Location */}
                         <div
-                            className={`flex items-center space-x-2 ${
-                                driverOption === "self-drive" ? "opacity-50 cursor-not-allowed" : ""
-                            }`}
+                            className={`flex items-center space-x-2 ${driverOption === "self-drive" ? "opacity-50 cursor-not-allowed" : ""
+                                }`}
                         >
                             <RadioGroupItem
                                 value="other"
@@ -91,45 +98,85 @@ const ConfirmFilter = ({
                             </Label>
                         </div>
                     </RadioGroup>
-                        {pickupOption === "other" && (
-                            <div className="mt-4 border p-4 rounded-lg">
-                                {customer_addresses?.length > 0 ? (
-                                    <RadioGroup
-                                        value={selectedAddress}
-                                        onValueChange={setSelectedAddress}
-                                        className="space-y-3"
-                                    >
-                                        {customer_addresses.map((addr) => (
-                                            <div
-                                                key={addr.id}
-                                                className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-gray-50 transition"
+                    {/* jika yang dipilih  owner */}
+                    {pickupOption === "owner" && (
+                        <div className="mt-4 border p-4 rounded-lg">
+                            {ownerAddress?.length > 0 ? (
+                                <RadioGroup
+                                    value={selectedAddress}
+                                    onValueChange={setSelectedAddress}
+                                    className="space-y-3"
+                                >
+                                    {ownerAddress.map((addr) => (
+                                        <div
+                                            key={addr.id}
+                                            className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-gray-50 transition"
+                                        >
+                                            <RadioGroupItem
+                                                value={addr.id.toString()}
+                                                id={`address-${addr.id}`}
+                                                className="mt-1"
+                                            />
+                                            <Label
+                                                htmlFor={`address-${addr.id}`}
+                                                className="cursor-pointer flex flex-col"
                                             >
-                                                <RadioGroupItem 
-                                                    value={addr.id.toString()} 
-                                                    id={`address-${addr.id}`} 
-                                                    className="mt-1"
-                                                />
-                                                <Label 
-                                                    htmlFor={`address-${addr.id}`} 
-                                                    className="cursor-pointer flex flex-col"
-                                                >
-                                                    <p className="text-sm text-gray-800">
-                                                        Kota: {addr.city},  Kecamatan: {addr.district}, Kabupaten: {addr.regency}, Provinsi: {addr.province}, ({addr.postal_code})
-                                                    </p>
-                                                    <p className="text-sm text-gray-600">
-                                                        Latitude: {addr.latitude}, Longitude: {addr.longitude}
-                                                    </p>
-                                                    <p className="text-sm">{addr.detail}</p>
-                                                </Label>
-                                            </div>
-                                        ))}
-                                    </RadioGroup>
-                                ) : (
-                                    <p className="text-sm text-gray-500">Tidak ada alamat tersimpan.</p>
-                                )}
-                            </div>
-                        )}
-                    </div>
+                                                <p className="text-sm text-gray-800">
+                                                    Kota: {addr.city},  Kecamatan: {addr.district}, Kabupaten: {addr.regency}, Provinsi: {addr.province}, ({addr.postal_code})
+                                                </p>
+                                                <p className="text-sm text-gray-600">
+                                                    Latitude: {addr.latitude}, Longitude: {addr.longitude}
+                                                </p>
+                                                <p className="text-sm">{addr.detail}</p>
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </RadioGroup>
+                            ) : (
+                                <p className="text-sm text-gray-500">Tidak ada alamat tersimpan.</p>
+                            )}
+                        </div>
+                    )}
+                    {/* jika yang dipilih other */}
+                    {pickupOption === "other" && (
+                        <div className="mt-4 border p-4 rounded-lg">
+                            {customer_addresses?.length > 0 ? (
+                                <RadioGroup
+                                    value={selectedAddress}
+                                    onValueChange={setSelectedAddress}
+                                    className="space-y-3"
+                                >
+                                    {customer_addresses.map((addr) => (
+                                        <div
+                                            key={addr.id}
+                                            className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-gray-50 transition"
+                                        >
+                                            <RadioGroupItem
+                                                value={addr.id.toString()}
+                                                id={`address-${addr.id}`}
+                                                className="mt-1"
+                                            />
+                                            <Label
+                                                htmlFor={`address-${addr.id}`}
+                                                className="cursor-pointer flex flex-col"
+                                            >
+                                                <p className="text-sm text-gray-800">
+                                                    Kota: {addr.city},  Kecamatan: {addr.district}, Kabupaten: {addr.regency}, Provinsi: {addr.province}, ({addr.postal_code})
+                                                </p>
+                                                <p className="text-sm text-gray-600">
+                                                    Latitude: {addr.latitude}, Longitude: {addr.longitude}
+                                                </p>
+                                                <p className="text-sm">{addr.detail}</p>
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </RadioGroup>
+                            ) : (
+                                <p className="text-sm text-gray-500">Tidak ada alamat tersimpan.</p>
+                            )}
+                        </div>
+                    )}
+                </div>
             </CardContent>
         </Card>
     );

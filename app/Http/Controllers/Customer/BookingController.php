@@ -63,7 +63,7 @@ class BookingController extends Controller
         $ownerName     = $owner?->name;
         $ownerPhone     = $owner?->phone_number;
         $isDriver      = (bool) ($owner?->is_driver);
-        $ownerAddress  = $owner?->addresses()->where('is_active', true)->first();
+        $ownerAddress  = $owner?->addresses()->where('is_active', true)->get();
 
         // Customer info
         $customer       = Auth::user()->hasRole('customer') ? Auth::user() : null;
@@ -104,7 +104,6 @@ class BookingController extends Controller
             'ownerAddress'       => $ownerAddress,
             'customerEmail'      => $customerEmail,
             'customerAddress'    => $customerAddress,
-            // 'customer_addresses' => Auth::user()->addresses()->get(),
             'csrf_token'         => csrf_token(),
         ]);
     }

@@ -34,8 +34,8 @@ export default async function HandlePayNow(
         // --- Tentukan pickup_location_id ---
         let pickup_location_id = null;
 
-        if (pickupOption === "self-drive" && ownerAddress) {
-            pickup_location_id = ownerAddress.id;
+        if (pickupOption === "owner" && ownerAddress?.length > 0) {
+            pickup_location_id = selectedAddress || ownerAddress[0].id;
         } else if (pickupOption === "other" && selectedAddress) {
             pickup_location_id = selectedAddress;
         }
