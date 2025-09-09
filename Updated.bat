@@ -1,0 +1,6 @@
+@echo off
+echo Menuju direktori proyek Laravel...
+cd /d "D:\00\Magang\LaravelBackEndReact"
+echo Menjalankan perintah 'php artisan schedule:work' untuk mengupdate status berdasarkan kondisi waktu...
+php artisan schedule:work
+pause

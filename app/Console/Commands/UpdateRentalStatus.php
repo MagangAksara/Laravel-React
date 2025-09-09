@@ -15,11 +15,17 @@ class UpdateRentalStatus extends Command
     {
         $today = Carbon::today();
 
-        $updated = Rental::where('status', 'confirmed_payment')
+        // 1. Update confirmed_payment → on_rent
+        $onRent = Rental::where('status', Rental::STATUS_CONFIRMED_PAYMENT)
             ->whereDate('start_date', '<=', $today)
-            ->update(['status' => 'on_rent']);
+            ->update(['status' => Rental::STATUS_ON_RENT]);
 
-        $this->info("Rental updated: {$updated}");
+        // 2. Update pending_payment → expired
+        $expired = Rental::where('status', Rental::STATUS_PENDING_PAYMENT)
+            ->whereDate('created_at', '<', $today)
+            ->update(['status' => Rental::STATUS_EXPIRED]);
+
+        $this->info("Rental updated: on_rent={$onRent}, expired={$expired}");
     }
 }
 

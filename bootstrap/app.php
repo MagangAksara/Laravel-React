@@ -47,8 +47,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // $schedule->command('rentals:update-status')->hourly();
         // $schedule->command('rentals:update-status')->everyThirtyMinutes();
         // $schedule->command('rentals:update-status')->everyTenMinutes();
-        // $schedule->command('rentals:update-status')->everyFiveMinutes();
-        $schedule->command('rentals:update-status')->everyMinute();
+        $schedule->command('rentals:update-status')->everyFiveMinutes();
+        // $schedule->command('rentals:update-status')->everyMinute();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { router } from "@inertiajs/react";
+import { toast } from "sonner";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+
+import { useOverdueTime } from "@/lib/useOverdueTime";
 
 import RentalDetailModal from "./Modals/RentalDetailModal";
 import FinishNowModal from "./Modals/FinishNowModal";
@@ -15,6 +18,8 @@ const OrderList = ({ orders }) => {
     const [openDetail, setOpenDetail] = useState(false);
     const [openFinishNow, setOpenFinishNow] = useState(false);
     const [openExtraPayment, setOpenExtraPayment] = useState(false);
+
+    const overdue = useOverdueTime(orders.end_date, orders.status);
 
     const handleOpenDetail = (order) => {
         setSelectedOrder(order);
@@ -116,6 +121,7 @@ const OrderList = ({ orders }) => {
                                     </Button>
                                 )}
                                 {order.status === "on_rent" && (
+                                    // button untuk mengkonfirmasi bahwa customer telah mengembalikan mobil yang desewanya
                                     <Button
                                         className="bg-blue-400 hover:bg-blue-700 text-white"
                                         onClick={() => handleOpenFinishNow(order)}
@@ -144,6 +150,12 @@ const OrderList = ({ orders }) => {
                                             Extra Payment
                                         </Button>
                                     </>
+                                )}
+                                {/* Warnings */}
+                                {overdue && (
+                                    <div className="mt-2 p-2 bg-yellow-100 text-yellow-700 rounded text-sm font-medium col-span-3 text-center">
+                                        ⏰ This rental is overdue: {overdue}
+                                    </div>
                                 )}
                             </div>
                         </CardContent>

@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
+import { router } from "@inertiajs/react";
+import { toast } from "sonner";
+
 import { Card, CardContent, CardHeader } from "@/Components/ui/card";
 import { Badge } from "@/Components/ui/badge";
 import { Button } from "@/Components/ui/button";
-import { toast } from "sonner";
+
+import { useOverdueTime } from "@/lib/useOverdueTime";
 
 import RentalDetailModal from "./Modals/RentalDetailModal";
 import UploadImageModal from "./Modals/UploadImageModal";
 import CancelledModal from "./Modals/CancelledModal";
 import CancelAndRefundModal from "./Modals/CancelAndRefundModal";
-import { router } from "@inertiajs/react";
 
 const RentalList = ({ rentals }) => {
     const [selectedOrder, setSelectedOrder] = useState(null);
@@ -16,6 +19,9 @@ const RentalList = ({ rentals }) => {
     const [openUpload, setOpenUpload] = useState(false);
     const [openCancelled, setOpenCancelled] = useState(false);
     const [openCancelAndRefund, setOpenCancelAndRefund] = useState(false);
+
+    // const overdue = useOverdueTime(selectedOrder?.end_date, selectedOrder?.status);
+    const overdue = useOverdueTime(order.end_date, order.status);
 
     const handleOpenDetail = (order) => {
         setSelectedOrder(order);
@@ -147,6 +153,13 @@ const RentalList = ({ rentals }) => {
                                     <Button variant="outline">Give Review</Button>
                                 )}
                             </div>
+
+                            {/* Warnings */}
+                            {overdue && (
+                                <div className="mt-2 p-2 bg-red-100 text-red-600 rounded text-sm font-medium w-full text-center">
+                                    ⚠ Rental time has passed end date: {overdue}
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 ))
@@ -156,10 +169,10 @@ const RentalList = ({ rentals }) => {
 
             {/* Modal dipanggil di bawah */}
             <RentalDetailModal open={openDetail} onClose={() => setOpenDetail(false)} order={selectedOrder} />
-            <UploadImageModal 
-                open={openUpload} 
-                onClose={() => setOpenUpload(false)} 
-                order={selectedOrder} 
+            <UploadImageModal
+                open={openUpload}
+                onClose={() => setOpenUpload(false)}
+                order={selectedOrder}
             />
             <CancelledModal
                 open={openCancelled}
@@ -178,10 +191,10 @@ const RentalList = ({ rentals }) => {
                     );
                 }}
             />
-            <CancelAndRefundModal 
-                open={openCancelAndRefund} 
-                onClose={() => setOpenCancelAndRefund(false)} 
-                order={selectedOrder} 
+            <CancelAndRefundModal
+                open={openCancelAndRefund}
+                onClose={() => setOpenCancelAndRefund(false)}
+                order={selectedOrder}
             />
         </div>
     );
