@@ -10,11 +10,8 @@ const RentalDetailModal = ({ open, onClose, order }) => {
             <DialogContent className="min-w-[32%] p-6 rounded-lg shadow-lg">
 
                 <DialogTitle className="flex justify-center  font-bold text-2xl">Order Details</DialogTitle>
-                <DialogDescription className="flex flex-row justify-between">
-                    <div className="font-medium">
-                        <span className=" text-gray-500 mr-2">Booking ID</span>
-                        <span>{order.booking_id}</span>
-                    </div>
+                <DialogDescription className="flex flex-row justify-between font-medium">
+                    <span className=" text-gray-500 mr-2">Booking ID {order.booking_id}</span>
                     <span className="text-gray-500">{order.date}</span>
                 </DialogDescription>
 

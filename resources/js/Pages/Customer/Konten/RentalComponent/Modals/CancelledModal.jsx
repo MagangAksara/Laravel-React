@@ -12,7 +12,7 @@ const CancelledModal = ({ open, onClose, order, onConfirm }) => {
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="max-w-lg p-6 rounded-lg shadow-lg">
 
-                <DialogDescription className="flex flex-row justify-between font-medium">
+                <DialogDescription className="flex flex-row justify-between font-medium p-6">
                     <span className=" text-gray-500 mr-2">Booking ID</span>
                     <span>{order.booking_id}</span>
                 </DialogDescription>
@@ -45,8 +45,8 @@ const CancelledModal = ({ open, onClose, order, onConfirm }) => {
                         </div>
                         <div className="flex justify-end w-full px-4">
                             <Button
-                                className="mt-2 w-[25%] border border-gray-600 text-gray-600"
-                                variant="outline"
+                                className="mt-2 w-[25%] border border-gray-600 text-white font-medium"
+                                variant="destructive"
                                 onClick={() => onConfirm(reason)}
                             >
                                 Yes
