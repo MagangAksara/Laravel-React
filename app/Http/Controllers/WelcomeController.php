@@ -6,13 +6,21 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Car;
 
 class WelcomeController extends Controller
 {
     public function index()
     {
-        $cars = Car::with(['brand', 'model', 'type', 'transmission', 'fuelType', 'color'])->get()->map(function ($car) {
+        $cars = Car::with([
+            'brand',
+            'model',
+            'type',
+            'transmission',
+            'fuelType',
+            'color',
+        ])->get()->map(function ($car) {
             return [
                 'id' => $car->id,
                 'brand' => $car->brand->name ?? '-',
@@ -28,10 +36,14 @@ class WelcomeController extends Controller
             ];
         });
 
+        $userName = Auth::check() ? Auth::user()->name : null;
+
         return Inertia::render('Welcome', [
             'cars' => $cars,
+            'userName' => $userName,
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
+            'canLogout' => Route::has('logout'),
         ]);
     }
 }

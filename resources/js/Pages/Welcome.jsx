@@ -6,7 +6,7 @@ import AboutUsDraft from "./WelcomeComponent/AboutUsDraft.jsx";
 import CarsDraft from "./WelcomeComponent/CarsDraft.jsx";
 import FooterDraft from "./WelcomeComponent/FooterDraft.jsx";
 
-const Welcome = ({ cars }) => {
+const Welcome = ({ cars, userName }) => {
   return (
     <>
       <Head title="Welcome" />
@@ -14,7 +14,7 @@ const Welcome = ({ cars }) => {
       <div className="font-sans text-gray-800">
   
         {/* Navbar */}
-        <NavbarDraft/>
+        <NavbarDraft name={userName} />
 
         {/* Hero */}
         <HeroClip/>

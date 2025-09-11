@@ -1,8 +1,9 @@
 // resources/js/Components/NavbarDraft.jsx
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "@inertiajs/react";
+import UserMenu from "./UserMenu";
 
-export default function NavbarDraft() {
+const NavbarDraft = ({ name }) => {
   const [scrolled, setScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState("home");
   const tickingRef = useRef(false);
@@ -39,6 +40,10 @@ export default function NavbarDraft() {
     const activeClass = "text-black bg-blue-200 font-semibold rounded-full px-3 py-1.5 transition-all duration-150";
     return activeLink === linkName ? activeClass : baseClass;
   }, [activeLink]);
+
+  // Assume you receive the authenticated user's name as a prop or from context.
+  // For this example, let's use a placeholder name.
+  const userName = name; // Replace with actual user name from props/context
 
   return (
     <nav
@@ -86,25 +91,34 @@ export default function NavbarDraft() {
         </a>
       </div>
 
-      <div className="flex gap-3">
-        <Link href="/login">
-          <button
-            className="px-3 py-1.5 bg-blue-600 border border-white rounded-full text-white text-sm hover:bg-white hover:text-black transition-colors"
-            style={{ fontFamily: "quicksand" }}
-          >
-            Login
-          </button>
-        </Link>
+      {userName ? (
+        // Sudah login
+        <UserMenu userName={userName} />
+      ) : (
+        // Belum login
+        <div className="flex gap-3">
+          <Link href="/login">
+            <button
+              className="px-3 py-1.5 bg-blue-600 border border-white rounded-full text-white text-sm hover:bg-white hover:text-black transition-colors"
+              style={{ fontFamily: "quicksand" }}
+            >
+              Login
+            </button>
+          </Link>
 
-        <Link href="/choose-role">
-          <button
-            className="px-3 py-1.5 bg-white border border-blue-600 rounded-full text-black text-sm hover:bg-blue-600 hover:text-white transition-colors"
-            style={{ fontFamily: "quicksand" }}
-          >
-            Register
-          </button>
-        </Link>
-      </div>
-    </nav>
+          <Link href="/choose-role">
+            <button
+              className="px-3 py-1.5 bg-white border border-blue-600 rounded-full text-black text-sm hover:bg-blue-600 hover:text-white transition-colors"
+              style={{ fontFamily: "quicksand" }}
+            >
+              Register
+            </button>
+          </Link>
+        </div>
+      )}
+
+    </nav >
   );
 }
+
+export default NavbarDraft;
