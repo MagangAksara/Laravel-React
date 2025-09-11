@@ -1,14 +1,16 @@
 import React from "react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { useOverdueTime } from "@/lib/useOverdueTime";
 
 const RentalDetailModal = ({ open, onClose, order }) => {
 
     if (!order) return null;
 
+    const { overdue } = useOverdueTime(order.end_date, order.status);
+
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="max-w-[32%] p-6 rounded-lg shadow-lg">
-
+            <DialogContent className="min-w-[32%] p-6 rounded-lg shadow-lg">
                 <DialogTitle className="flex justify-center  font-bold text-2xl">Order Details</DialogTitle>
                 <DialogDescription className="flex flex-row justify-between font-medium">
                     <span className=" text-gray-500 mr-2">Booking ID {order.booking_id}</span>
@@ -20,6 +22,12 @@ const RentalDetailModal = ({ open, onClose, order }) => {
                     {order.status === "cancelled" && (
                         <div className="bg-red-100 text-red-700 px-4 py-2 rounded mb-4 text-sm">
                             Your order has been cancelled
+                        </div>
+                    )}
+
+                    {overdue && (
+                        <div className="bg-yellow-100 text-yellow-700 px-4 py-2 rounded mb-4 text-sm font-medium">
+                            ⏰ This rental is overdue: {overdue}
                         </div>
                     )}
 

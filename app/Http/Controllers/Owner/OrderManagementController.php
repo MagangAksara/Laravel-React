@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
+use App\Models\Fine;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -14,11 +15,6 @@ use Inertia\Inertia;
 
 class OrderManagementController extends Controller
 {
-    // public function index()
-    // {
-    //     return Inertia::render('Owner/Konten/OrdersManagement');
-    // }
-
     private function mapStatusLabel($status)
     {
         return match ($status) {
@@ -52,6 +48,7 @@ class OrderManagementController extends Controller
 
         $query = Rental::with([
             'payment',
+            'fine',
             'car.brand',
             'car.model',
             'car.type',
@@ -170,8 +167,16 @@ class OrderManagementController extends Controller
                     'email' => $rental->user->email ?? '-',
                     'phone' => $rental->user->phone_number ?? '-',
                     'city' => $rental->user->firstAddress->city ?? '-',
+
+                    // data denda
+                    // 'fine_at_times' => $rental->fine->created_at ?? 0,
+                    'fine_at_times' => Carbon::parse($rental->fine->created_at ?? null)->format('d M Y, H:i') ?? '-',
+                    'fine_time' => $rental->fine->late_time ?? 0,
+                    'fine_amount' => $rental->fine->late_amount ?? 0,
                 ];
             });
+
+        // dd($orders);
 
         return Inertia::render('Owner/Konten/OrdersManagement', [
             'orders' => $orders,
@@ -182,16 +187,35 @@ class OrderManagementController extends Controller
     /* 
         fungsi untuk update status jika
         1. button finish di tekan maka status menjadi waiting_for_check dari yang sebelumnya on_rent
+        1_1. jika ada overdue (terlambat kembalinya mobil) maka akan dibuatkan record baru di tabel fines, dan id dari fines tersebut akan dimasukkan ke dalam kolom fine_id di tabel rentals
         2. button complete di tekan maka status menjadi completed dari yang sebelumnya waiting_for_check
     */
-    public function updateStatus(Request $requet, $id)
+    public function updateStatus(Request $request, $id)
     {
-        $rental = Rental::findOrFail($id);
+        $rental = Rental::with('fine')->findOrFail($id);
+
+        // terima overdue dari frontend
+        $overdueHours = (int) $request->input('overdue', 0);
+        $finePerHour = 50000;
+        $fineAmount = $overdueHours > 0 ? $overdueHours * $finePerHour : 0;
 
         switch ($rental->status) {
             case Rental::STATUS_ON_RENT:
-                // Jika tekan Finish → status jadi waiting_for_check
                 $rental->status = Rental::STATUS_WAITING_FOR_CHECK;
+
+                if ($overdueHours > 0) {
+                    // Buat record Fine baru
+                    $fine = Fine::create([
+                        'late_time'   => $overdueHours,
+                        'late_amount' => $fineAmount,
+                        'damage_type' => null,
+                        'damage_amount' => null,
+                        'description' => 'Late return fine',
+                    ]);
+
+                    // Update rental untuk link ke fine
+                    $rental->fine_id = $fine->id;
+                }
                 break;
 
             case Rental::STATUS_WAITING_FOR_CHECK:
@@ -208,47 +232,7 @@ class OrderManagementController extends Controller
         return redirect()->back()->with('success', 'Status updated successfully');
     }
 
-    /* 
-        Fungsi untuk mencari order berdasarkan
-        - booking id
-        - nama car (brand, model, type)
-        - start date dan end date
-        - minimal total price (dalam hal ini jika ada yang lebih atau kurang 50.000 berdasarkan yang dicari dibanding dengan total price yang tercatat dalam tb)
-    */
-    // public function searchOrders(Request $request)
-    // {
-    //     $query = Rental::with('car'); // supaya langsung ambil data mobil
-
-    //     if ($request->search) {
-    //         $search = $request->search;
-
-    //         $query->where(function ($q) use ($search) {
-    //             // booking id
-    //             $q->where('booking_id', 'like', "%{$search}%")
-
-    //                 // nama mobil
-    //                 ->orWhereHas('car', function ($carQuery) use ($search) {
-    //                     $carQuery->where('brand', 'like', "%{$search}%")
-    //                         ->orWhere('model', 'like', "%{$search}%")
-    //                         ->orWhere('type', 'like', "%{$search}%");
-    //                 });
-
-    //             // total price (cek kalau input numeric)
-    //             if (is_numeric($search)) {
-    //                 $min = $search - 50000;
-    //                 $max = $search + 50000;
-    //                 $q->orWhereBetween('total_price', [$min, $max]);
-    //             }
-    //         });
-    //     }
-
-    //     // filter tanggal tetap pakai input date
-    //     if ($request->start_date && $request->end_date) {
-    //         $query->whereBetween('start_date', [$request->start_date, $request->end_date]);
-    //     }
-
-    //     $orders = $query->latest()->get();
-
-    //     return response()->json($orders);
-    // }
+    public function extraPayment() {
+        // Logic untuk extra payment
+    }
 }

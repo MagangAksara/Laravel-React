@@ -13,8 +13,12 @@ return new class extends Migration
     {
         Schema::create('fines', function (Blueprint $table) {
             $table->id();
-            $table->string('damage_type');
-            $table->integer('amount');
+            // lates fines
+            $table->integer('late_time')->default(0);
+            $table->integer('late_amount')->default(5000); // dihitung per jam (jika tidak melawati 1 jam akan tetap dihitung 1 jam)
+            // damage fines
+            $table->string('damage_type')->nullable(); // karena pada awal pembuatan bagian ini belum tentu ada
+            $table->integer('damage_amount')->nullable(); // karena pada awal pembuatan bagian ini belum tentu ada
             $table->text('description')->nullable();
             $table->timestamps();
         });

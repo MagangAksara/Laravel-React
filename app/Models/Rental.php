@@ -12,8 +12,9 @@ class Rental extends Model
     protected $fillable = [
         'user_id',
         'car_id',
-        'payment_id',
         'pickup_location_id',
+        'payment_id',
+        'fine_id',
         'start_date',
         'end_date',
         'total_price',
@@ -64,5 +65,10 @@ class Rental extends Model
     public function pickupLocation()
     {
         return $this->belongsTo(UserAddress::class);
+    }
+
+    public function fine()
+    {
+        return $this->belongsTo(Fine::class);
     }
 }
