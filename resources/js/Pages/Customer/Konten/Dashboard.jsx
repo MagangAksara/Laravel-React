@@ -1,20 +1,24 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Head, Link as InertiaLink, router, usePage } from '@inertiajs/react';
+
 import Layout from "../Layout";
 import FilterSidebar from "./DashboardComponent/FilterSidebar";
 import CarCard from "./DashboardComponent/CarCard";
-import { Head, Link as InertiaLink, usePage } from '@inertiajs/react';
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { Menu } from "lucide-react";
 import useCarFilters from "../Hooks/useCarFilters";
+import useLoaderCardCars from "../Hooks/useLoaderCardCars";
+
+import { Menu } from "lucide-react";
 
 const Dashboard = () => {
   const { cars: initialCars } = usePage().props;
   const carsData = initialCars.data ?? [];
 
+  const { data: cars, loading, currentPage, lastPage, loaderRef } = useLoaderCardCars(route('cars.json'), 1000);
+
+  // sidebar + filter
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [filters, setFilters] = useState({});
-
-  const { filteredCars, filterOptions } = useCarFilters(carsData, filters);
+  const { filteredCars, filterOptions } = useCarFilters(cars, filters);
 
   return (
     <>
@@ -69,38 +73,21 @@ const Dashboard = () => {
               )}
             </div>
 
-            {/* Pagination */}
-            {initialCars.last_page > 1 && (
-              <div className="mt-6 flex justify-center">
-                <Pagination>
-                  <PaginationContent>
-                    {initialCars.prev_page_url && (
-                      <PaginationItem>
-                        <PaginationPrevious href={initialCars.prev_page_url} />
-                      </PaginationItem>
-                    )}
-
-                    {Array.from({ length: initialCars.last_page }, (_, i) => (
-                      <PaginationItem key={i}>
-                        <PaginationLink
-                          href={`?page=${i + 1}`}
-                          isActive={initialCars.current_page === i + 1}
-                        >
-                          {i + 1}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-
-                    {initialCars.next_page_url && (
-                      <PaginationItem>
-                        <PaginationNext href={initialCars.next_page_url} />
-                      </PaginationItem>
-                    )}
-                  </PaginationContent>
-                </Pagination>
+            {/* Loader / Sentinel */}
+            {currentPage < lastPage ? (
+              <div
+                ref={loaderRef}
+                className="flex justify-center items-center py-6"
+              >
+                {loading ? (
+                  <span className="text-gray-500">Loading...</span>
+                ) : (
+                  <span className="text-gray-400">Scroll to load more</span>
+                )}
               </div>
+            ) : (
+              <div className="h-16" />
             )}
-
           </main >
         </div >
       </Layout >

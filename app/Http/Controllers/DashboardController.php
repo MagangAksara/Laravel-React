@@ -12,15 +12,12 @@ use DB;
 
 class DashboardController extends Controller
 {
-    public function indexCustomer()
+    private function mapCarsCustomer($query, $perPage = 12)
     {
-        $cars = Car::with(['brand', 'model', 'type', 'transmission', 'fuelType', 'color', 'rentals', 'user.firstAddress'])
-            ->paginate(18);
+        $cars = $query->paginate($perPage);
 
-        // Transform hanya pada data, pagination meta tetap ada
         $cars->getCollection()->transform(function ($car) {
             return [
-                // komponen utama
                 'id' => $car->id,
                 'brand' => $car->brand->name ?? '-',
                 'model' => $car->model->name ?? '-',
@@ -31,26 +28,37 @@ class DashboardController extends Controller
                 'color' => $car->color->name ?? '-',
                 'capacity' => $car->capacity,
                 'price' => $car->price_per_day,
-                // komponen filter
                 'is_available' => $car->is_available,
-                // komponen filter terhubung dengan rental
-                'rentals' => $car->rentals->map(function ($rental) {
-                    return [
-                        'start_date' => $rental->start_date?->toDateTimeString(),
-                        'end_date'   => $rental->end_date?->toDateTimeString(),
-                        'status'     => $rental->status,
-                    ];
-                }),
-                // komponen filter terhubung dengan user
+                'rentals' => $car->rentals->map(fn($rental) => [
+                    'start_date' => $rental->start_date?->toDateTimeString(),
+                    'end_date'   => $rental->end_date?->toDateTimeString(),
+                    'status'     => $rental->status,
+                ]),
                 'owner_city' => $car->user?->firstAddress?->city ?? '-',
             ];
         });
 
-        // dd($cars);
+        return $cars;
+    }
+
+    public function indexCustomer()
+    {
+        $query = Car::with(['brand','model','type','transmission','fuelType','color','rentals','user.firstAddress']);
+        $cars = $this->mapCarsCustomer($query);
 
         return Inertia::render('Customer/Konten/Dashboard', [
             'cars' => $cars,
         ]);
+    }
+
+    public function carsJson(Request $request)
+    {
+        $page = $request->input('page', 1);
+        $query = Car::with(['brand','model','type','transmission','fuelType','color','rentals','user.firstAddress']);
+
+        $cars = $this->mapCarsCustomer($query, 12, $page);
+
+        return response()->json($cars);
     }
 
     public function indexOwner(Request $request)

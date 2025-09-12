@@ -44,6 +44,8 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
+    Route::get('/cars-json', [DashboardController::class, 'carsJson'])->name('cars.json');
+    
     Route::get('/search', [SearchController::class, 'search'])->name('search');
     
     Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
