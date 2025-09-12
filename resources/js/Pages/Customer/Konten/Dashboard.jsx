@@ -11,7 +11,6 @@ import { Menu } from "lucide-react";
 
 const Dashboard = () => {
   const { cars: initialCars } = usePage().props;
-  const carsData = initialCars.data ?? [];
 
   const { data: cars, loading, currentPage, lastPage, loaderRef } = useLoaderCardCars(route('cars.json'), 1000);
 
