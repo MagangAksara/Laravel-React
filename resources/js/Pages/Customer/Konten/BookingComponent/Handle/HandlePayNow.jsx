@@ -1,3 +1,5 @@
+import { router } from '@inertiajs/react';
+
 // resources/js/Pages/Customer/BookingComponent/HandlePayNow.jsx
 export default async function HandlePayNow(
     {
@@ -9,7 +11,8 @@ export default async function HandlePayNow(
         endDate,
         pickupOption,
         selectedAddress,
-        ownerAddress
+        ownerAddress,
+        redirect = true,
     }
 ) {
 
@@ -85,13 +88,16 @@ export default async function HandlePayNow(
         }
 
         // 5. Redirect ke Xendit checkout link
-        if (paymentResult.checkout_link) {
+        if (redirect && paymentResult.checkout_link) {
             window.location.href = paymentResult.checkout_link;
+        } else if (!redirect) {
+            router.visit(route('rental'));
         } else {
             alert("Gagal membuat pembayaran: checkout_link tidak ditemukan.");
         }
+        
     } catch (error) {
-        console.error("Payment/Rental error:", error);
+        console.error("Payment/Rental error:", error.message, error);
         alert("Terjadi kesalahan saat proses pembayaran.");
     } finally {
         setLoading(false);

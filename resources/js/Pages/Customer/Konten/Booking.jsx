@@ -11,7 +11,7 @@ import DateTime from "./BookingComponent/DateTime";
 import { Card } from "@/Components/ui/card";
 
 import HandlePayNow from "./BookingComponent/Handle/HandlePayNow";
-
+import AcceptModal from "./BookingComponent/Modals/AcceptModal";
 
 const Booking = () => {
   // Ambil data dari Laravel controller lewat Inertia props
@@ -25,7 +25,66 @@ const Booking = () => {
   const [showDialog, setShowDialog] = useState(false);
   const [dialogMessage, setDialogMessage] = useState("");
 
+  // handler Modal
+  // const [selectedOrder, setSelectedOrder] = useState(null);
+  const [openAccept, setOpenAccept] = useState(false);
 
+  const handleConfirmAccept = () => {
+    if (!startDate || !endDate) {
+      setDialogMessage("Silakan isi tanggal mulai dan tanggal selesai terlebih dahulu.");
+      setShowDialog(true);
+      return;
+    }
+
+    if (blockedRange) {
+      const rangeStart = new Date(blockedRange.start);
+      const rangeEnd = new Date(blockedRange.end);
+
+      if (
+        (startDate >= rangeStart && startDate <= rangeEnd) ||
+        (endDate >= rangeStart && endDate <= rangeEnd)
+      ) {
+        setDialogMessage("Mobil sedang sibuk pada rentang tanggal ini. Ubah waktu atau pilih mobil lain.");
+        setShowDialog(true);
+        return;
+      }
+    }
+
+    // buka modal Accept dulu
+    setOpenAccept(true);
+  };
+
+  const handleAcceptConfirm = () => {
+    setOpenAccept(false);
+    HandlePayNow({
+      car,
+      customerEmail,
+      setLoading,
+      totalPayment,
+      startDate,
+      endDate,
+      pickupOption,
+      selectedAddress,
+      ownerAddress,
+      redirect: true, // default → redirect ke Xendit
+    });
+  };
+
+  const handleAcceptPending = () => {
+    setOpenAccept(false);
+    HandlePayNow({
+      car,
+      customerEmail,
+      setLoading,
+      totalPayment,
+      startDate,
+      endDate,
+      pickupOption,
+      selectedAddress,
+      ownerAddress,
+      redirect: false, // ❌ tidak redirect ke Xendit
+    });
+  };
 
   // State untuk driver dan pickup (dipindahkan dari ConfirmFilter)
   const [pickupOption, setPickupOption] = useState("owner");
@@ -144,7 +203,7 @@ const Booking = () => {
                 {/* Payment */}
                 <ReadyToPay
                   loading={loading}
-                  onPayNow={handlePayNowClick}
+                  onPayNow={handleConfirmAccept}
                 />
               </div>
             </Card>
@@ -160,6 +219,14 @@ const Booking = () => {
           <p>{dialogMessage}</p>
         </DialogContent>
       </Dialog>
+
+      {/* Modals */}
+      <AcceptModal
+        open={openAccept}
+        onClose={() => setOpenAccept(false)}
+        onConfirm={handleAcceptConfirm}
+        onPending={handleAcceptPending}
+      />
     </>
   );
 }
