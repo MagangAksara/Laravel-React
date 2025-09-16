@@ -20,6 +20,31 @@ const OrderList = ({ orders }) => {
     selectedOrder?.status
   );
 
+  const handleExtraPaymentSubmit = (e, { images, selected, value }) => {
+    e.preventDefault();
+    if (!selectedOrder) return;
+
+    const formData = new FormData();
+    formData.append("rental_id", selectedOrder.id);
+    formData.append("damage_type", selected[0] || "Extra Charges");
+    formData.append("extra_amount", value.replace(/\./g, ""));
+    formData.append("description", e.target.description.value);
+
+    images.forEach((img, i) => formData.append(`images[${i}]`, img.file));
+
+    router.post(route("rentals.updateExtraPayment", selectedOrder.id), formData, {
+      forceFormData: true,
+      onSuccess: () => {
+        toast.success("Extra payment added successfully");
+        setOpenExtraPayment(false);
+      },
+      onError: (errors) => {
+        toast.error("Failed to add extra payment");
+        console.log(errors);
+      },
+    });
+  };
+
   return (
     <div className="space-y-2">
       {orders.length > 0 ? (
@@ -74,6 +99,7 @@ const OrderList = ({ orders }) => {
         open={openExtraPayment}
         onClose={() => setOpenExtraPayment(false)}
         order={selectedOrder}
+        onSubmit={handleExtraPaymentSubmit}
       />
     </div>
   );

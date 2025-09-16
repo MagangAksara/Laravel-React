@@ -1,8 +1,673 @@
-let nama: string = "aksara";
-nama = 123; // ❌ Error, karena harus string
+oke sekarang buatkan controller untk extra payment
 
-interface User {
-  id: number;
-  name: string;
+import React, { useState } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/Components/ui/dialog";
+import { Popover, PopoverTrigger, PopoverContent } from "@/Components/ui/popover";
+import { Textarea } from "@/Components/ui/textarea";
+import { Button } from "@/Components/ui/button";
+import { Input } from "@/Components/ui/input";
+
+import { X, ArrowUpFromLine, Camera, ChevronDown, CircleAlert } from "lucide-react";
+
+const ExtraPaymentModal = ({ open, onClose, order }) => {
+  const [images, setImages] = useState([]);
+  const [selected, setSelected] = useState([]);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [value, setValue] = useState("");
+
+  const options = ["Hard Damage", "Small Damage"];
+
+  const formatNumber = (num) => (num ? new Intl.NumberFormat("id-ID").format(num) : "");
+
+  const handleChange = (e) => {
+    const rawValue = e.target.value.replace(/\D/g, "");
+    setValue(formatNumber(rawValue));
+  };
+
+  if (!order) return null;
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    const newImages = files.map((file) => ({ file, url: URL.createObjectURL(file) }));
+    setImages((prev) => [...prev, ...newImages]);
+  };
+
+  const removeImage = (index) => setImages((prev) => prev.filter((_, i) => i !== index));
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent
+        className="max-w-lg p-6 rounded-lg shadow-lg overflow-x-auto max-h-[95vh]"
+        style={{ scrollbarWidth: 'none' }}
+      >
+        <DialogTitle className="flex justify-center font-bold text-2xl">Extra Payment</DialogTitle>
+        <DialogDescription className="flex flex-row justify-between font-medium">
+          <span className="text-gray-500 mr-2">Booking ID </span>
+          <span className="text-gray-500">{order.date}</span>
+        </DialogDescription>
+
+        <div className="text-sm space-y-1">
+          {/* Alert Section */}
+          <div className="flex flex-row bg-sky-100 text-gray-600 px-4 py-2 rounded-xl mb-4 text-sm gap-3">
+            <CircleAlert className="w-20" />
+            <span>Please upload several photos of the car, such as front, back, side views, wheels, trunk, interior, and more. Once uploaded, the photos cannot be edited or deleted, so make sure everything is correct before submitting.</span>
+          </div>
+
+          {/* Detail Section */}
+          <div className="flex flex-col gap-4 pb-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <span>Long Delay</span>
+                <Input value={`${order.fine_time} hours`} readOnly />
+              </div>
+              <div>
+                <span>Punishment (Editable)</span>
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  defaultValue={formatNumber(order.fine_amount)}
+                />
+              </div>
+            </div>
+
+            {/* Damage Type Popover */}
+            <div className="flex flex-col gap-2">
+              <span>Damage Type</span>
+              <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-between"
+                  >
+                    {selected.length > 0 ? selected.join(", ") : "Select Damage Level"}
+                    <ChevronDown />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  side="bottom"
+                  sideOffset={8}
+                  forceMount
+                  className="pointer-events-auto select-auto z-50 w-auto p-2"
+                >
+                  <div className="flex flex-col">
+                    {options.map((option) => (
+                      <div
+                        key={option}
+                        className={`cursor-pointer px-3 py-2 rounded-md hover:bg-blue-100 ${
+                          selected.includes(option) ? "bg-blue-200 font-medium" : ""
+                        }`}
+                        onClick={() => {
+                          setSelected([option]);
+                          setPopoverOpen(false);
+                        }}
+                      >
+                        {option}
+                      </div>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Damage Fee */}
+            <div>
+              <span className="font-medium">Damage Fee</span>
+              <Input
+                type="text"
+                inputMode="numeric"
+                placeholder="2.000.000"
+                value={value}
+                onChange={handleChange}
+                className="w-full border rounded p-2"
+              />
+            </div>
+
+            {/* Description */}
+            <div>
+              <span className="font-medium">Description</span>
+              <Textarea placeholder="Description" className="w-full border rounded p-2" />
+            </div>
+          </div>
+
+          {/* Upload Section */}
+          <label className="w-full h-40 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+            <span className="text-gray-500 flex items-center">
+              Upload Picture
+              <ArrowUpFromLine className="ml-1 w-4" />
+            </span>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={handleFileChange}
+            />
+          </label>
+
+          {/* Thumbnails */}
+          <div className="flex flex-wrap gap-2 mt-2">
+            {images.map((img, index) => (
+              <div key={index} className="relative w-16 h-16">
+                <img src={img.url} alt={`upload-${index}`} className="w-16 h-16 object-cover rounded" />
+                <button
+                  onClick={() => removeImage(index)}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 text-xs"
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            ))}
+            {Array.from({ length: Math.max(0, (order.max_images || 6) - images.length) }).map((_, i) => (
+              <div
+                key={i}
+                className="w-16 h-16 flex items-center justify-center border-2 border-dashed border-gray-300 rounded text-gray-400"
+              >
+                <Camera />
+              </div>
+            ))}
+          </div>
+
+          <div className="flex justify-end pt-3">
+            <Button className="w-auto px-8 bg-blue-400 hover:bg-blue-600 text-white">
+              Upload
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default ExtraPaymentModal;
+
+Models
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * @mixin IdeHelperRental
+ */
+class Rental extends Model
+{
+    protected $fillable = [
+        'user_id',
+        'car_id',
+        'pickup_location_id',
+        'payment_id',
+        'fine_id',
+        'start_date',
+        'end_date',
+        'total_price',
+        'status',
+        'cancelled_reason',
+    ];
+
+    // daftar status
+    const STATUS_PENDING_PAYMENT            = 'pending_payment'; // status awal, kondisi status payment pending
+    const STATUS_CONFIRMED_PAYMENT          = 'confirmed_payment'; // kondisi status payment paid
+    const STATUS_PAYMENT_RECEIVED           = 'payment_received'; // kondisi status payment settled, status untuk owner memberitahu bahwa pembayaran telah diterima
+    const STATUS_EXPIRED                    = 'expired'; // kondisi status payment expired
+    const STATUS_CANCELLED                  = 'cancelled'; // kondisi status payment unpaid
+    const STATUS_REFUNDED                   = 'refunded'; // kondisi status payment refunded 
+    const STATUS_ON_RENT                    = 'on_rent'; // status yang diatur manual, bukan berasal dari status xendit
+    const STATUS_WAITING_FOR_CHECK          = 'waiting_for_check'; // status yang diatur manual, bukan berasal dari status xendit
+    const STATUS_WAITING_FOR_FINES_PAYMENT  = 'waiting_for_fines_payment'; // status yang diatur manual, bukan berasal dari status xendit
+    const STATUS_COMPLETED                  = 'completed'; // status yang diatur manual, bukan berasal dari status xendit
+    const STATUS_FAILED                     = 'failed'; // status yang diatur manual, bukan berasal dari status xendit
+    // const STATUS_RETURNED                  = 'returned'; // status untuk owner -> diatur manual, tampil saat customer melakukan cencelled
+
+    protected $casts = [
+        'start_date'  => 'datetime:Y-m-d H:i:s',
+        'end_date'    => 'datetime:Y-m-d H:i:s',
+        'total_price' => 'integer',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function car()
+    {
+        return $this->belongsTo(Car::class);
+    }
+
+    public function payment()
+    {
+        return $this->belongsTo(Payment::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function pickupLocation()
+    {
+        return $this->belongsTo(UserAddress::class);
+    }
+
+    public function fine()
+    {
+        return $this->belongsTo(Fine::class);
+    }
 }
-const user: User = { id: 1, name: "aksara" };
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Fine extends Model
+{
+    protected $fillable = [
+        'payment_id',
+        'late_time',
+        'late_amount',
+        'damage_type',
+        'damage_amount',
+        'description',
+    ];
+
+    public function rental()
+    {
+        return $this->hasOne(Rental::class);
+    }
+}
+
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class FineCarImage extends Model
+{
+    protected $fillable = [
+        'fine_id',
+        'image_path',
+    ];
+
+    public function fines()
+    {
+        return $this->belongsTo(Fine::class);
+    }
+}
+
+migrations
+Schema::create('fines', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('payment_id')->constrained('payments')->onDelete('cascade');
+            // lates fines
+            $table->integer('late_time')->default(0);
+            $table->integer('late_amount')->default(5000); // dihitung per jam (jika tidak melawati 1 jam akan tetap dihitung 1 jam)
+            // damage fines
+            $table->string('damage_type')->nullable(); // karena pada awal pembuatan bagian ini belum tentu ada
+            $table->integer('damage_amount')->nullable(); // karena pada awal pembuatan bagian ini belum tentu ada
+            $table->text('description')->nullable();
+            $table->timestamps();
+        });
+
+lalu berikut kode dari handlerpaynow yang dapat dicontoh untuk handlepayfinenow
+import { router } from '@inertiajs/react';
+
+// resources/js/Pages/Customer/BookingComponent/HandlePayNow.jsx
+export default async function HandlePayNow(
+    {
+        car,
+        customerEmail,
+        setLoading,
+        totalPayment,
+        startDate,
+        endDate,
+        pickupOption,
+        selectedAddress,
+        ownerAddress,
+        redirect = true,
+    }
+) {
+
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(";").shift();
+    }
+
+    try {
+        setLoading(true);
+
+        // 1. Ambil CSRF cookie dari Laravel Sanctum
+        await fetch("http://127.0.0.1:8000/sanctum/csrf-cookie", {
+            method: "GET",
+            credentials: "include",
+        });
+
+        // 2. Ambil nilai XSRF-TOKEN dari cookie browser
+        const xsrfToken = getCookie("XSRF-TOKEN");
+
+        // --- Tentukan pickup_location_id ---
+        let pickup_location_id = null;
+
+        if (pickupOption === "owner" && ownerAddress?.length > 0) {
+            pickup_location_id = selectedAddress || ownerAddress[0].id;
+        } else if (pickupOption === "other" && selectedAddress) {
+            pickup_location_id = selectedAddress;
+        }
+
+        // 3. Kirim request ke API untuk buat pembayaran
+        const paymentResponse = await fetch("http://127.0.0.1:8000/api/payment/create", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                amount: totalPayment, // ⬅️ pakai dari props
+                description: `Rental ${car.brand} ${car.model}`,
+                payer_email: customerEmail,
+            }),
+        });
+
+        if (!paymentResponse.ok) {
+            throw new Error(`HTTP error! Status: ${paymentResponse.status}`);
+        }
+
+        const paymentResult = await paymentResponse.json();
+
+        // 4. Simpan rental ke database
+        const rentalResponse = await fetch("http://127.0.0.1:8000/api/rental/store", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                car_id: car.id,
+                start_date: startDate,
+                end_date: endDate,
+                total_price: totalPayment,
+                pickup_location_id,
+            }),
+        });
+
+        if (!rentalResponse.ok) {
+            throw new Error(`Gagal menyimpan rental! Status: ${rentalResponse.status}`);
+        }
+
+        // 5. Redirect ke Xendit checkout link
+        if (redirect && paymentResult.checkout_link) {
+            window.location.href = paymentResult.checkout_link;
+        } else if (!redirect) {
+            router.visit(route('rental'));
+        } else {
+            alert("Gagal membuat pembayaran: checkout_link tidak ditemukan.");
+        }
+        
+    } catch (error) {
+        console.error("Payment/Rental error:", error.message, error);
+        alert("Terjadi kesalahan saat proses pembayaran.");
+    } finally {
+        setLoading(false);
+    }
+}
+
+controller untuk payment sudah dibuat dan sudah bisa jadi cukup gunakan ini
+
+<?php
+
+namespace App\Http\Controllers\API;
+
+use App\Http\Controllers\Controller;
+
+use Xendit\Xendit;
+use Xendit\Configuration;
+use Xendit\XenditSdkException;
+
+use Xendit\invoice\InvoiceApi;
+use Xendit\Invoice\CreateInvoiceRequest;
+use Xendit\PaymentRequest\PaymentRequest;
+use Xendit\Refund\RefundApi;
+use Xendit\Refund\CreateRefund;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+
+use App\Models\Payment;
+use App\Models\Rental;
+use Xendit\PaymentRequest\PaymentRequestApi;
+
+class PaymentController extends Controller
+{
+    var $apiInstance = null;
+    var $refundInstance = null;
+
+    public function __construct()
+    {
+        Configuration::setXenditKey(config('services.xendit.secret_key'));
+        $this->apiInstance = new InvoiceApi();
+        $this->refundInstance = new RefundApi();
+        // $this->apiInstance = new PaymentRequestApi();
+    }
+
+    // fungsi untuk membuat pembayaran baru
+    public function store(Request $request)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:1000',
+            'description' => 'required|string|max:255',
+            'payer_email' => 'required|email',
+        ]);
+
+        $external_id = (string) Str::uuid();
+
+        $create_invoice_request = new CreateInvoiceRequest([
+            'external_id' => $external_id,
+            'amount' => (int) $request->amount,
+            'description' => $request->description,
+            'payer_email' => $request->payer_email,
+            'invoice_duration' => 86400, // 24 jam dalam detik
+            'success_redirect_url' => url('/rental/success'), // halaman sukses
+            'failure_redirect_url' => url('/rental/failed'),  // halaman gagal
+            // 'payment_methods' => [
+            //     'credit_card',
+            //     'bank_transfer',
+            // ],
+        ]);
+
+        try {
+            $result = $this->apiInstance->createInvoice($create_invoice_request);
+
+            // dd($result);
+
+            $payment = new Payment();
+            $payment->status = Payment::STATUS_PENDING;;
+            // $payment->rental_id = null;
+            $payment->external_id = $external_id;
+            $payment->xendit_payment_id = $result->getId(); // seharusnya berupa id dari invoice id
+            $payment->invoice_id = $result->getId();
+            $payment->payment_request_id = 'null';
+            $payment->payer_email = $request->payer_email;
+            $payment->amount = (int) $request->amount;
+            // $payment->payment_method = 'xendit';
+            $payment->checkout_link = $result->getInvoiceUrl();
+            $payment->paid_at = null;
+            $payment->description = $request->description;
+            $payment->save();
+
+            Log::info("Xendit Invoice Created", [
+                'id' => $result->getId(),
+                'url' => $result->getInvoiceUrl(),
+                'status' => $result->getStatus(),
+            ]);
+
+            return response()->json([
+                'message' => 'Payment created successfully',
+                'data' => $payment,
+                'checkout_link' => $result->getInvoiceUrl(),
+            ], 201);
+        } catch (XenditSdkException $e) {
+            Log::error($e->getMessage());
+            // Log::error($e->getResponseBody()); // Removed due to undefined method
+            return response()->json([
+                'error' => 'Failed to create invoice',
+                'details' => $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function webhook(Request $request)
+    {
+        $data = $request->all();
+        Log::info('Xendit Webhook received', $data);
+
+        $payment = Payment::where('external_id', $data['external_id'] ?? null)->first();
+
+        if (!$payment) {
+            return response()->json(['message' => 'Payment not found'], 404);
+        }
+
+        // Ambil status asli dari Xendit
+        $xenditStatus = strtolower($data['status'] ?? '');
+
+        Log::info("Webhook status: " . $xenditStatus, $data);
+
+        // Simpan payment_request_id & payment_method_id kalau ada
+        // if (isset($data['payment_request_id'])) {
+        //     $payment->payment_request_id = $data['payment_request_id'];
+        // }
+        if (isset($data['id'])) {
+            $payment->invoice_id = $data['id'];
+        }
+        if (isset($data['external_id'])) {
+            $payment->payment_request_id = $data['external_id'];
+        }
+        if (isset($data['payment_method'])) {
+            $payment->payment_method = $data['payment_method'];
+        }
+
+        // Mapping status untuk rental
+        $statusMap = [
+            Payment::STATUS_PENDING => Rental::STATUS_PENDING_PAYMENT,
+            Payment::STATUS_UNPAID  => Rental::STATUS_CANCELLED,
+            Payment::STATUS_PAID    => Rental::STATUS_CONFIRMED_PAYMENT,
+            Payment::STATUS_SETTLED => Rental::STATUS_PAYMENT_RECEIVED,
+            Payment::STATUS_EXPIRED => Rental::STATUS_EXPIRED,
+            Payment::STATUS_FAILED  => Rental::STATUS_FAILED,
+        ];
+
+        // Selalu simpan status asli dari Xendit ke payment
+        $payment->status = $xenditStatus;
+
+        if (in_array($xenditStatus, [Payment::STATUS_PAID, Payment::STATUS_SETTLED])) {
+            $payment->paid_at = $data['paid_at'] ?? now();
+        }
+
+        $payment->save();
+
+        // Update Rental status (jika mapping tersedia)
+        if (isset($statusMap[$xenditStatus])) {
+            $rental = $payment->rental;
+            if ($rental) {
+                $rental->status = $statusMap[$xenditStatus];
+                $rental->save();
+
+                Log::info('Rental status updated', [
+                    'rental_id' => $rental->id,
+                    'new_status' => $rental->status,
+                    'xenditStatus' => $xenditStatus
+                ]);
+            }
+        }
+
+        return response()->json(['message' => 'Webhook processed']);
+    }
+
+    public function cancel(Request $request, $paymentId)
+    {
+        $payment = Payment::where('id', $paymentId)->with('rental')->first();
+
+        if (!$payment) {
+            return response()->json(['error' => 'Payment not found'], 404);
+        }
+
+        // cek apakah sudah paid/settled
+        if (!in_array($payment->status, [Payment::STATUS_PAID, Payment::STATUS_SETTLED])) {
+            // Belum bayar → cukup cancel rental aja
+            if ($payment->rental) {
+                $payment->rental->status = Rental::STATUS_CANCELLED;
+                $payment->rental->save();
+            }
+            $payment->status = Payment::STATUS_CANCELLED;
+            $payment->save();
+
+            return response()->json(['message' => 'Rental cancelled (unpaid)'], 200);
+        }
+    }
+
+}
+
+ini controller api untuk rental pada saat pembuatan rental
+
+<?php
+
+namespace App\Http\Controllers\API;
+
+use App\Http\Controllers\Controller;
+use App\Models\Payment;
+use Illuminate\Http\Request;
+use App\Models\Rental;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+
+class RentalController extends Controller
+{
+    public function store(Request $request)
+    {
+        $request->validate([
+            'car_id'       => 'required|exists:cars,id',
+            'start_date'   => 'required|date',
+            'end_date'     => 'required|date|after:start_date',
+            'total_price'  => 'required|numeric|min:1000',
+        ]);
+
+        $userId = Auth::id();
+
+        $payment = Payment::latest()->first();
+
+        $startDate = Carbon::parse($request->start_date)->format('Y-m-d H:i:s');
+        $endDate   = Carbon::parse($request->end_date)->format('Y-m-d H:i:s');
+
+        if (!$payment) {
+            return response()->json([
+                'message' => 'Payment not found'
+            ], 400);
+        }
+
+        $rental = Rental::create([
+            'user_id'     => $userId,
+            'car_id'      => $request->car_id,
+            'payment_id'  => $payment->id,
+            'pickup_location_id' => $request->pickup_location_id,
+            'start_date'  => $startDate,
+            'end_date'    => $endDate,
+            'total_price' => $request->total_price,
+        ]);
+
+        return response()->json([
+            'message' => 'Rental berhasil dibuat',
+            'data'    => $rental
+        ], 201);
+    }
+}
+

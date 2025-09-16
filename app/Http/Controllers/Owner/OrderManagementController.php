@@ -219,7 +219,7 @@ class OrderManagementController extends Controller
                 break;
 
             case Rental::STATUS_WAITING_FOR_CHECK:
-                // Jika tekan Complete → status jadi completed
+                // Jika tekan Complete → status jadi completed, jika tidak ada id fine yang terpaut pada id rental tsb
                 $rental->status = Rental::STATUS_COMPLETED;
                 break;
 
@@ -232,7 +232,38 @@ class OrderManagementController extends Controller
         return redirect()->back()->with('success', 'Status updated successfully');
     }
 
-    public function extraPayment() {
-        // Logic untuk extra payment
+    public function updateExtraPayment(Request $request, $id)
+    {
+
+        $request->validate([
+            'rental_id'    => 'required|exists:rentals,id',
+            'damage_type'  => 'required|string',
+            'extra_amount' => 'required|numeric|min:0',
+            'description'  => 'nullable|string',
+        ]);
+
+        $rental = Rental::with('fine')->findOrFail($id);
+
+        if (!$rental->fine) {
+            return response()->json([
+                'message' => 'No fine record associated with this rental'
+            ], 400);
+        }
+
+        // Update denda
+        $rental->fine->damage_type   = $request->damage_type;
+        $rental->fine->damage_amount = $request->extra_amount;
+        $rental->fine->description   = $request->description ?? 'Additional charges added by owner';
+        $rental->fine->status        = Fine::STATUS_PENDING_PAYMENT;
+        $rental->fine->save();
+
+        // Update status rental
+        $rental->status = Rental::STATUS_WAITING_FOR_FINES_PAYMENT;
+        $rental->save();
+
+        return response()->json([
+            'message' => 'Extra payment added successfully',
+            'rental'  => $rental->load('fine'),
+        ]);
     }
 }

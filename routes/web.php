@@ -61,6 +61,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 Route::middleware(['auth', 'role:owner'])->group(function () {
     Route::get('/orders', [OrderManagementController::class, 'index'])->name('owner.orders.management');
     Route::patch('/orders/{id}/status', [OrderManagementController::class, 'updateStatus'])->name('rentals.updateStatus');
+    Route::post('/orders/{id}/extra-payment', [OrderManagementController::class, 'updateExtraPayment'])->name('rentals.updateExtraPayment');
 
     Route::get('/cars', [CarManagementController::class, 'index'])->name('owner.cars.management');
 });

@@ -38,4 +38,9 @@ class Payment extends Model
     {
         return $this->hasOne(Rental::class, 'payment_id', 'id');
     }
+
+    public function fine()
+    {
+        return $this->hasOne(Fine::class, 'payment_id', 'id');
+    }
 }

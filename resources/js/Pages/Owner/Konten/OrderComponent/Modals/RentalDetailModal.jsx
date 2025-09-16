@@ -13,7 +13,7 @@ const RentalDetailModal = ({ open, onClose, order }) => {
             <DialogContent className="min-w-[32%] p-6 rounded-lg shadow-lg">
                 <DialogTitle className="flex justify-center  font-bold text-2xl">Order Details</DialogTitle>
                 <DialogDescription className="flex flex-row justify-between font-medium">
-                    <span className=" text-gray-500 mr-2">Booking ID {order.booking_id}</span>
+                    <span className="text-gray-500 mr-2">Booking ID {order.booking_id}</span>
                     <span className="text-gray-500">{order.date}</span>
                 </DialogDescription>
 
@@ -27,7 +27,7 @@ const RentalDetailModal = ({ open, onClose, order }) => {
 
                     {overdue && (
                         <div className="bg-yellow-100 text-yellow-700 px-4 py-2 rounded mb-4 text-sm font-medium">
-                            ⏰ This rental is overdue: {overdue}
+                            ⏰ This rental is overdue: {overdue || ""}
                         </div>
                     )}
 
