@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Models\Fine;
+use App\Models\FineCarImage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -240,10 +241,12 @@ class OrderManagementController extends Controller
             'damage_type'  => 'required|string',
             'extra_amount' => 'required|numeric|min:0',
             'description'  => 'nullable|string',
+            'images.*'     => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $rental = Rental::with('fine')->findOrFail($id);
 
+        // cek apakah ada record fine yang terkait dengan rental ini
         if (!$rental->fine) {
             return response()->json([
                 'message' => 'No fine record associated with this rental'
@@ -257,13 +260,37 @@ class OrderManagementController extends Controller
         $rental->fine->status        = Fine::STATUS_PENDING_PAYMENT;
         $rental->fine->save();
 
+        // simpan gambar ke DineCarImage
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                $path = $file->store('fine_images', 'public');
+
+                FineCarImage::create([
+                    'fine_id'    => $rental->fine->id,
+                    'image_path' => $path,
+                ]);
+            }
+        }
+
         // Update status rental
         $rental->status = Rental::STATUS_WAITING_FOR_FINES_PAYMENT;
         $rental->save();
 
-        return response()->json([
-            'message' => 'Extra payment added successfully',
-            'rental'  => $rental->load('fine'),
+        // debug
+        \Log::debug('Extra payment updated', [
+            'rental_id' => $rental->id,
+            'fine_id'   => $rental->fine->id,
+            'damage_type' => $rental->fine->damage_type,
+            'damage_amount' => $rental->fine->damage_amount,
+            'description' => $rental->fine->description,
+            'status' => $rental->fine->status,
         ]);
+
+        // return response()->json([
+        //     'message' => 'Extra payment added successfully',
+        //     'rental'  => $rental->load('fine'),
+        // ]);
+
+        return redirect()->back()->with('success', 'Extra payment added successfully');
     }
 }

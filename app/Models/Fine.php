@@ -31,4 +31,9 @@ class Fine extends Model
     {
         return $this->belongsTo(Payment::class);
     }
+
+    public function images()
+    {
+        return $this->hasMany(FineCarImage::class);
+    }
 }
