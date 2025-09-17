@@ -224,6 +224,15 @@ class OrderManagementController extends Controller
                 $rental->status = Rental::STATUS_COMPLETED;
                 break;
 
+            case Rental::STATUS_WAITING_FOR_FINES_PAYMENT:
+                // Jika tekan Complete → status jadi completed, jika ada id fine yang terpaut pada id rental tsb
+                if ($rental->fine && $rental->fine->status === Fine::STATUS_CONFIRMED_PAYMENT) {
+                    $rental->status = Rental::STATUS_COMPLETED;
+                } else {
+                    return response()->json(['message' => 'Cannot complete rental with unpaid fines'], 400);
+                }
+                break;
+
             default:
                 return response()->json(['message' => 'Status tidak valid untuk update'], 400);
         }

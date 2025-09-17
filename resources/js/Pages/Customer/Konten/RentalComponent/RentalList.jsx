@@ -2,18 +2,14 @@ import React, { useEffect, useState } from "react";
 import { router } from "@inertiajs/react";
 import { toast } from "sonner";
 
-import { Card, CardContent, CardHeader } from "@/Components/ui/card";
-import { Badge } from "@/Components/ui/badge";
-import { Button } from "@/Components/ui/button";
-
-import { useOverdueTime } from "@/lib/useOverdueTime";
-
 import RentalItem from "./RentalItem"; // ✅ pakai komponen child
 
 import RentalDetailModal from "./Modals/RentalDetailModal";
 import UploadImageModal from "./Modals/UploadImageModal";
 import CancelledModal from "./Modals/CancelledModal";
 import CancelAndRefundModal from "./Modals/CancelAndRefundModal";
+import PayExtra from "./Modals/PayExtra";
+
 
 const RentalList = ({ rentals }) => {
     const [selectedOrder, setSelectedOrder] = useState(null);
@@ -21,6 +17,7 @@ const RentalList = ({ rentals }) => {
     const [openUpload, setOpenUpload] = useState(false);
     const [openCancelled, setOpenCancelled] = useState(false);
     const [openCancelAndRefund, setOpenCancelAndRefund] = useState(false);
+    const [openPayExtra, setOpenPayExtra] = useState(false);
 
     const handleOpenDetail = (order) => {
         setSelectedOrder(order);
@@ -42,6 +39,13 @@ const RentalList = ({ rentals }) => {
         setOpenCancelAndRefund(true);
     }
 
+    const handleOpenPayExtra = (order) => {
+        setSelectedOrder(order);
+        setOpenPayExtra(true);
+    }
+
+    // lakukan pembayaran denda
+
     return (
         <div className="space-y-4">
             {rentals.length > 0 ? (
@@ -54,6 +58,7 @@ const RentalList = ({ rentals }) => {
                             onOpenUpload={handleOpenUpload}
                             onOpenCancelled={handleOpenCancelled}
                             onOpenCancelAndRefund={handleOpenCancelAndRefund}
+                            onOpenPayExtra={handleOpenPayExtra}
                         />
                     );
                 })
@@ -88,6 +93,11 @@ const RentalList = ({ rentals }) => {
             <CancelAndRefundModal
                 open={openCancelAndRefund}
                 onClose={() => setOpenCancelAndRefund(false)}
+                order={selectedOrder}
+            />
+            <PayExtra
+                open={openPayExtra}
+                onClose={() => setOpenPayExtra(false)}
                 order={selectedOrder}
             />
         </div>

@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useOverdueTime } from "@/lib/useOverdueTime";
 
-const RentalItem = ({ order, onOpenDetail, onOpenUpload, onOpenCancelled, onOpenCancelAndRefund }) => {
+const RentalItem = ({ order, onOpenDetail, onOpenUpload, onOpenCancelled, onOpenCancelAndRefund, onOpenPayExtra }) => {
     const { overdue } = useOverdueTime(order.end_date, order.status);
 
     return (
@@ -103,14 +103,26 @@ const RentalItem = ({ order, onOpenDetail, onOpenUpload, onOpenCancelled, onOpen
                     )}
                     {order.status === "on_rent" && (
                         <Button
-                            className="bg-green-500 hover:bg-green-300 text-white hover:text-black"
+                            className="bg-green-500 hover:bg-green-600 text-white hover:text-black"
                             onClick={() => onOpenUpload(order)}
                         >
                             Upload Image
                         </Button>
                     )}
                     {order.status === "completed" && (
-                        <Button variant="outline">Give Review</Button>
+                        <Button
+                            className="bg-blue-500 hover:bg-blue-600 text-white hover:text-black"
+                        >
+                            Give Review
+                        </Button>
+                    )}
+                    {order.status === "waiting_for_fines_payment" && (
+                        <Button
+                            className="bg-blue-500 hover:bg-blue-600 text-white hover:text-black"
+                            onClick={() => onOpenPayExtra(order)}
+                        >
+                            Pay a Pinalty
+                        </Button>
                     )}
                 </div>
 

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
+use App\Models\Fine;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 use App\Models\Payment;
 use App\Models\Rental;
@@ -43,7 +45,8 @@ class RentalController extends Controller
             'car.imagePath',
             'user',
             'user.firstAddress',
-            'pickupLocation'
+            'pickupLocation',
+            'fine',
         ])
             ->where('user_id', $request->user()->id)
             ->orderBy('created_at', 'desc')
@@ -127,6 +130,19 @@ class RentalController extends Controller
                     'email' => $rental->user->email ?? '-',
                     'phone' => $rental->user->phone_number ?? '-',
                     'city' => $rental->user->firstAddress->city ?? '-',
+
+                    // data owner cars
+                    'carUserImage' => $rental->car->user->profile_picture ?? null,
+                    'carUserName' => $rental->car->user->name ?? '-',
+                    'carUserCity' => $rental->car->user->firstAddress->city ?? '-',
+
+                    // fine penalty
+                    "fine_id" => $rental->fine->id ?? null,
+                    "overtime" => $rental->fine->late_time ?? 0,
+                    "overtime_amount" => $rental->fine->late_amount ?? 0,
+                    'damage_type' => $rental->fine->damage_type ?? null,
+                    'damage_amount' => $rental->fine->damage_amount ?? 0,
+                    'total_fine' => ($rental->fine->late_amount ?? 0) + ($rental->fine->damage_amount ?? 0),
                 ];
             });
 
@@ -164,6 +180,42 @@ class RentalController extends Controller
         }
 
         return back()->withErrors(['error' => 'Payment already processed, cannot cancel']);
+    }
+
+    public function updateForFine(Request $request, $id)
+    {
+        $rental = Rental::with('fine')->findOrFail($id);
+
+        switch ($rental->status) {
+            case Rental::STATUS_WAITING_FOR_FINES_PAYMENT:
+                if ($rental->fine && $rental->fine->status === Fine::STATUS_PENDING_PAYMENT) {
+                    // ✅ update status rental
+                    $rental->status = Rental::STATUS_COMPLETED;
+                    $rental->save();
+
+                    // ✅ update status fine
+                    $rental->fine->status = Fine::STATUS_CONFIRMED_PAYMENT;
+
+                    // ✅ set payment_id baru
+                    $payment = Payment::latest()->first();
+                    if ($payment) {
+                        $rental->fine->payment_id = $payment->id;
+                    }
+
+                    $rental->fine->save();
+                } else {
+                    return response()->json(['message' => 'Cannot complete rental with unpaid fines'], 400);
+                }
+                break;
+
+            default:
+                return response()->json(['message' => 'Status tidak valid untuk update'], 400);
+        }
+
+        // debug
+        Log::info("Rental ID: {$rental->id}, Payment ID: {$rental->fine->payment_id}, New Status: {$rental->status}, Fine Status: {$rental->fine->status}");
+
+        return response()->json(['message' => 'Status updated successfully']);
     }
 
     public function success()

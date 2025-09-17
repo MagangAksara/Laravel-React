@@ -56,6 +56,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/rental/success', [RentalController::class, 'show'])->name('rental.success');
     Route::get('/rental/failed', [RentalController::class, 'show'])->name('rental.failed');
     Route::patch('/rental/cancelled/{id}', [RentalController::class, 'cancel'])->name('rental.cancelled');
+
+    Route::patch('/rental/{id}/updateForFine', [RentalController::class, 'updateForFine'])->name('forRentalandFine.updateForFine');
+
 });
 
 Route::middleware(['auth', 'role:owner'])->group(function () {
