@@ -1,117 +1,231 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../Layout";
-import { Head } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 import { usePage } from "@inertiajs/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/Components/ui/input";
+import { SearchBox } from "@/assets/SearchBox";
+import useDebounce from "@/Pages/Customer/Hooks/useDebounce";
+import AddModel from "./CarsManagement/CarModals/AddModels";
+import AddBrand from "./CarsManagement/CarModals/AddBrand";
+import DeletePopUp from "./CarsManagement/CarModals/Delete";
+import CarDetail from "./CarsManagement/ViewDetail";
+import AddCarForm from "./CarsManagement/CarModals/AddCar"; // pastikan path sesuai
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Inertia } from "@inertiajs/inertia";
 
 const CarsManagement = () => {
-  const { props } = usePage();
-  const { cars } = props;
-  const [activeTab, setActiveTab] = useState("basic");
+    const { props } = usePage();
+    const { cars } = props;
+    const [activeTab, setActiveTab] = useState("basic");
 
-  return (
-    <>
-        <Head title="Cars Management" />
-        <Layout>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Cars Management</h2>
-              <Button>Add Car +</Button>
-            </div>
+    // pop up delete
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [selectedCar, setSelectedCar] = useState(null);
 
-            <Card>
-              {/* Tabs Section */}
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="m-0">
-                  <TabsTrigger value="basic">Basic Information</TabsTrigger>
-                  <TabsTrigger value="important">Important Information</TabsTrigger>
-                  <TabsTrigger value="policies">Policies</TabsTrigger>
-                  <TabsTrigger value="rent">Rent Details</TabsTrigger>
-                </TabsList>
-              </Tabs>
+    const handleDeleteClick = (car) => {
+        setSelectedCar(car);
+        setIsDeleteOpen(true);
+    };
 
-              {/* Action buttons */}
-              <div className="flex flex-row justify-end gap-2 mr-6 mb-1">
-                <Button variant="outline">Add Transmission</Button>
-                <Button variant="outline">Add Brand</Button>
-                <Button variant="outline">Filter By Brand</Button>
-              </div>
+    const handleConfirmDelete = () => {
+        if (!selectedCar) return;
 
-              {/* Table */}
-              {/* <CardHeader>
-                <CardTitle>Car List</CardTitle>
-              </CardHeader> */}
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse text-sm">
-                    <thead className="bg-gray-100">
-                      <tr>
-                        <th className="border p-2">No</th>
-                        <th className="border p-2">Availability</th>
-                        <th className="border p-2">Photo</th>
-                        <th className="border p-2">Brand</th>
-                        <th className="border p-2">Model</th>
-                        <th className="border p-2">Type</th>
-                        <th className="border p-2">Price/day</th>
-                        <th className="border p-2">Driver</th>
-                        <th className="border p-2">Driver Fee/day</th>
-                        <th className="border p-2">Year</th>
-                        <th className="border p-2">Color</th>
-                        <th className="border p-2">Transmission</th>
-                        <th className="border p-2">Fuel</th>
-                        <th className="border p-2">Seat</th>
-                        <th className="border p-2">City</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {cars.map((car, i) => (
-                        <tr key={car.id} className="text-center">
-                          <td className="border p-2">{i + 1}</td>
-                          <td className="border p-2">
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs ${
-                                car.availability
-                                  ? "bg-blue-100 text-blue-700"
-                                  : "bg-red-100 text-red-700"
-                              }`}
-                            >
-                              {car.availability ? "Available" : "Not Available"}
-                            </span>
-                          </td>
-                          <td className="border p-2">
-                            <img
-                              src={car.photo}
-                              alt={car.model}
-                              className="h-12 mx-auto"
-                            />
-                          </td>
-                          <td className="border p-2">{car.brand}</td>
-                          <td className="border p-2">{car.model}</td>
-                          <td className="border p-2">{car.type}</td>
-                          <td className="border p-2">
-                            Rp {car.price_day.toLocaleString()}
-                          </td>
-                          <td className="border p-2">{car.driver}</td>
-                          <td className="border p-2">
-                            Rp {car.driver_fee.toLocaleString()}
-                          </td>
-                          <td className="border p-2">{car.year}</td>
-                          <td className="border p-2">{car.color}</td>
-                          <td className="border p-2">{car.transmission}</td>
-                          <td className="border p-2">{car.fuel}</td>
-                          <td className="border p-2">{car.seat}</td>
-                          <td className="border p-2">{car.city}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+        router.delete(route("owner.cars.destroy", selectedCar.id), {
+            onSuccess: () => {
+                setIsDeleteOpen(false);
+                alert("Car deleted successfully");
+            },
+            onError: (error) => {
+                console.error(error);
+                alert("Failed to delete car");
+            },
+        });
+    };
+
+    // search
+    const [searchValue, setSearchValue] = useState("");
+
+    const [results, setResults] = useState([]); // 🔹 state untuk hasil search
+    const [showResults, setShowResults] = useState(false);
+
+    const debouncedSearch = useDebounce(searchValue, 500);
+
+    // state modal
+    // const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModelModalOpen, setIsModelModalOpen] = useState(false);
+    const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
+
+    const [isCarModalOpen, setIsCarModalOpen] = useState(false);
+
+    useEffect(() => {
+        if (debouncedSearch.trim() !== "") {
+            fetch(`/search?q=${debouncedSearch}`)
+                .then((res) => res.json())
+                .then((data) => {
+                    setResults(data);
+                    setShowResults(true);
+                })
+                .catch((err) => console.error("Search error:", err));
+        } else {
+            setResults([]);
+            setShowResults(false);
+        }
+    }, [debouncedSearch]);
+
+    return (
+        <>
+            <Head title="Cars Management" />
+            <Layout>
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold">Cars Management</h2>
+                    <Button
+                        className="border border-blue-500 text-blue-500 bg-transparent
+                hover:bg-blue-500 hover:text-white
+                data-[state=active]:bg-blue-500 data-[state=active]:text-white"
+                        onClick={() => setIsCarModalOpen(true)}
+                    >
+                        Add Car +
+                    </Button>
+                    {/* Modal Add Car */}
+                    <AddCarForm
+                        isOpen={isCarModalOpen}
+                        onClose={() => setIsCarModalOpen(false)}
+                    />
                 </div>
-              </CardContent>
-            </Card>
-        </Layout>
-    </>
-  );
+                <div className="flex justify-between items-center mb-4">
+                    <SearchBox
+                        value={searchValue}
+                        onChange={(e) => setSearchValue(e.target.value)}
+                        placeholder="Search brand, model, type..."
+                    />
+                </div>
+
+                <Card>
+                    <div className="flex flex-row justify-end gap-2 mr-6 mb-3 my-3">
+                        <Button
+                            variant="outline"
+                            className="bg-blue-500 text-white border-blue-500 "
+                            onClick={() => setIsModelModalOpen(true)}
+                        >
+                            Add Model
+                        </Button>
+                        <Button
+                            variant="outline"
+                            className="bg-blue-500 text-white border-blue-500 "
+                            onClick={() => setIsBrandModalOpen(true)}
+                        >
+                            Add Brand
+                        </Button>
+                    </div>
+
+                    {/* Modal */}
+                    <AddModel
+                        isOpen={isModelModalOpen}
+                        onClose={() => setIsModelModalOpen(false)}
+                    />
+                    <AddBrand
+                        isOpen={isBrandModalOpen}
+                        onClose={() => setIsBrandModalOpen(false)}
+                    />
+
+                    <CardContent>
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse text-sm">
+                                <thead className="bg-gray-100">
+                                    <tr>
+                                        <th className="border p-2">No</th>
+                                        <th className="border p-2">Photo</th>
+                                        <th className="border p-2">
+                                            Plate Number
+                                        </th>
+                                        <th className="border p-2">Brand</th>
+                                        <th className="border p-2">
+                                            Price/day
+                                        </th>
+                                        <th className="border p-2">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {cars.map((car, i) => (
+                                        <tr
+                                            key={car.id}
+                                            className="text-center"
+                                        >
+                                            <td className="border p-2">
+                                                {i + 1}
+                                            </td>
+                                            <td className="border p-2">
+                                                <img
+                                                    src={car.photo}
+                                                    alt={car.brand}
+                                                    className="h-12 w-12 mx-auto rounded-md"
+                                                />
+                                            </td>
+                                            <td className="border p-2">
+                                                {car.plate_number}
+                                            </td>
+
+                                            <td className="border p-2">
+                                                 {car.brand}
+
+                                            </td>
+                                            <td className="border p-2">
+                                                {/* Rp{" "}
+                                                {car.price_day.toLocaleString()} */}
+                                                {car.model}
+
+                                            </td>
+                                            <td className="border p-2 w-40 text-center">
+                                                <div className="flex justify-center gap-2">
+                                                    {/* <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs">
+                                View Detail
+                                </button> */}
+                                                    <Link
+                                                        href={route(
+                                                            "owner.cars.detail",
+                                                            car.id
+                                                        )}
+                                                    >
+                                                        <Button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs">
+                                                            View Details
+                                                        </Button>
+                                                    </Link>
+                                                    <Button
+                                                        variant="destructive"
+                                                        onClick={() =>
+                                                            handleDeleteClick(
+                                                                car
+                                                            )
+                                                        }
+                                                    >
+                                                        🗑️
+                                                    </Button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </CardContent>
+                    <DeletePopUp
+                        isOpen={isDeleteOpen}
+                        onClose={() => setIsDeleteOpen(false)}
+                        car={selectedCar}
+                        onDelete={handleConfirmDelete}
+                    />
+                </Card>
+            </Layout>
+        </>
+    );
 };
 
 export default CarsManagement;

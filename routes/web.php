@@ -15,7 +15,7 @@ use App\Http\Controllers\Customer\CarController;
 use App\Http\Controllers\Customer\SearchController;
 use App\Http\Controllers\Customer\BookingController;
 use App\Http\Controllers\Customer\RentalController;
-
+use App\Models\Car;
 use Inertia\Inertia;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
@@ -45,9 +45,9 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/cars-json', [DashboardController::class, 'carsJson'])->name('cars.json');
-    
+
     Route::get('/search', [SearchController::class, 'search'])->name('search');
-    
+
     Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
 
     Route::get('rental/booking/{id}', [BookingController::class, 'show'])->name('booking');
@@ -63,6 +63,13 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
     Route::patch('/orders/{id}/status', [OrderManagementController::class, 'updateStatus'])->name('rentals.updateStatus');
 
     Route::get('/cars', [CarManagementController::class, 'index'])->name('owner.cars.management');
+    //  route detail mobil
+    Route::get('/cars/{id}', [CarManagementController::class, 'show'])->name('owner.cars.detail');
+    Route::delete('/cars/{id}', [CarManagementController::class, 'destroy'])->name('owner.cars.destroy');
+
+    Route::post('/brands', [CarManagementController::class, 'store'])->name('owner.brands.store');
+    Route::post('/models', [CarManagementController::class, 'modelsStore'])->name('owner.models.store');
+
 });
 
 Route::middleware('auth')->group(function () {
