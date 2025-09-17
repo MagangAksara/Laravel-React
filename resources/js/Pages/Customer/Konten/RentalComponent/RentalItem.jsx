@@ -32,7 +32,7 @@ const RentalItem = ({ order, onOpenDetail, onOpenUpload, onOpenCancelled, onOpen
             </CardHeader>
 
             {/* Content */}
-            <CardContent className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-t p-4">
+            <CardContent className="grid grid-cols-1 md:grid-cols-3 items-start md:items-center gap-4 border-t p-4">
 
                 {/* Car Info */}
                 <div className="flex items-center gap-4 mt-3 flex-1">
@@ -60,7 +60,7 @@ const RentalItem = ({ order, onOpenDetail, onOpenUpload, onOpenCancelled, onOpen
                 </div>
 
                 {/* Payment Info */}
-                <div className="flex flex-col text-right w-full md:justify-center md:text-center md:min-w-[350px] md:w-auto">
+                <div className="grid grid-cols-1 text-right justify-items-end">
                     <p className="text-sm text-gray-500">Total Payment</p>
                     <p className="font-semibold text-lg">
                         Rp {order.totalPayment.toLocaleString()}
@@ -68,7 +68,14 @@ const RentalItem = ({ order, onOpenDetail, onOpenUpload, onOpenCancelled, onOpen
                 </div>
 
                 {/* Actions */}
-                <div className="flex flex-col gap-2 justify-end w-full md:flex-row md:flex-wrap md:w-auto md:min-w-[350px]">
+                <div
+                    className={`grid grid-cols-1 gap-2 justify-end ${order.status === "on_rent"
+                        ? "md:grid-cols-2"
+                        : order.status === "waiting_for_payment"
+                            ? "lg:grid-cols-3"
+                            : "lg:flex lg:justify-end"
+                        }`}
+                >
                     <Button
                         variant="outline"
                         onClick={() => onOpenDetail(order)}
