@@ -56,6 +56,14 @@ class CarFactory extends Factory
             'description' => $this->faker->paragraph(),
             'price_per_day' => $this->faker->numberBetween(100000, 1000000), // harga sewa per hari
             'is_available' => $this->faker->boolean(80), // 80% kemungkinan tersedia
+            'rule_before_booking' => $this->faker->paragraph(),
+            'rule_after_booking' => $this->faker->paragraph(),
+            'rule_during_pickup' => $this->faker->paragraph(),
+            'rule_before_pickup' => $this->faker->paragraph(),
+            'rule_at_pickup' => $this->faker->paragraph(),
+            'rule_usage' => $this->faker->paragraph(),
+            'rule_return' => $this->faker->paragraph(),
+            'rule_overtime' => $this->faker->paragraph(),
         ];
     }
 }

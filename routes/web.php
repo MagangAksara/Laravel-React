@@ -67,6 +67,13 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
     Route::post('/orders/{id}/extra-payment', [OrderManagementController::class, 'updateExtraPayment'])->name('rentals.updateExtraPayment');
 
     Route::get('/cars', [CarManagementController::class, 'index'])->name('owner.cars.management');
+    Route::get('/cars/{id}', [CarManagementController::class, 'show'])->name('owner.cars.detail');
+    Route::post('/cars/{id}', [CarManagementController::class, 'update'])->name('owner.cars.update');
+    Route::delete('/cars/{id}', [CarManagementController::class, 'destroy'])->name('owner.cars.destroy');
+
+
+    Route::post('/brands', [CarManagementController::class, 'store'])->name('owner.brands.store');
+    Route::post('/models', [CarManagementController::class, 'modelsStore'])->name('owner.models.store');
 });
 
 Route::middleware('auth')->group(function () {
