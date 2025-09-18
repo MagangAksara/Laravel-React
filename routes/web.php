@@ -48,7 +48,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     
     Route::get('/search', [SearchController::class, 'search'])->name('search');
     
-    Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
+    Route::get('/cars-card/{id}', [CarController::class, 'show'])->name('cars.show');
 
     Route::get('rental/booking/{id}', [BookingController::class, 'show'])->name('booking');
 

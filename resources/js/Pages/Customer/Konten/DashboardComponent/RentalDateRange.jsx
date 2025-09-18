@@ -78,7 +78,8 @@ const RentalDateRange = ({ startDate: initialStart = null, endDate: initialEnd =
               <Calendar
                 mode="single"
                 selected={startDate}
-                onSelect={setStartDate}
+                // onSelect={setStartDate}
+                onSelect={(date) => {setStartDate(date)}}
                 disabled={(date) => {
                   const today = new Date()
                   today.setHours(0, 0, 0, 0)

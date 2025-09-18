@@ -2,12 +2,16 @@ import React from "react";
 import { MapPin } from "lucide-react";
 
 export default function CarCard({ image_url, brand, model, type, price, type_transmisi, capacity, fuel_type, owner_city }) {
+  // Cek apakah image_url adalah URL eksternal atau file lokal dari public
+  const isExternal = /^(https?:)?\/\//.test(image_url);
+  const imgSrc = isExternal ? image_url : `/storage/${image_url}`;
+
   return (
     <div className="bg-white rounded-xl shadow-sm border overflow-hidden h-full max-w-sm">
-      <img 
-        src={image_url} 
-        alt={`${brand} ${model} ${type}`} 
-        className="w-full h-48 object-cover" 
+      <img
+        src={imgSrc}
+        alt={`${brand} ${model} ${type}`}
+        className="w-full h-48 object-cover"
       />
       <div className="p-4 flex flex-col flex-grow">
         <h3 className="font-semibold text-lg">{brand} {model} {type}</h3>
@@ -22,11 +26,11 @@ export default function CarCard({ image_url, brand, model, type, price, type_tra
           <MapPin size={16} /> {owner_city}
         </div>
         <div className="flex-grow" />
-          <div className="flex justify-between items-center mt-3 text-sm font-medium">
-            <span>⚙️ {type_transmisi}</span>
-            <span>🚗 {capacity}</span>
-            <span>⛽ {fuel_type}</span>
-          </div>
+        <div className="flex justify-between items-center mt-3 text-sm font-medium">
+          <span>⚙️ {type_transmisi}</span>
+          <span>🚗 {capacity}</span>
+          <span>⛽ {fuel_type}</span>
+        </div>
       </div>
     </div>
   );

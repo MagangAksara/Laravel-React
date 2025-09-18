@@ -61,39 +61,43 @@ const DetailPrice = ({ car, startDate, endDate, ownerAddress, customerAddress, d
     return (
         <>
             {/* <Card> */}
-                <CardHeader>
-                    <CardTitle className="mb-0 pb-0">
-                        <OwnerInformation car={car}/>
-                        <div className="flex text-lg">
-                            <p>{car.brand} {car.model} {car.type}</p>
-                            <p className="ml-1"> -- Rp {car.price_per_day.toLocaleString()}</p>
-                        </div>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 mt-0">
-                    <p>Duration Rental: {duration ? duration.text : "-"}</p>
-                    <Separator />
-                        <div className="flex justify-between">
-                            <span>Biaya Sewa</span>
-                            <span>Rp {rentalFee.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span>Driver Fee</span>
-                            <span>Rp {driverFee.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span>Pick Up Location</span>
-                            <span>Rp {pickupFee.toLocaleString()}</span>
-                        </div>
-                    <Separator />
-                    <div className="flex justify-between font-bold">
-                        <span>Total Payment</span>
-                        <span>Rp {totalPayment.toLocaleString()}</span>
+            <CardHeader>
+                <CardTitle className="mb-0 pb-0">
+                    <OwnerInformation car={car} />
+                    <div className="flex text-lg">
+                        <p>{car.brand} {car.model} {car.type}</p>
+                        <p className="ml-1"> -- Rp {car.price_per_day.toLocaleString()}</p>
                     </div>
-                    <p className="text-xs text-gray-500">
-                        With driver bookings, meals, fuel, tolls, etc. are counted as additional costs not included in the system.
-                    </p>
-                </CardContent>
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 mt-0">
+                <p>Duration Rental: {duration ? duration.text : "-"}</p>
+                <Separator />
+                <div className="flex justify-between">
+                    <span>Biaya Sewa</span>
+                    <span>Rp {rentalFee.toLocaleString()}</span>
+                    {/* <span>Rp {Math.round(rentalFee / 100) * 100000 .toLocaleString()}</span> */}
+                </div>
+                <div className="flex justify-between">
+                    <span>Driver Fee</span>
+                    <span>Rp {driverFee.toLocaleString()}</span>
+                    {/* <span>Rp {Math.round(driverFee / 100) * 100000 .toLocaleString()}</span> */}
+                </div>
+                <div className="flex justify-between">
+                    <span>Pick Up Location</span>
+                    <span>Rp {pickupFee.toLocaleString()}</span>
+                    {/* <span>Rp {Math.round(pickupFee / 100) * 100000 .toLocaleString()}</span> */}
+                </div>
+                <Separator />
+                <div className="flex justify-between font-bold">
+                    <span>Total Payment</span>
+                    <span>Rp {totalPayment.toLocaleString()}</span>
+                    {/* <span>Rp {Math.round(totalPayment / 100) * 100000 .toLocaleString()}</span> */}
+                </div>
+                <p className="text-xs text-gray-500">
+                    With driver bookings, meals, fuel, tolls, etc. are counted as additional costs not included in the system.
+                </p>
+            </CardContent>
             {/* </Card> */}
         </>
     );
