@@ -27,6 +27,16 @@ class Car extends Model
         'description',
         'price_per_day',
         'is_available',
+        'driver_fee_on_day',
+        'overtime_fee_on_hour',
+        'rule_before_booking',
+        'rule_after_booking',
+        'rule_during_pickup',
+        'rule_before_pickup',
+        'rule_at_pickup',
+        'rule_usage',
+        'rule_return',
+        'rule_overtime',
     ];
 
     public function user()

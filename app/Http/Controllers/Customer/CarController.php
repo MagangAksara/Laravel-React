@@ -27,7 +27,7 @@ class CarController extends Controller
     {
         $car = Car::with(['user.address'])->findOrFail($id);
         
-        // dd($car);
+        dd($car);
 
         return Inertia::render('Customer/Konten/CarDetail', [
             'car' => $this->transformCar($car)

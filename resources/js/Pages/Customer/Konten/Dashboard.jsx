@@ -57,7 +57,7 @@ const Dashboard = () => {
 
             {/* Grid Cars Card */}
             <div className="grid gap-6 flex-1 items-stretch grid-cols-[repeat(auto-fit,minmax(280px,1fr))]">
-              {filteredCars.length > 0 ? (
+              {/* {filteredCars.length > 0 ? (
                 filteredCars.map((car, idx) => (
                   <InertiaLink
                     key={idx}
@@ -69,7 +69,7 @@ const Dashboard = () => {
                 ))
               ) : (
                 <p className="text-gray-500 col-span-full">No cars available</p>
-              )}
+              )} */}
             </div>
 
             {/* Loader / Sentinel */}

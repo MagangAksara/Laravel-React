@@ -35,6 +35,7 @@ class BookingController extends Controller
             'user.addresses',
         ])->findOrFail($id);
 
+        // untuk me
         if (!$car->is_available) {
             // ambil rental aktif terkait mobil ini
             $rental = Rental::where('car_id', $car->id)

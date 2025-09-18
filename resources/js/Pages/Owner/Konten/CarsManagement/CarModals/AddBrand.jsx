@@ -13,7 +13,7 @@ const AddBrand = ({ isOpen, onClose }) => {
 
     if (!brandName.trim()) return alert('Brand name cannot be empty');
 
-    router.post('/brands', { name: brandName }, {
+    router.post(route('owner.brands.store'), { name: brandName }, {
       onSuccess: () => {
         alert('Brand added successfully');
         setBrandName('');
@@ -21,7 +21,7 @@ const AddBrand = ({ isOpen, onClose }) => {
       },
       onError: (errors) => {
         console.error(errors);
-        alert('Failed to add brand');
+        alert(errors.name ? errors.name : 'Failed to add brand');
       }
     });
   };

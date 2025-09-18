@@ -67,7 +67,7 @@ const Navbar = ({ header }) => {
                                         <ul>
                                             {results.map((car) => (
                                                 <li key={car.id} className="border-b last:border-none">
-                                                    <Link
+                                                    {/* <Link
                                                         href={route('cars.show', car.id)} // 🔗 ke detail mobil
                                                         className="block px-4 py-2 hover:bg-gray-100 cursor-pointer"
                                                         onClick={() => {
@@ -82,7 +82,7 @@ const Navbar = ({ header }) => {
                                                         <div className="text-sm text-blue-600">
                                                             Rp {car.price_per_day.toLocaleString()}/day
                                                         </div>
-                                                    </Link>
+                                                    </Link> */}
                                                 </li>
                                             ))}
                                         </ul>

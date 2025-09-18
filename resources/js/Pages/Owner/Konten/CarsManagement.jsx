@@ -4,22 +4,13 @@ import { Head, Link, router } from "@inertiajs/react";
 import { usePage } from "@inertiajs/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/Components/ui/input";
 import { SearchBox } from "@/assets/SearchBox";
 import useDebounce from "@/Pages/Customer/Hooks/useDebounce";
 import AddModel from "./CarsManagement/CarModals/AddModels";
 import AddBrand from "./CarsManagement/CarModals/AddBrand";
 import DeletePopUp from "./CarsManagement/CarModals/Delete";
-import CarDetail from "./CarsManagement/ViewDetail";
 import AddCarForm from "./CarsManagement/CarModals/AddCar"; // pastikan path sesuai
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import { Inertia } from "@inertiajs/inertia";
+import { Trash2 } from "lucide-react";
 
 const CarsManagement = () => {
     const { props } = usePage();
@@ -143,13 +134,9 @@ const CarsManagement = () => {
                                     <tr>
                                         <th className="border p-2">No</th>
                                         <th className="border p-2">Photo</th>
-                                        <th className="border p-2">
-                                            Plate Number
-                                        </th>
-                                        <th className="border p-2">Brand</th>
-                                        <th className="border p-2">
-                                            Price/day
-                                        </th>
+                                        <th className="border p-2">Plate Number</th>
+                                        <th className="border p-2">Name</th>
+                                        <th className="border p-2">Price/day</th>
                                         <th className="border p-2">Action</th>
                                     </tr>
                                 </thead>
@@ -166,7 +153,7 @@ const CarsManagement = () => {
                                                 <img
                                                     src={car.photo}
                                                     alt={car.brand}
-                                                    className="h-12 w-12 mx-auto rounded-md"
+                                                    className="max-w-20 h-auto mx-auto rounded-md"
                                                 />
                                             </td>
                                             <td className="border p-2">
@@ -174,20 +161,14 @@ const CarsManagement = () => {
                                             </td>
 
                                             <td className="border p-2">
-                                                 {car.brand}
+                                                {car.brand} {car.model} {car.type}
 
                                             </td>
                                             <td className="border p-2">
-                                                {/* Rp{" "}
-                                                {car.price_day.toLocaleString()} */}
-                                                {car.model}
-
+                                                Rp {car.price_day.toLocaleString()}
                                             </td>
                                             <td className="border p-2 w-40 text-center">
                                                 <div className="flex justify-center gap-2">
-                                                    {/* <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs">
-                                View Detail
-                                </button> */}
                                                     <Link
                                                         href={route(
                                                             "owner.cars.detail",
@@ -205,8 +186,9 @@ const CarsManagement = () => {
                                                                 car
                                                             )
                                                         }
+                                                        className="w-10  h-10"
                                                     >
-                                                        🗑️
+                                                        <Trash2 />
                                                     </Button>
                                                 </div>
                                             </td>

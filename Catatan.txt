@@ -1,232 +1,38 @@
-
-import React, { useEffect, useState } from "react";
-import Layout from "../Layout";
-import { Head, Link, router } from "@inertiajs/react";
-import { usePage } from "@inertiajs/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/Components/ui/input";
-import { SearchBox } from "@/assets/SearchBox";
-import useDebounce from "@/Pages/Customer/Hooks/useDebounce";
-import AddModel from "./CarsManagement/CarModals/AddModels";
-import AddBrand from "./CarsManagement/CarModals/AddBrand";
-import DeletePopUp from "./CarsManagement/CarModals/Delete";
-import CarDetail from "./CarsManagement/ViewDetail";
-import AddCarForm from "./CarsManagement/CarModals/AddCar"; // pastikan path sesuai
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import { Inertia } from "@inertiajs/inertia";
-
-const CarsManagement = () => {
-    const { props } = usePage();
-    const { cars } = props;
-    const [activeTab, setActiveTab] = useState("basic");
-
-    // pop up delete
-    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-    const [selectedCar, setSelectedCar] = useState(null);
-
-    const handleDeleteClick = (car) => {
-        setSelectedCar(car);
-        setIsDeleteOpen(true);
-    };
-
-    const handleConfirmDelete = () => {
-        if (!selectedCar) return;
-
-        router.delete(route("owner.cars.destroy", selectedCar.id), {
-            onSuccess: () => {
-                setIsDeleteOpen(false);
-                alert("Car deleted successfully");
-            },
-            onError: (error) => {
-                console.error(error);
-                alert("Failed to delete car");
-            },
-        });
-    };
-
-    // search
-    const [searchValue, setSearchValue] = useState("");
-
-    const [results, setResults] = useState([]); // 🔹 state untuk hasil search
-    const [showResults, setShowResults] = useState(false);
-
-    const debouncedSearch = useDebounce(searchValue, 500);
-
-    // state modal
-    // const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isModelModalOpen, setIsModelModalOpen] = useState(false);
-    const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
-
-    const [isCarModalOpen, setIsCarModalOpen] = useState(false);
-
-    useEffect(() => {
-        if (debouncedSearch.trim() !== "") {
-            fetch(`/search?q=${debouncedSearch}`)
-                .then((res) => res.json())
-                .then((data) => {
-                    setResults(data);
-                    setShowResults(true);
-                })
-                .catch((err) => console.error("Search error:", err));
-        } else {
-            setResults([]);
-            setShowResults(false);
-        }
-    }, [debouncedSearch]);
-
-    return (
-        <>
-            <Head title="Cars Management" />
-            <Layout>
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold">Cars Management</h2>
-                    <Button
-                        className="border border-blue-500 text-blue-500 bg-transparent
-                hover:bg-blue-500 hover:text-white
-                data-[state=active]:bg-blue-500 data-[state=active]:text-white"
-                        onClick={() => setIsCarModalOpen(true)}
-                    >
-                        Add Car +
-                    </Button>
-                    {/* Modal Add Car */}
-                    <AddCarForm
-                        isOpen={isCarModalOpen}
-                        onClose={() => setIsCarModalOpen(false)}
-                    />
-                </div>
-                <div className="flex justify-between items-center mb-4">
-                    <SearchBox
-                        value={searchValue}
-                        onChange={(e) => setSearchValue(e.target.value)}
-                        placeholder="Search brand, model, type..."
-                    />
-                </div>
-
-                <Card>
-                    <div className="flex flex-row justify-end gap-2 mr-6 mb-3 my-3">
-                        <Button
-                            variant="outline"
-                            className="bg-blue-500 text-white border-blue-500 "
-                            onClick={() => setIsModelModalOpen(true)}
-                        >
-                            Add Model
-                        </Button>
-                        <Button
-                            variant="outline"
-                            className="bg-blue-500 text-white border-blue-500 "
-                            onClick={() => setIsBrandModalOpen(true)}
-                        >
-                            Add Brand
-                        </Button>
-                    </div>
-
-                    {/* Modal */}
-                    <AddModel
-                        isOpen={isModelModalOpen}
-                        onClose={() => setIsModelModalOpen(false)}
-                    />
-                    <AddBrand
-                        isOpen={isBrandModalOpen}
-                        onClose={() => setIsBrandModalOpen(false)}
-                    />
-
-                    <CardContent>
-                        <div className="overflow-x-auto">
-                            <table className="w-full border-collapse text-sm">
-                                <thead className="bg-gray-100">
-                                    <tr>
-                                        <th className="border p-2">No</th>
-                                        <th className="border p-2">Photo</th>
-                                        <th className="border p-2">
-                                            Plate Number
-                                        </th>
-                                        <th className="border p-2">Brand</th>
-                                        <th className="border p-2">
-                                            Price/day
-                                        </th>
-                                        <th className="border p-2">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {cars.map((car, i) => (
-                                        <tr
-                                            key={car.id}
-                                            className="text-center"
-                                        >
-                                            <td className="border p-2">
-                                                {i + 1}
-                                            </td>
-                                            <td className="border p-2">
-                                                <img
-                                                    src={car.photo}
-                                                    alt={car.brand}
-                                                    className="h-12 mx-auto"
-                                                />
-                                            </td>
-                                            <td className="border p-2">
-                                                {car.model}
-                                            </td>
-
-                                            <td className="border p-2">
-                                                Rp{" "}
-                                                {car.price_day.toLocaleString()}
-                                            </td>
-                                            <td className="border p-2">
-                                                {car.type}
-                                            </td>
-                                            <td className="border p-2 w-40 text-center">
-                                                <div className="flex justify-center gap-2">
-                                                    {/* <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs">
-                                View Detail
-                                </button> */}
-                                                    <Link
-                                                        href={route(
-                                                            "owner.cars.detail",
-                                                            car.id
-                                                        )}
-                                                    >
-                                                        <Button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs">
-                                                            View Details
-                                                        </Button>
-                                                    </Link>
-                                                    <Button
-                                                        variant="destructive"
-                                                        onClick={() =>
-                                                            handleDeleteClick(
-                                                                car
-                                                            )
-                                                        }
-                                                    >
-                                                        🗑️
-                                                    </Button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </CardContent>
-                    <DeletePopUp
-                        isOpen={isDeleteOpen}
-                        onClose={() => setIsDeleteOpen(false)}
-                        car={selectedCar}
-                        onDelete={handleConfirmDelete}
-                    />
-                </Card>
-            </Layout>
-        </>
-    );
-};
-
-export default CarsManagement;
+ini kenapa
+index.js:1 content loaded
+index.a4962feb.js:3 Content Script: Initializing
+hook.js:608 {plateNumber: 'The plate number field is required.', brand: 'The brand field is required.', model: 'The model field is required.', type: 'The type field is required.', fuel: 'The fuel field is required.', …}
+overrideMethod @ hook.js:608
+onError @ ViewDetail.jsx:39
+process @ @inertiajs_react.js?v=f6e499dd:9484
+await in process
+(anonymous) @ @inertiajs_react.js?v=f6e499dd:9464
+processNext @ @inertiajs_react.js?v=f6e499dd:8609
+process @ @inertiajs_react.js?v=f6e499dd:8601
+add @ @inertiajs_react.js?v=f6e499dd:8598
+handle @ @inertiajs_react.js?v=f6e499dd:9464
+(anonymous) @ @inertiajs_react.js?v=f6e499dd:9704
+Promise.then
+send @ @inertiajs_react.js?v=f6e499dd:9702
+send @ @inertiajs_react.js?v=f6e499dd:9779
+visit @ @inertiajs_react.js?v=f6e499dd:9911
+put @ @inertiajs_react.js?v=f6e499dd:9838
+handleUpdate @ ViewDetail.jsx:32
+callCallback2 @ chunk-NXESFFTV.js?v=f6e499dd:3680
+invokeGuardedCallbackDev @ chunk-NXESFFTV.js?v=f6e499dd:3705
+invokeGuardedCallback @ chunk-NXESFFTV.js?v=f6e499dd:3739
+invokeGuardedCallbackAndCatchFirstError @ chunk-NXESFFTV.js?v=f6e499dd:3742
+executeDispatch @ chunk-NXESFFTV.js?v=f6e499dd:7046
+processDispatchQueueItemsInOrder @ chunk-NXESFFTV.js?v=f6e499dd:7066
+processDispatchQueue @ chunk-NXESFFTV.js?v=f6e499dd:7075
+dispatchEventsForPlugins @ chunk-NXESFFTV.js?v=f6e499dd:7083
+(anonymous) @ chunk-NXESFFTV.js?v=f6e499dd:7206
+batchedUpdates$1 @ chunk-NXESFFTV.js?v=f6e499dd:18966
+batchedUpdates @ chunk-NXESFFTV.js?v=f6e499dd:3585
+dispatchEventForPluginEventSystem @ chunk-NXESFFTV.js?v=f6e499dd:7205
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-NXESFFTV.js?v=f6e499dd:5484
+dispatchEvent @ chunk-NXESFFTV.js?v=f6e499dd:5478
+dispatchDiscreteEvent @ chunk-NXESFFTV.js?v=f6e499dd:5455
 
 <?php
 
@@ -235,14 +41,19 @@ namespace App\Http\Controllers\Owner;
 use App\Http\Controllers\Controller;
 use App\Models\Car;
 use App\Models\CarBrand;
+use App\Models\CarColor;
+use App\Models\CarFuelType;
 use App\Models\CarModel;
+use App\Models\CarTransmission;
+use App\Models\CarType;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 
 class CarManagementController extends Controller
 {
-     public function index()
+    // untuk cars manajement page
+    public function index()
     {
         // data dummy dulu, nanti bisa dari DB (Car model)
         $cars = Car::with([
@@ -257,6 +68,7 @@ class CarManagementController extends Controller
         ])->get()->map(function ($car) {
             return [
                 'id' => $car->id,
+                'plate_number' => $car->plate_number,
                 'brand' => $car->brand->name ?? '-',
                 'model' => $car->model->name ?? '-',
                 'type' => $car->type->name ?? '-',
@@ -275,7 +87,7 @@ class CarManagementController extends Controller
             ];
         });
 
-         //  ambil semua brand untuk dropdown
+        //  ambil semua brand untuk dropdown
         $brands = CarBrand::all();
 
         return Inertia::render('Owner/Konten/CarsManagement', [
@@ -284,148 +96,197 @@ class CarManagementController extends Controller
         ]);
     }
 
+    // untuk showDetals
+    public function show($id)
+    {
+        $car = Car::with([
+            'brand',
+            'model',
+            'type',
+            'color',
+            'transmission',
+            'fuelType',
+            'user.firstAddress',
+        ])->findOrFail($id);
 
-public function show($id)
-{
-    $car = Car::with([
-        'brand',
-        'model',
-        'type',
-        'color',
-        'transmission',
-        'fuelType',
-        'user.firstAddress',
-    ])->findOrFail($id);
+        // format data untuk dikirim ke frontend
+        $carData = [
+            'id' => $car->id,
+            'plate_number' => $car->plate_number,
+            'brand' => $car->brand->name ?? '-',
+            'model' => $car->model->name ?? '-',
+            'type' => $car->type->name ?? '-',
+            'availability' => $car->is_available ? 'Available' : 'Not Available',
+            'photo' => $car->main_image,
+            'price_day' => $car->price_per_day,
+            'driver_fee' => $car->driver_fee_on_day,
+            'overtime_fee' => $car->overtime_fee_on_hour,
+            'year' => $car->year ?? '-',
+            'color' => $car->color->name ?? '-',
+            'transmission' => $car->transmission->name ?? '-',
+            'fuel' => $car->fuelType->name ?? '-',
+            'seat' => $car->capacity ?? '-',
+            // 'driver' => $car->user->is_driver ? 'With Driver' : 'Without Driver',
+            // 'driver_fee' => $car->user->is_driver ? $car->user->driver_fee : 0,
+            'city' => $car->user->firstAddress->city ?? '-',
+            // important information
+            'before_booking' => $car->rule_before_booking,
+            'after_booking' => $car->rule_after_booking,
+            'during_pickup' => $car->rule_during_pickup,
+            // policies
+            'before_pickup' => $car->rule_before_pickup,
+            'at_pickup' => $car->rule_at_pickup,
+            'usage' => $car->rule_usage,
+            'return' => $car->rule_return,
+            'overtime' => $car->rule_overtime,
 
-    // format data untuk dikirim ke frontend
-    $carData = [
-        'id' => $car->id,
-        'brand' => $car->brand->name ?? '-',
-        'model' => $car->model->name ?? '-',
-        'type' => $car->type->name ?? '-',
-        'availability' => $car->is_available ? 'Available' : 'Not Available',
-        'photo' => $car->main_image,
-        'price_day' => $car->price_per_day,
-        'year' => $car->year ?? '-',
-        'color' => $car->color->name ?? '-',
-        'transmission' => $car->transmission->name ?? '-',
-        'fuel' => $car->fuelType->name ?? '-',
-        'seat' => $car->capacity ?? '-',
-        'driver' => $car->user->is_driver ? 'With Driver' : 'Without Driver',
-        'driver_fee' => $car->user->is_driver ? $car->user->driver_fee : 0,
-        'city' => $car->user->firstAddress->city ?? '-',
-    ];
+        ];
 
-    $brands = CarBrand::get('name');
-    $models = CarModel::where('car_brand_id', $car->car_brand_id)->get('name');
+        $brands = CarBrand::query()
+            ->select('id', 'name')->get();
+        $models = CarModel::query()
+            ->select('id', 'car_brand_id', 'name')
+            ->get();
 
-    // dd($carData, $brands,$models);
+        // dd($carData, $brands,$models);
 
-    return Inertia::render('Owner/Konten/CarsManagement/ViewDetail', [
-        'car' => $carData,
-        'brands' => $brands,
-        'models' => $models,
-    ]);
+        return Inertia::render('Owner/Konten/CarsManagement/ViewDetail', [
+            'car' => $carData,
+            'brands' => $brands,
+            'models' => $models,
+        ]);
+    }
+
+    // add brand
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:car_brands,name',
+        ]);
+
+        CarBrand::create([
+            'name' => $request->name,
+        ]);
+
+        return back()->with('success', 'Brand added successfully');
+    }
+
+    public function modelsStore(Request $request)
+    {
+        $request->validate([
+            'brand_id' => 'required|exists:car_brands,id', // pastikan nama tabel sesuai migration
+            'name' => 'required|string|max:255',
+        ]);
+
+        CarModel::create([
+            'car_brand_id' => $request->brand_id,
+            'name' => $request->name,
+        ]);
+
+        return back()->with('success', 'Model added successfully');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $car = Car::findOrFail($id);
+
+        $validated = $request->validate([
+            'plateNumber'   => 'required|string|max:50',
+            'brand'         => 'required|string|max:100',
+            'model'         => 'required|string|max:100',
+            'type'          => 'required|string|max:100',
+            'fuel'          => 'required|string|max:50',
+            'transmission'  => 'required|string|max:50',
+            'seat'          => 'required|integer|min:1',
+            'year'          => 'required|integer|min:1900|max:' . date('Y'),
+            'color'         => 'required|string|max:50',
+            'price'         => 'required|numeric|min:0',
+            'driverFee'     => 'nullable|numeric|min:0',
+            'overtime'      => 'nullable|numeric|min:0',
+            // important information
+            'beforeBooking' => 'nullable|string',
+            'afterBooking'  => 'nullable|string',
+            'duringPickup'  => 'nullable|string',
+            // policies
+            'beforePickup'  => 'nullable|string',
+            'atPickup'      => 'nullable|string',
+            'usage'         => 'nullable|string',
+            'return'        => 'nullable|string',
+            'overtimePolicy'=> 'nullable|string',
+            'carImage.*'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        // relasi brand, model, type, dll
+        $brand = CarBrand::firstOrCreate(['name' => $validated['brand']]);
+        $model = CarModel::firstOrCreate([
+            'name' => $validated['model'],
+            'car_brand_id' => $brand->id,
+        ]);
+        $type = CarType::firstOrCreate(['name' => $validated['type']]);
+        $color = CarColor::firstOrCreate(['name' => $validated['color']]);
+        $fuel = CarFuelType::firstOrCreate(['name' => $validated['fuel']]);
+        $transmission = CarTransmission::firstOrCreate(['name' => $validated['transmission']]);
+
+        $car->update([
+            'plate_number'       => $validated['plateNumber'],
+            'car_brand_id'       => $brand->id,
+            'car_model_id'       => $model->id,
+            'car_type_id'        => $type->id,
+            'car_color_id'       => $color->id,
+            'car_fuel_type_id'   => $fuel->id,
+            'car_transmission_id' => $transmission->id,
+            'capacity'           => $validated['seat'],
+            'year'               => $validated['year'],
+            'price_per_day'      => $validated['price'],
+            'driver_fee_on_day'  => $validated['driverFee'] ?? 0,
+            'overtime_fee_on_hour' => $validated['overtime'] ?? 0,
+            // rules / info
+            'rule_before_booking' => $validated['beforeBooking'] ?? null,
+            'rule_after_booking' => $validated['afterBooking'] ?? null,
+            'rule_during_pickup' => $validated['duringPickup'] ?? null,
+            'rule_before_pickup' => $validated['beforePickup'] ?? null,
+            'rule_at_pickup'     => $validated['atPickup'] ?? null,
+            'rule_usage'         => $validated['usage'] ?? null,
+            'rule_return'        => $validated['return'] ?? null,
+            'rule_overtime'      => $validated['overtimePolicy'] ?? null,
+        ]);
+
+        // simpan gambar baru
+        if ($request->hasFile('carImage')) {
+            foreach ($request->file('carImage') as $file) {
+                $path = $file->store('cars', 'public');
+                $car->imagePath()->create([
+                    'image_path' => $path,
+                ]);
+            }
+
+            if (!$car->main_image && $car->imagePath()->exists()) {
+                $car->update(['main_image' => $car->imagePath()->first()->image_path]);
+            }
+        }
+
+        return redirect()
+            ->route('owner.cars.management')
+            ->with('success', 'Car updated successfully.');
+    }
+
+
+    // delete a car
+    public function destroy($id)
+    {
+        $car = Car::findOrFail($id);
+        $car->delete();
+
+        return redirect()->route('owner.cars.management')
+            ->with('success', 'Car deleted successfully');
+    }
 }
 
+// hooks/useCarForm.js
+import { useState, useEffect } from "react";
 
-public function destroy($id)
-{
-    $car = Car::findOrFail($id);
-    $car->delete();
-
-    // debug
-    // dd($car);
-
-    return redirect()->route('owner.cars.management')
-        ->with('success', 'Car deleted successfully');
-}
-
-// add brand
-public function store(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-    ]);
-
-    \App\Models\CarBrand::create([
-        'name' => $request->name,
-    ]);
-
-    return redirect()->back()->with('success', 'Brand added successfully');
-}
-
-public function modelsStore(Request $request)
-{
-    $request->validate([
-    'brand_id' => 'required|exists:car_brands,id', // pastikan nama tabel sesuai migration
-    'name' => 'required|string|max:255',
-    ]);
-
-    CarModel::create([
-        'car_brand_id' => $request->brand_id,
-        'name' => $request->name,
-    ]);
-
-    return back()->with('success', 'Model added successfully');
-}
-
-
-}
-
-import React, { useState, useEffect } from "react";
-import { usePage, Link, Head } from "@inertiajs/react";
-import { Inertia } from "@inertiajs/inertia";
-import {
-    ArrowLeft,
-    Settings,
-    AlertTriangle,
-    FileText,
-    CheckCircle,
-} from "lucide-react";
-import Layout from "../../Layout";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea"; // kalau kamu ada komponen ini di shadcn/ui
-
-
-
-const CarDetail = ({ car }) => {
-    // const { props } = usePage();
-    // const { car } = props || {}; // aman kalau props belum siap
-
-      // ubah price ke rupiah
-
-
-
-    const formatRupiah = (value) => {
-        if (!value) return "";
-        return new Intl.NumberFormat("id-ID", {
-            style: "currency",
-            currency: "IDR",
-            minimumFractionDigits: 0,
-        }).format(value);
-        };
-
-         const handleRemoveImage = (indexToRemove) => {
-  setFormData((prev) => ({
-    ...prev,
-    carImage: prev.carImage.filter((_, index) => index !== indexToRemove),
-  }));
-};
-
+export default function useCarForm(car) {
     const [isAvailable, setIsAvailable] = useState(true);
-
-  // Pindahkan fungsi handleAvailabilityChange ke dalam scope CarDetail
-  const handleAvailabilityChange = (e) => {
-    setIsAvailable(e.target.value === "Available");
-    // Atur juga formData.availableStatus di sini
-    setFormData((prev) => ({
-      ...prev,
-      availableStatus: e.target.value,
-    }));
-  };
-
     const [formData, setFormData] = useState({
         plateNumber: "",
         brand: "",
@@ -446,14 +307,21 @@ const CarDetail = ({ car }) => {
         afterBooking: "",
         atPickUp: "",
         beforePickup: "",
-        atPickup: "",
         usage: "",
         return: "",
         overtime: "",
         address: "",
     });
 
-    // inisialisasi data ketika car tersedia
+    const formatRupiah = (value) => {
+        if (!value) return "";
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+        }).format(value);
+    };
+
     useEffect(() => {
         if (car) {
             setFormData({
@@ -474,9 +342,9 @@ const CarDetail = ({ car }) => {
                 carImage: car.photo ? [car.photo] : [],
                 beforeBooking: car.before_booking ?? "",
                 afterBooking: car.after_booking ?? "",
-                atPickUp: car.at_pickup ?? "",
+                duringPickup: car.during_pickup ?? "",
                 beforePickup: car.before_pickup ?? "",
-                atPickup: car.at_pickup ?? "",
+                atPickUp: car.at_pickup ?? "",
                 usage: car.usage ?? "",
                 return: car.return ?? "",
                 overtime: car.overtime ?? "",
@@ -485,43 +353,19 @@ const CarDetail = ({ car }) => {
         }
     }, [car]);
 
-    const { brands, models } = usePage().props;
-// Provide an empty array as a default
-
-const selectedBrand = brands.find(b => b.name === formData.brand);
-const filteredModels = models.filter(m => m.car_brand_id === selectedBrand?.id);
-
-    // radio button driver// radio button driver
     const handleInputChange = (e) => {
         const { name, value, type } = e.target;
-
         setFormData((prev) => {
             if (type === "radio") {
-                if (name === "hasDriver") {
-                    // Logika untuk radio button "Driver"
-                    return {
-                        ...prev,
-                        hasDriver: value === "withDriver",
-                    };
-                }
+                if (name === "hasDriver") return { ...prev, hasDriver: value === "withDriver" };
                 if (name === "availableStatus") {
-                    // Logika untuk radio button "Availability"
                     setIsAvailable(value === "Available");
-                    return {
-                        ...prev,
-                        availableStatus: value,
-                    };
+                    return { ...prev, availableStatus: value };
                 }
             }
-            // Logika untuk input lain
-            return {
-                ...prev,
-                [name]: value,
-            };
+            return { ...prev, [name]: value };
         });
     };
-
-
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
@@ -531,546 +375,109 @@ const filteredModels = models.filter(m => m.car_brand_id === selectedBrand?.id);
         }));
     };
 
-
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("Final Form Data:", formData);
-        alert("Form submitted successfully!");
+    const handleRemoveImage = (indexToRemove) => {
+        setFormData((prev) => ({
+            ...prev,
+            carImage: prev.carImage.filter(
+                (_, index) => index !== indexToRemove
+            ),
+        }));
     };
 
-     const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 60 }, (_, i) => currentYear - i); // contoh 35 tahun ke belakang
+    return { isAvailable, formatRupiah, formData, setFormData, handleInputChange, handleImageChange, handleRemoveImage };
+}
 
-//   disable button avalaible
-//   const isDisabled = formData.availableStatus === "Not Available";
+import React from "react";
+import { Link, Head, router } from "@inertiajs/react";
+import { ArrowLeft } from "lucide-react";
+
+import { Button } from "@/Components/ui/button";
+
+import Layout from "../../Layout";
+import BasicInformation from "./Details/BasicInformation";
+import ImportantInformation from "./Details/ImportantInformation";
+import Policies from "./Details/Policies";
+import useCarForm from "./Hooks/useCarForm";
+
+const CarDetail = ({ car }) => {
+    const { formData } = useCarForm(car);
+
+    const handleUpdate = (e) => {
+        e.preventDefault();
+
+        const data = new FormData();
+        Object.keys(formData).forEach((key) => {
+            if (key === "carImage") {
+                formData.carImage.forEach((file) => {
+                    if (file instanceof File) {
+                        data.append("carImage[]", file);
+                    }
+                });
+            } else {
+                data.append(key, formData[key]);
+            }
+        });
+
+        router.put(route("owner.cars.update", car.id), data, {
+            forceFormData: true,
+            method: "put",
+            onSuccess: () => {
+                alert("Car updated successfully");
+            },
+            onError: (errors) => {
+                console.error(errors);
+                alert("Failed to update car");
+            },
+        });
+    };
 
     return (
         <>
-            <Head title="Cars Management" />
+            <Head title={`Car Detail - ${car.brand}`} />
             <Layout>
                 <div className="p-6 max-w-3xl mx-auto border border-gray-300 rounded-xl">
-                    <Head title={`Car Detail - ${car.brand}`} />
-
-                    {/*  button back*/}
                     {/* Back Button */}
                     <div className="mb-6 flex items-center">
                         <Link
-                        href={route("owner.cars.management")}
-                        className="flex items-center text-blue-600 hover:text-blue-800"
+                            href={route("owner.cars.management")}
+                            className="flex items-center text-blue-600 hover:text-blue-800"
                         >
-                        <ArrowLeft className="w-5 h-5 mr-2" />
-                        Back to Cars Management
+                            <ArrowLeft className="w-5 h-5 mr-2" />
+                            Back to Cars Management
                         </Link>
                     </div>
 
-                    <h2 className="text-lg text-center font-semibold mb-4">1. Basic Information</h2>
-                    <div className="space-y-4">
-                        {/* Plate Number + Brand */}
-                            <div className="flex gap-4 mt-1">
-                                <div className="flex-1">
-                                    <Label htmlFor="plateNumber">Plate Number</Label>
-                                    <Input
-                                    id="plateNumber"
-                                    name="plateNumber"
-                                    value={formData.plateNumber}
-                                    onChange={handleInputChange}
-                                    placeholder="Enter plate number"
-                                    disabled={!isAvailable}
-                                    // {plateNumber.map((plateNumber, index) => (
-                                    //     <option key={index} value={brand.name}>
-                                    //         {brand.name}
-                                    //     </option>
-                                    //     ))}
-                                    />
-                                </div>
+                    <form onSubmit={handleUpdate}>
+                        <h2 className="text-lg text-center font-semibold mb-4">
+                            1. Basic Information
+                        </h2>
+                        <BasicInformation car={car} />
 
-                            {/* Brand */}
-                                    <div className="flex-1">
-                                        <Label htmlFor="brand">Brand</Label>
-                                        <select
-                                        id="brandSelect"
-                                        name="brand"
-                                        value={formData.brand}
-                                        onChange={handleInputChange}
-                                        className="w-full border border-gray-300 rounded-md p-2 "
-                                        disabled={!isAvailable}
-                                        >
-                                        <option value="" >Select a brand</option>
-                                        {brands && brands.map((brand, index) => (
-                                        <option key={index} value={brand.name}>
-                                            {brand.name}
-                                        </option>
-                                    ))}
-                                        </select>
-                                    </div>
-                            </div>
+                        <h2 className="text-lg text-center font-semibold py-4">
+                            2. Important Information
+                        </h2>
+                        <ImportantInformation car={car} />
 
-                              {/* Model + Type + fuek */}
-                              <div className="flex gap-4 mt-1">
-                                <div className="flex-1">
-                                  <Label htmlFor="model">Model</Label>
-                                  <select
-                                  id="modelSelect"
-                                  name="model"
-                                  value={formData.model}
-                                  onChange={handleInputChange}
-                                  disabled={!isAvailable}
-                                  className="w-full border border-gray-300 rounded-md p-2"
-                                >
-                                  <option value="">Select a Model</option>
-                                  {filteredModels.map((model) => (
-  <option key={model.id} value={model.name}>
-    {model.name}
-  </option>
-))}
+                        <h2 className="text-lg text-center font-semibold py-4">
+                            3. Policies
+                        </h2>
+                        <Policies car={car} />
 
-                                </select>
+                        {/* <h2 className="text-lg text-center font-semibold py-4">
+                            4. Rent Detail
+                        </h2>
+                        <RentDetail car={car} /> */}
 
-                                </div>
-                                <div className="flex-1">
-                                  <Label htmlFor="type">Type</Label>
-                                  <Input
-                                    id="type"
-                                    name="type"
-                                    value={formData.type}
-                                    onChange={handleInputChange}
-                                    placeholder="Enter type"
-                                    disabled={!isAvailable}
-                                  />
-                                </div>
-
-                                <div className="flex-1">
-                                    <div className="flex-1">
-                                          <Label htmlFor="fuel">Fuel</Label>
-                                          <Input
-                                            id="fuel"
-                                            name="fuel"
-                                            value={formData.fuel}
-                                            onChange={handleInputChange}
-                                            placeholder="Enter fuel type"
-                                            disabled={!isAvailable}
-                                    />
-                                </div>
-                              </div>
-                              </div>
-
-                            {/* Transmission + seat + Year */}
-                              <div className="flex gap-4 mt-1">
-                                <div className="flex-1">
-                                        <Label htmlFor="transmission">Transmission</Label>
-                                        <Input
-                                            id="transmission"
-                                            name="transmission"
-                                            value={formData.transmission}
-                                            disabled={!isAvailable}
-                                            onChange={handleInputChange}
-                                            placeholder="Enter transmission"
-                                        />
-                                        </div>
-                                <div className="flex-1">
-                                        <Label htmlFor="seat">Seat</Label>
-                                        <Input
-                                            type="number"
-                                            id="seat"
-                                            name="seat"
-                                            value={formData.seat}
-                                            disabled={!isAvailable}
-                                            onChange={handleInputChange}
-                                            placeholder="Enter seat number"
-                                        />
-                                        </div>
-                                        <div className="flex-1">
-                                        <Label htmlFor="year">Year</Label>
-                                        <select
-                                            id="year"
-                                            name="year"
-                                            value={formData.year}
-                                            onChange={handleInputChange}
-                                            disabled={!isAvailable}
-                                            className="w-full border border-gray-300 rounded-sm p-2"
-                                        >
-                                            <option value="" disabled hidden>
-                                            Select year
-                                            </option>
-                                            {years.map((y) => (
-                                            <option key={y} value={y}>
-                                                {y}
-                                            </option>
-                                            ))}
-                                        </select>
-                                        </div>
-                              </div>
-
-                            {/* color & city */}
-                            <div className="flex gap-4 mt-1">
-                                    <div className="flex-1">
-                                    <Label htmlFor="color">Color</Label>
-                                    <Input
-                                        id="color"
-                                        name="color"
-                                        value={formData.color}
-                                        onChange={handleInputChange}
-                                        placeholder="Enter color"
-                                    />
-                                    </div>
-                                    <div className="flex-1">
-                                    <Label htmlFor="city">City</Label>
-                                    <Input
-                                        id="city"
-                                        name="city"
-                                        value={formData.city}
-                                        onChange={handleInputChange}
-                                        placeholder="Enter city"
-                                    />
-                                    </div>
-                                </div>
-
-                            {/* driver & available */}
-                           <div className="flex gap-4 mt-1">
-                                {/* Driver */}
-                                  <div className="flex-1">
-                                    <Label>Driver</Label>
-                                    <div className="flex gap-4 mt-1">
-                                      <label className="flex items-center gap-2">
-                                        <input
-                                          type="radio"
-                                          name="hasDriver"
-                                          value="withDriver"
-                                          disabled={!isAvailable}
-                                          checked={formData.hasDriver === true}
-                                          onChange={handleInputChange}
-                                        />
-                                        With Driver
-                                      </label>
-                                      <label className="flex items-center gap-2">
-                                        <input
-                                          type="radio"
-                                          name="hasDriver"
-                                          value="withoutDriver"
-                                          checked={formData.hasDriver === false}
-                                          onChange={handleInputChange}
-                                        />
-                                        Without Driver
-                                      </label>
-                                    </div>
-                                  </div>
-
-                                {/* available */}
-                                  <div className="flex-1">
-                                    <Label>availability</Label>
-                                    <div className="flex gap-4 mt-1">
-                                      <label className="flex items-center gap-2">
-                                        <input
-                                          type="radio"
-                                          name="availableStatus"
-                                          value="Available"
-                                          checked={formData.availableStatus === "Available"}
-                                          onChange={handleInputChange}
-                                        />{' '}
-                                        Available
-                                      </label>
-                                      <label className="flex items-center gap-2">
-                                        <input
-                                          type="radio"
-                                          name="availableStatus"
-                                          value="Not Available"
-                                          checked={formData.availableStatus === "Not Available"}
-                                          onChange={handleInputChange}
-                                        />{' '}
-                                        Not Available
-                                      </label>
-                                    </div>
-                                  </div>
-                           </div>
-
-
-                                {/* price & driver fee */}
-                                <div className="flex gap-4 mt-1">
-                                        <div className="flex-1">
-                                            <Label htmlFor="price">Price / Day</Label>
-                                            <Input
-                                            type="text"
-                                            id="price"
-                                            name="price"
-                                            disabled={!isAvailable}
-                                            value={formatRupiah(formData.price)}
-
-                                            onChange={(e) => {
-                                                // Ambil hanya angka dari input
-                                                const raw = e.target.value.replace(/\D/g, "");
-                                                handleInputChange({
-                                                    target: {
-                                                    name: "price",
-                                                    value: raw, // simpan angka murni ke state
-                                                    },
-                                                });
-                                                }}
-                                            placeholder="Enter price per day"
-                                            />
-                                        </div>
-
-                                     {/* Driver Fees */}
-
-                                {formData.hasDriver && (
-                                    <div className="flex-1">
-                                        <Label htmlFor="driverFee">Driver Fee / Day</Label>
-                                        <Input
-                                            type="text"
-                                            id="driverFee"
-                                            name="driverFee"
-                                            disabled={!isAvailable}
-                                            value={formatRupiah(formData.driverFee)}
-                                            onChange={(e) => {
-                                                 const raw = e.target.value.replace(/\D/g, "");
-                                                 handleInputChange({
-                                                     target: {
-                                                         name: "driverFee",
-                                                         value: raw,
-                                                     },
-                                                 });
-                                             }}
-                                            placeholder="Enter driver fee"
-                                        />
-                                    </div>
-                                )}
-
-                                {/* Overtime Fee  */}
-                                {!formData.hasDriver && (
-                                        <div className="flex-1">
-                                            <Label htmlFor="overtime">Overtime Fee / Hour</Label>
-                                            <Input
-                                                type="text"
-                                                id="overtime"
-                                                name="overtime"
-                                                disabled={!isAvailable}
-                                                value={formatRupiah(formData.overtime)} // Gunakan formatRupiah di sini
-                                                 onChange={(e) => {
-                                                     const raw = e.target.value.replace(/\D/g, "");
-                                                     handleInputChange({
-                                                         target: {
-                                                             name: "overtime",
-                                                             value: raw,
-                                                         },
-                                                     });
-                                                 }}
-                                                placeholder="Enter overtime fee"
-                                            />
-                                        </div>
-                                    )}
-                                    </div>
-
-                                  {/* Image Upload */}
-                                  {/* <div>
-                                    <Label>Car Image</Label>
-                                    <Input
-                                    type="file"
-                                    name="carImage"
-                                    accept="image/*"
-                                    multiple
-                                    onChange={handleImageChange}
-                                    />
-                                    {formData.carImage && formData.carImage.length > 0 && (
-                                      <div className="flex gap-3 mt-3 flex-wrap">
-                                       {formData.carImage.map((img, i) => (
-                                          <div
-                                            key={i}
-                                            className="relative w-20 h-20 border border-gray-300 rounded-md overflow-hidden"
-                                          >
-                                            <img
-                                              src={URL.createObjectURL(img)}
-                                              alt={`Car preview ${i}`}
-                                              className="w-full h-full object-cover"
-                                            />
-                                            <button
-                                              type="button"
-                                              onClick={() => handleRemoveImage(i)}
-                                              className="absolute top-1 right-1 bg-black/50 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-black/70"
-                                            >
-                                              &times;
-                                            </button>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    )}
-                                  </div>
-
-
-                        <div className="col-span-2">
-                        <label>Image</label>
-                        {car.image_url ? (
-                            <img src={car.image_url} alt={car.brand} className="w-32 h-24 rounded-lg object-cover mt-2" />
-                        ) : (
-                            <div className="w-32 h-24 bg-gray-200 rounded-lg flex items-center justify-center mt-2">No Image</div>
-                        )}
-                        </div> */}
-
-
-                              {/* Image Upload */}
-                              {/* <div>
-                                <Label>Car Image</Label>
-                                <Input
-                                type="file"
-                                name="carImage"
-                                accept="image/*"
-                                multiple
-                                onChange={handleImageChange}
-                                />
-                                {formData.carImage && formData.carImage.length > 0 && (
-                                  <div className="flex gap-3 mt-3 flex-wrap">
-                                   {formData.carImage.map((img, i) => (
-                                      <div
-                                        key={i}
-                                        className="relative w-20 h-20 border border-gray-300 rounded-md overflow-hidden"
-                                      >
-                                        <img
-                                          src={URL.createObjectURL(img)}
-                                          alt={`Car preview ${i}`}
-                                          className="w-full h-full object-cover"
-                                        />
-                                        <button
-                                          type="button"
-                                          onClick={() => handleRemoveImage(i)}
-                                          className="absolute top-1 right-1 bg-black/50 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-black/70"
-                                        >
-                                          &times;
-                                        </button>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                              </div> */}
-                    </div>
-
-                    <h2 className="text-lg text-center font-semibold mb-4">2. Important Information</h2>
-                    <div className="space-y-4 ">
-                                <div>
-                                  <Label htmlFor="beforeBooking">Before Booking</Label>
-                                  <Textarea
-                                    id="beforeBooking"
-                                    name="beforeBooking"
-                                    disabled={!isAvailable}
-                                    rows={5}
-                                    placeholder="Enter information for the customer before they book..."
-                                    value={formData.beforeBooking || ""}
-                                    onChange={handleInputChange}
-                                  />
-                                </div>
-
-                                <div>
-                                  <Label htmlFor="afterBooking">After Booking</Label>
-                                  <Textarea
-                                    id="afterBooking"
-                                    name="afterBooking"
-                                    rows={5}
-                                    disabled={!isAvailable}
-                                    placeholder="Enter information for the customer after they have booked..."
-                                    value={formData.afterBooking || ""}
-                                    onChange={handleInputChange}
-                                  />
-                                </div>
-
-                                <div>
-                                  <Label htmlFor="atPickUp">At Pick Up</Label>
-                                  <Textarea
-                                    id="atPickUp"
-                                    name="atPickUp"
-                                    rows={5}
-                                    disabled={!isAvailable}
-                                    placeholder="Enter information for the customer when they pick up the car..."
-                                    value={formData.atPickUp || ""}
-                                    onChange={handleInputChange}
-                                  />
-                                </div>
-                    </div>
-
-                    <h2 className="text-lg text-center font-semibold mb-4">3. Policies</h2>
-                    <div className="space-y-4 ">
-                        <div>
-                        <Label htmlFor="beforePickup">Before Pickup</Label>
-                        <Textarea
-                            id="beforePickup"
-                            name="beforePickup"
-                            rows={5}
-                            disabled={!isAvailable}
-                            placeholder="Enter policies for the customer before they pick up the car..."
-                            value={formData.beforePickup || ""}
-                            onChange={handleInputChange}
-                        />
+                        <div className="flex justify-end items-end pt-4">
+                            <Button
+                                type="submit"
+                                className="w-30 bg-blue-400 hover:bg-blue-600"
+                            >
+                                Save
+                            </Button>
                         </div>
-
-                        <div>
-                        <Label htmlFor="atPickup">At Pickup</Label>
-                        <Textarea
-                            id="atPickup"
-                            name="atPickup"
-                            rows={5}
-                            disabled={!isAvailable}
-                            placeholder="Enter policies for the customer at the time of pickup..."
-                            value={formData.atPickup || ""}
-                            onChange={handleInputChange}
-                        />
-                        </div>
-
-                        <div>
-                        <Label htmlFor="usage">Usage</Label>
-                        <Textarea
-                            id="usage"
-                            name="usage"
-                            rows={5}
-                            disabled={!isAvailable}
-                            placeholder="Enter policies regarding car usage, such as mileage limits or restrictions..."
-                            value={formData.usage || ""}
-                            onChange={handleInputChange}
-                        />
-                        </div>
-
-                        <div>
-                        <Label htmlFor="return">Return</Label>
-                        <Textarea
-                            id="return"
-                            name="return"
-                            rows={5}
-                            disabled={!isAvailable}
-                            placeholder="Enter policies for returning the car, such as fuel level or cleanliness..."
-                            value={formData.return || ""}
-                            onChange={handleInputChange}
-                        />
-                        </div>
-
-                        <div>
-                        <Label htmlFor="overtime">Overtime</Label>
-                        <Textarea
-                            id="overtime"
-                            name="overtime"
-                            rows={5}
-                            disabled={!isAvailable}
-                            placeholder="Enter policies for overtime charges or extensions..."
-                            value={formData.overtime || ""}
-                            onChange={handleInputChange}
-                        />
-                        </div>
-                    </div>
-
-                    <h2 className="text-lg text-center font-semibold mb-4">4. Rent Detail</h2>
-                    <div className="space-y-4">
-                        <div>
-                            <Label htmlFor="address">Address</Label>
-                            <Textarea
-                                id="address"
-                                name="address"
-                                rows={5}
-                                disabled={!isAvailable}
-                                placeholder="Enter the pickup address for the car..."
-                                value={formData.address || ""}
-                                onChange={handleInputChange}
-                            />
-                            <a href="#" className="text-blue-500 text-sm mt-2 inline-block">
-                                Change your address
-                            </a>
-                        </div>
-                    </div>
-                    </div>
+                    </form>
+                </div>
             </Layout>
         </>
     );
@@ -1078,80 +485,457 @@ const filteredModels = models.filter(m => m.car_brand_id === selectedBrand?.id);
 
 export default CarDetail;
 
-<?php
+import React, { useState, useEffect } from "react";
+import { usePage } from "@inertiajs/react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import useCarForm from "../Hooks/useCarForm";
 
-namespace App\Models;
+const BasicInformation = ({ car }) => {
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+    const { isAvailable, formatRupiah, formData, handleInputChange, handleImageChange, handleRemoveImage } = useCarForm(car);
 
-/**
- * @mixin IdeHelperCar
- */
-class Car extends Model
-{
-    use HasFactory;
+    const { brands, models } = usePage().props;
 
-    protected $fillable = [
-        'user_id',
-        'car_brand_id',
-        'car_model_id',
-        'car_type_id',
-        'car_color_id',
-        'car_fuel_type_id',
-        'car_transmission_id',
-        'main_image',
-        'plate_number',
-        'capacity',
-        'year',
-        'description',
-        'price_per_day',
-        'is_available',
-    ];
+    const selectedBrand = brands.find((b) => b.name === formData.brand);
+    const filteredModels = models.filter(
+        (m) => m.car_brand_id === selectedBrand?.id
+    );
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: 60 }, (_, i) => currentYear - i);
 
-    public function rentals()
-    {
-        return $this->hasMany(Rental::class );
-    }
+    return (
+        <div className="space-y-4">
+            {/* Plate Number + Brand */}
+            <div className="flex gap-4 mt-1">
+                <div className="flex-1">
+                    <Label htmlFor="plateNumber">
+                        Plate Number
+                    </Label>
+                    <Input
+                        id="plateNumber"
+                        name="plateNumber"
+                        value={formData.plateNumber}
+                        onChange={handleInputChange}
+                        placeholder="Enter plate number"
+                        disabled={!isAvailable}
 
-    // cars variable
-    public function brand()
-    {
-        return $this->belongsTo(CarBrand::class, 'car_brand_id');
-    }
+                    />
+                </div>
 
-    public function model()
-    {
-        return $this->belongsTo(CarModel::class, 'car_model_id');
-    }
+                {/* Brand */}
+                <div className="flex-1">
+                    <Label htmlFor="brand">Brand</Label>
+                    <select
+                        id="brandSelect"
+                        name="brand"
+                        value={formData.brand}
+                        onChange={handleInputChange}
+                        className="w-full border border-gray-300 rounded-md p-2 "
+                        disabled={!isAvailable}
+                    >
+                        <option value="">Select a brand</option>
+                        {brands &&
+                            brands.map((brand, index) => (
+                                <option
+                                    key={index}
+                                    value={brand.name}
+                                >
+                                    {brand.name}
+                                </option>
+                            ))}
+                    </select>
+                </div>
+            </div>
 
-    public function type()
-    {
-        return $this->belongsTo(CarType::class, 'car_type_id');
-    }
+            {/* Model + Type + fuel */}
+            <div className="flex gap-4 mt-1">
+                <div className="flex-1">
+                    <Label htmlFor="model">Model</Label>
+                    <select
+                        id="modelSelect"
+                        name="model"
+                        value={formData.model}
+                        onChange={handleInputChange}
+                        disabled={!isAvailable}
+                        className="w-full border border-gray-300 rounded-md p-2"
+                    >
+                        <option value="">Select a Model</option>
+                        {filteredModels.map((model) => (
+                            <option
+                                key={model.id}
+                                value={model.name}
+                            >
+                                {model.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="flex-1">
+                    <Label htmlFor="type">Type</Label>
+                    <Input
+                        id="type"
+                        name="type"
+                        value={formData.type}
+                        onChange={handleInputChange}
+                        placeholder="Enter type"
+                        disabled={!isAvailable}
+                    />
+                </div>
 
-    public function imagePath()
-    {
-        return $this->hasMany(CarImage::class);
-    }
+                <div className="flex-1">
+                    <div className="flex-1">
+                        <Label htmlFor="fuel">Fuel</Label>
+                        <Input
+                            id="fuel"
+                            name="fuel"
+                            value={formData.fuel}
+                            onChange={handleInputChange}
+                            placeholder="Enter fuel type"
+                            disabled={!isAvailable}
+                        />
+                    </div>
+                </div>
+            </div>
 
-    public function color()
-    {
-        return $this->belongsTo(CarColor::class, 'car_color_id');
-    }
+            {/* Transmission + seat + Year */}
+            <div className="flex gap-4 mt-1">
+                <div className="flex-1">
+                    <Label htmlFor="transmission">
+                        Transmission
+                    </Label>
+                    <Input
+                        id="transmission"
+                        name="transmission"
+                        value={formData.transmission}
+                        disabled={!isAvailable}
+                        onChange={handleInputChange}
+                        placeholder="Enter transmission"
+                    />
+                </div>
+                <div className="flex-1">
+                    <Label htmlFor="seat">Seat</Label>
+                    <Input
+                        type="number"
+                        id="seat"
+                        name="seat"
+                        value={formData.seat}
+                        disabled={!isAvailable}
+                        onChange={handleInputChange}
+                        placeholder="Enter seat number"
+                    />
+                </div>
+                <div className="flex-1">
+                    <Label htmlFor="year">Year</Label>
+                    <select
+                        id="year"
+                        name="year"
+                        value={formData.year}
+                        onChange={handleInputChange}
+                        disabled={!isAvailable}
+                        className="w-full border border-gray-300 rounded-sm p-2"
+                    >
+                        <option value="" disabled hidden>
+                            Select year
+                        </option>
+                        {years.map((y) => (
+                            <option key={y} value={y}>
+                                {y}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            </div>
 
-    public function fuelType()
-    {
-        return $this->belongsTo(CarFuelType::class, 'car_fuel_type_id');
-    }
+            {/* color & city */}
+            <div className="flex gap-4 mt-1">
+                <div className="flex-1">
+                    <Label htmlFor="color">Color</Label>
+                    <Input
+                        id="color"
+                        name="color"
+                        value={formData.color}
+                        onChange={handleInputChange}
+                        placeholder="Enter color"
+                    // className="w-[32%]"
+                    />
+                </div>
+                <div className="flex-1">
+                    <Label htmlFor="price">Price / Day</Label>
+                    <Input
+                        type="text"
+                        id="price"
+                        name="price"
+                        disabled={!isAvailable}
+                        value={formatRupiah(formData.price)}
+                        onChange={(e) => {
+                            // Ambil hanya angka dari input
+                            const raw = e.target.value.replace(
+                                /\D/g,
+                                ""
+                            );
+                            handleInputChange({
+                                target: {
+                                    name: "price",
+                                    value: raw, // simpan angka murni ke state
+                                },
+                            });
+                        }}
+                        placeholder="Enter price per day"
+                    />
+                </div>
+            </div>
 
-    public function transmission()
-    {
-        return $this->belongsTo(CarTransmission::class, 'car_transmission_id');
-    }
+            {/* price & driver fee */}
+            <div className="flex gap-4 mt-1">
+                {/* Driver Fees */}
+
+                <div className="flex-1">
+                    <Label htmlFor="driverFee">
+                        Driver Fee / Day
+                    </Label>
+                    <Input
+                        type="text"
+                        id="driverFee"
+                        name="driverFee"
+                        disabled={!isAvailable}
+                        value={formatRupiah(formData.driverFee)}
+                        onChange={(e) => {
+                            const raw = e.target.value.replace(
+                                /\D/g,
+                                ""
+                            );
+                            handleInputChange({
+                                target: {
+                                    name: "driverFee",
+                                    value: raw,
+                                },
+                            });
+                        }}
+                        placeholder="Enter driver fee"
+                    />
+                </div>
+                {/* )} */}
+
+                {/* karena ini pengaturan awal dan mengatahui hahwa saat ini has driver or not diatur dalam profile, sehingga bagian ini akan selalu tampil */}
+                {/* Overtime Fee  */}
+                <div className="flex-1">
+                    <Label htmlFor="overtime">
+                        Overtime Fee / Hour
+                    </Label>
+                    <Input
+                        type="text"
+                        id="overtime"
+                        name="overtime"
+                        disabled={!isAvailable}
+                        value={formatRupiah(formData.overtime)} // Gunakan formatRupiah di sini
+                        onChange={(e) => {
+                            const raw = e.target.value.replace(
+                                /\D/g,
+                                ""
+                            );
+                            handleInputChange({
+                                target: {
+                                    name: "overtime",
+                                    value: raw,
+                                },
+                            });
+                        }}
+                        placeholder="Enter overtime fee"
+                    />
+                </div>
+            </div>
+
+            {/* Image Upload */}
+            <div>
+                <Label>Car Image</Label>
+                <Input
+                    type="file"
+                    name="carImage"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageChange}
+                />
+                {formData.carImage && formData.carImage.length > 0 && (
+                    <div className="flex gap-3 mt-3 flex-wrap">
+                        {formData.carImage.map((img, i) => {
+                            let previewUrl;
+
+                            // kalau img adalah File (baru diupload user)
+                            if (img instanceof File) {
+                                previewUrl = URL.createObjectURL(img);
+                            }
+                            // kalau img string (misalnya dari database / backend)
+                            else if (typeof img === "string") {
+                                previewUrl = img; // langsung pakai URL dari backend
+                            }
+                            else {
+                                return null; // skip kalau bukan keduanya
+                            }
+
+                            return (
+                                <div
+                                    key={i}
+                                    className="relative border border-gray-300 rounded-md overflow-hidden"
+                                >
+                                    <img
+                                        src={previewUrl}
+                                        alt={`Car preview ${i}`}
+                                        className="w-auto h-[150px] object-cover"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveImage(i)}
+                                        className="absolute top-1 right-1 bg-black/50 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-black/70"
+                                    >
+                                        &times;
+                                    </button>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
 }
+
+export default BasicInformation;
+
+import React from "react";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea"; // kalau kamu ada komponen ini di shadcn/ui
+import useCarForm from "../Hooks/useCarForm";
+
+const ImportantInformation = ({ car }) => {
+    const { formData, handleInputChange, isAvailable } = useCarForm(car);
+
+    return (
+        <div className="space-y-4 ">
+            <div>
+                <Label htmlFor="beforeBooking">
+                    Before Booking
+                </Label>
+                <Textarea
+                    id="beforeBooking"
+                    name="beforeBooking"
+                    disabled={!isAvailable}
+                    rows={5}
+                    placeholder="Enter information for the customer before they book..."
+                    value={formData.beforeBooking || ""}
+                    onChange={handleInputChange}
+                />
+            </div>
+
+            <div>
+                <Label htmlFor="afterBooking">After Booking</Label>
+                <Textarea
+                    id="afterBooking"
+                    name="afterBooking"
+                    rows={5}
+                    disabled={!isAvailable}
+                    placeholder="Enter information for the customer after they have booked..."
+                    value={formData.afterBooking || ""}
+                    onChange={handleInputChange}
+                />
+            </div>
+
+            <div>
+                <Label htmlFor="duringPickUp">During Pick Up</Label>
+                <Textarea
+                    id="duringPickUp"
+                    name="duringPickUp"
+                    rows={5}
+                    disabled={!isAvailable}
+                    placeholder="Enter information for the customer when they pick up the car..."
+                    value={formData.duringPickup || ""}
+                    onChange={handleInputChange}
+                />
+            </div>
+        </div>
+    );
+}
+
+export default ImportantInformation;
+
+import React from "react";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea"; 
+import useCarForm from "../Hooks/useCarForm";
+
+const Policies = ({ car }) => {
+    const { formData, handleInputChange, isAvailable } = useCarForm(car);
+
+    return (
+        <div className="space-y-4 ">
+            <div>
+                <Label htmlFor="beforePickup">Before Pickup</Label>
+                <Textarea
+                    id="beforePickup"
+                    name="beforePickup"
+                    rows={5}
+                    disabled={!isAvailable}
+                    placeholder="Enter policies for the customer before they pick up the car..."
+                    value={formData.beforePickup || ""}
+                    onChange={handleInputChange}
+                />
+            </div>
+
+            <div>
+                <Label htmlFor="atPickup">At Pickup</Label>
+                <Textarea
+                    id="atPickup"
+                    name="atPickup"
+                    rows={5}
+                    disabled={!isAvailable}
+                    placeholder="Enter policies for the customer at the time of pickup..."
+                    value={formData.atPickup || ""}
+                    onChange={handleInputChange}
+                />
+            </div>
+
+            <div>
+                <Label htmlFor="usage">Usage</Label>
+                <Textarea
+                    id="usage"
+                    name="usage"
+                    rows={5}
+                    disabled={!isAvailable}
+                    placeholder="Enter policies regarding car usage, such as mileage limits or restrictions..."
+                    value={formData.usage || ""}
+                    onChange={handleInputChange}
+                />
+            </div>
+
+            <div>
+                <Label htmlFor="return">Return</Label>
+                <Textarea
+                    id="return"
+                    name="return"
+                    rows={5}
+                    disabled={!isAvailable}
+                    placeholder="Enter policies for returning the car, such as fuel level or cleanliness..."
+                    value={formData.return || ""}
+                    onChange={handleInputChange}
+                />
+            </div>
+
+            <div>
+                <Label htmlFor="overtime">Overtime</Label>
+                <Textarea
+                    id="overtime"
+                    name="overtime"
+                    rows={5}
+                    disabled={!isAvailable}
+                    placeholder="Enter policies for overtime charges or extensions..."
+                    value={formData.overtime || ""}
+                    onChange={handleInputChange}
+                />
+            </div>
+        </div>
+    );
+}
+
+export default Policies;
+
