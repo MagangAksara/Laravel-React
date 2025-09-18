@@ -215,6 +215,7 @@ const AddCarForm = ({ isOpen, onClose }) => {
                         Add New Car
                     </DialogTitle>
                 </DialogHeader>
+                <DialogDescription/>
 
                 {/* Header Steps */}
                 <div className="flex items-center justify-between mb-6 w-full">
@@ -291,6 +292,7 @@ const AddCarForm = ({ isOpen, onClose }) => {
                             </Button>
                         )}
                         {step < 3 ? (
+                            <>
                             <Button
                                 className={`text-white ${
                                     isStepValid
@@ -302,6 +304,9 @@ const AddCarForm = ({ isOpen, onClose }) => {
                             >
                                 Next
                             </Button>
+                            {/* label yang akan menampilkan peringatan seandainya terdapat input atau select yang belum dipilih */}
+                            <Label></Label>
+                            </>
                         ) : (
                             <Button
                                 className={`text-white ${
