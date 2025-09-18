@@ -43,7 +43,11 @@ const CarsManagement = () => {
 
     // search
     const [searchValue, setSearchValue] = useState("");
-
+    // data yang sudah difilter
+    const filteredCars = cars.filter((car) => {
+        const name = `${car.brand} ${car.model} ${car.type} ${car.plate_number}`.toLowerCase();
+        return name.includes(searchValue.toLowerCase());
+    });
     const [results, setResults] = useState([]); // 🔹 state untuk hasil search
     const [showResults, setShowResults] = useState(false);
 
@@ -95,7 +99,7 @@ const CarsManagement = () => {
                     <SearchBox
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}
-                        placeholder="Search brand, model, type..."
+                        placeholder="Search brand, model, type, plate number..."
                     />
                 </div>
 
@@ -141,7 +145,7 @@ const CarsManagement = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {cars.map((car, i) => (
+                                    {filteredCars.map((car, i) => (
                                         <tr
                                             key={car.id}
                                             className="text-center"

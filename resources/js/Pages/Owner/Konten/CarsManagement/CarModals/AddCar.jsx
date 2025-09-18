@@ -22,6 +22,8 @@ import StepPolicies from "./StepPolicies";
 // import StepRentDetail from "./StepRentDetail";
 import ImportantInfoForm from "./StepImportant";
 
+
+
 const AddCarForm = ({ isOpen, onClose }) => {
     const [step, setStep] = useState(1);
 
@@ -46,8 +48,14 @@ const AddCarForm = ({ isOpen, onClose }) => {
         router.post(route("owner.cars.storeStepBasic"), data, {
             forceFormData: true,
             onSuccess: () => {
-                alert("Car added successfully!");
                 onClose(); // tutup dialog
+
+                // alert("Car added successfully!");
+                router.visit(route("owner.cars.management"), {
+                onFinish: () => {
+                    alert("Car added successfully!"); // muncul setelah redirect
+                },
+            });
             },
             onError: (errors) => {
                 console.error(errors);
@@ -73,9 +81,9 @@ const AddCarForm = ({ isOpen, onClose }) => {
         driverFee: "",
         overtimeFee: "",
         // Important info
-        beforeBooking: "",
-        afterBooking: "",
-        duringPickUp: "",
+        beforeBooking: "Be sure to read the rental terms",
+        afterBooking: "The provider will contact the driver via WhatsApp to request photos of some mandatory documents.",
+        duringPickUp: "Bring your ID card, driver's license, and any other documents required by the rental company.\nWhen you meet with the rental staff, inspect the car's condition with them.\nAfterward, read and sign the rental agreement.",
         // Policies
         beforePickup: "",
         atPickup: "",
