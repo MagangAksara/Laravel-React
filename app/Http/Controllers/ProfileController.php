@@ -23,11 +23,41 @@ class ProfileController extends Controller
         ]);
     }
 
+    // public function update(ProfileUpdateRequest $request): RedirectResponse
+    // {
+    //     $user = $request->user();
+
+    //     $user->fill($request->validated());
+
+    //     if ($user->isDirty('email')) {
+    //         $user->email_verified_at = null;
+    //     }
+
+    //     $user->save();
+
+    //     return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    // }
+
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
+        \Log::info('Data diterima :', $request->all());
+
         $user = $request->user();
 
-        $user->fill($request->validated());
+        $validated = $request->validated();
+
+        \Log::info('Data setelah validasi :', $validated);
+
+        // Handle profile picture upload
+        if ($request->hasFile('profile_picture')) {
+            $path = $request->file('profile_picture')->store('profiles', 'public');
+            $validated['profile_picture'] = "/storage/" . $path;
+        } else {
+            // kalau user tidak upload file, jangan hapus picture lama
+            unset($validated['profile_picture']);
+        }
+
+        $user->fill($validated);
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
@@ -120,5 +150,4 @@ class ProfileController extends Controller
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
-
 }

@@ -37,7 +37,7 @@ class HandleInertiaRequests extends Middleware
             // ],
             'auth' => [
                 'user' => fn () => $request->user() ? array_merge(
-                    $request->user()->only(['id', 'name', 'email', 'phone_number', 'is_driver']),
+                    $request->user()->only(['id', 'name', 'email', 'phone_number', 'profile_picture', 'is_driver']),
                     [
                         'role' => $request->user()->getRoleNames()->first(), // Ambil role pertama
                     ]

@@ -12,17 +12,24 @@ export default function UpdateProfileInformation({
 }) {
     const user = usePage().props.auth.user;
 
-    const { data, setData, patch, errors, processing, recentlySuccessful } =
+    const { data, setData, post, errors, processing, recentlySuccessful } =
         useForm({
             name: user.name,
             email: user.email,
             phone_number: user.phone_number || '',
+            profile_picture: user.profile_picture || 'https://i.pinimg.com/1200x/5d/f8/4f/5df84fb698e8c449cc8533eb22b5617f.jpg',
             is_driver: user.is_driver || false,
         });
 
+    const handlePictureChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            setData("profile_picture", e.target.files[0]);
+        }
+    };
+
     const submit = (e) => {
         e.preventDefault();
-        patch(route('profile.update'));
+        post(route('profile.update'));
     };
 
     return (
@@ -38,15 +45,32 @@ export default function UpdateProfileInformation({
                 <div className="flex flex-col items-center gap-4 w-1/3">
                     <div className="w-40 h-40 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center shadow-md">
                         <img
-                            src={user.profile_photo_url || 'https://i.pinimg.com/1200x/5d/f8/4f/5df84fb698e8c449cc8533eb22b5617f.jpg'}
+                            src={
+                                data.profile_picture instanceof File
+                                    ? URL.createObjectURL(data.profile_picture) // preview jika file baru
+                                    : data.profile_picture // tampilkan URL lama
+                            }
                             alt="Profile"
                             className="w-full h-full object-cover"
                         />
                     </div>
 
-                    <PrimaryButton className="flex flex-col justify-center w-full" type="button">
+                    <input
+                        id="profile_picture"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handlePictureChange}
+                    />
+
+                    <PrimaryButton
+                        className="flex flex-col justify-center w-full"
+                        type="button"
+                        onClick={() => document.getElementById("profile_picture").click()}
+                    >
                         Upload Picture
                     </PrimaryButton>
+                    <InputError className="mt-2" message={errors.profile_picture} />
                 </div>
 
                 {/* Bagian kanan: Form input */}
