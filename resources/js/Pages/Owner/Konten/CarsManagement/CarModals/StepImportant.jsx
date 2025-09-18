@@ -15,7 +15,7 @@ const ImportantInfoForm = ({ formData, handleInputChange }) => {
             name="beforeBooking"
             rows={5}
             placeholder="Enter information for the customer before they book..."
-            value={formData.beforeBooking || ""}
+            value={formData.beforeBooking || "Be sure to read the rental terms"}
             onChange={handleInputChange}
           />
         </div>
@@ -27,19 +27,19 @@ const ImportantInfoForm = ({ formData, handleInputChange }) => {
             name="afterBooking"
             rows={5}
             placeholder="Enter information for the customer after they have booked..."
-            value={formData.afterBooking || ""}
+            value={formData.afterBooking || "The provider will contact the driver via WhatsApp to request photos of some mandatory documents."}
             onChange={handleInputChange}
           />
         </div>
 
         <div>
-          <Label htmlFor="atPickUp">At Pick Up</Label>
+          <Label htmlFor="duringPickUp">At Pick Up</Label>
           <Textarea
-            id="atPickUp"
-            name="atPickUp"
+            id="duringPickUp"
+            name="duringPickUp"
             rows={5}
             placeholder="Enter information for the customer when they pick up the car..."
-            value={formData.atPickUp || ""}
+            value={formData.duringPickUp || "Bring your ID card, driver\'s license, and any other documents required by the rental company.\nWhen you meet with the rental staff, inspect the car\'s condition with them.\nAfterward, read and sign the rental agreement."}
             onChange={handleInputChange}
           />
         </div>

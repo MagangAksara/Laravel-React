@@ -6,7 +6,7 @@ const StepperHeader = ({ step }) => {
     { id: 1, icon: Settings },
     { id: 2, icon: AlertTriangle },
     { id: 3, icon: FileText },
-    { id: 4, icon: CheckCircle },
+    // { id: 4, icon: CheckCircle },
   ];
 
   return (

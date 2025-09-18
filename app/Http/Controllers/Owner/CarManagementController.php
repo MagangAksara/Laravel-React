@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 use App\Models\Car;
 use App\Models\CarBrand;
 use App\Models\CarColor;
@@ -10,13 +13,12 @@ use App\Models\CarFuelType;
 use App\Models\CarModel;
 use App\Models\CarTransmission;
 use App\Models\CarType;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
+
 
 
 class CarManagementController extends Controller
 {
-    // untuk cars manajement page
+    // untuk cars manajement page bagian dari show page utama dan add car yang merupakan pop up
     public function index()
     {
         // data dummy dulu, nanti bisa dari DB (Car model)
@@ -52,15 +54,29 @@ class CarManagementController extends Controller
         });
 
         //  ambil semua brand untuk dropdown
-        $brands = CarBrand::all();
+        $brands = CarBrand::query()
+            ->select('id', 'name')->get();
+        $models = CarModel::query()
+            ->select('id', 'car_brand_id', 'name')
+            ->get();
+        $fuel = CarFuelType::query()
+            ->select('id', 'name')->get();
+        $transmission = CarTransmission::query()
+            ->select('id', 'name')->get();
+        $color = CarColor::query()
+            ->select('id', 'name')->get();
 
         return Inertia::render('Owner/Konten/CarsManagement', [
             'cars' => $cars,
             'brands' => $brands,
+            'models' => $models,
+            'fuels' => $fuel,
+            'transmissions' => $transmission,
+            'colors' => $color,
         ]);
     }
 
-    // untuk showDetals
+    // untuk showDetals bagian dari cars update
     public function show($id)
     {
         $car = Car::with([
@@ -70,6 +86,7 @@ class CarManagementController extends Controller
             'color',
             'transmission',
             'fuelType',
+            'imagePath',
             'user.firstAddress',
         ])->findOrFail($id);
 
@@ -82,6 +99,7 @@ class CarManagementController extends Controller
             'type' => $car->type->name ?? '-',
             'availability' => $car->is_available ? 'Available' : 'Not Available',
             'photo' => $car->main_image,
+            'image_paths' => $car->imagePath->pluck('image_path')->toArray(),
             'price_day' => $car->price_per_day,
             'driver_fee' => $car->driver_fee_on_day,
             'overtime_fee' => $car->overtime_fee_on_hour,
@@ -111,6 +129,12 @@ class CarManagementController extends Controller
         $models = CarModel::query()
             ->select('id', 'car_brand_id', 'name')
             ->get();
+        $fuel = CarFuelType::query()
+            ->select('id', 'name')->get();
+        $transmission = CarTransmission::query()
+            ->select('id', 'name')->get();
+        $color = CarColor::query()
+            ->select('id', 'name')->get();
 
         // dd($carData, $brands,$models);
 
@@ -118,6 +142,9 @@ class CarManagementController extends Controller
             'car' => $carData,
             'brands' => $brands,
             'models' => $models,
+            'fuels' => $fuel,
+            'transmissions' => $transmission,
+            'colors' => $color,
         ]);
     }
 
@@ -126,6 +153,7 @@ class CarManagementController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:car_brands,name',
+
         ]);
 
         CarBrand::create([
@@ -153,7 +181,7 @@ class CarManagementController extends Controller
     public function update(Request $request, $id)
     {
         \Log::info('Data diterima update Car:', $request->all());
-        
+
         $car = Car::findOrFail($id);
 
         $validated = $request->validate([
@@ -223,16 +251,37 @@ class CarManagementController extends Controller
         ]);
 
         // simpan gambar baru
-        if ($request->hasFile('carImage')) {
-            foreach ($request->file('carImage') as $file) {
-                $path = $file->store('cars', 'public');
-                $car->imagePath()->create([
-                    'image_path' => $path,
-                ]);
-            }
+        // if ($request->hasFile('carImage')) {
+        //     foreach ($request->file('carImage') as $file) {
+        //         $path = $file->store('cars', 'public');
+        //         $car->imagePath()->create([
+        //             'image_path' => $path,
+        //         ]);
+        //     }
 
-            if (!$car->main_image && $car->imagePath()->exists()) {
-                $car->update(['main_image' => $car->imagePath()->first()->image_path]);
+        //     // if (!$car->main_image && $car->imagePath()->exists()) {
+        //     //     $car->update(['main_image' => $car->imagePath()->first()->image_path]);
+        //     // }
+        //     // overwrite main_image dengan gambar terakhir yang diupload
+        //     $car->main_image = $path;
+        //     $car->save();
+        // }
+
+        if ($request->hasFile('carImage')) {
+            $files = $request->file('carImage');
+
+            foreach ($files as $index => $file) {
+                $path = $file->store('cars', 'public');
+
+                if ($index === 0) {
+                    // file pertama → main_image
+                    $car->update(['main_image' => $path]);
+                } else {
+                    // sisanya → masuk ke relasi imagePath
+                    $car->imagePath()->create([
+                        'image_path' => $path,
+                    ]);
+                }
             }
         }
 
@@ -250,5 +299,103 @@ class CarManagementController extends Controller
 
         return redirect()->route('owner.cars.management')
             ->with('success', 'Car deleted successfully');
+    }
+
+
+
+    public function storeStepBasic(Request $request)
+    {
+        \Log::info('Data diterima update Car:', $request->all());
+
+        $userId = Auth::id();
+
+        $validated = $request->validate([
+            'plateNumber'   => 'required|string|max:50',
+            'brand'         => 'required|string|max:100',
+            'model'         => 'required|string|max:100',
+            'type'          => 'required|string|max:100',
+            'fuel'          => 'required|string|max:50',
+            'transmission'  => 'required|string|max:50',
+            'seat'          => 'required|integer|min:1',
+            'year'          => 'required|integer|min:1900|max:' . date('Y'),
+            'color'         => 'required|string|max:50',
+            'price'         => 'required|numeric|min:0',
+            'driverFee'     => 'nullable|numeric|min:0',
+            'overtimeFee'   => 'nullable|numeric|min:0',
+            'carImage.*'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            // important information
+            'beforeBooking' => 'nullable|string',
+            'afterBooking'  => 'nullable|string',
+            'duringPickUp'  => 'nullable|string',
+            // policies
+            'beforePickup'  => 'nullable|string',
+            'atPickup'      => 'nullable|string',
+            'usage'         => 'nullable|string',
+            'return'        => 'nullable|string',
+            'overtime' => 'nullable|string',
+        ]);
+
+        \Log::info('Data setelah validasi update Car:', $validated);
+
+        // relasi brand, model, type, dll
+        $brand = CarBrand::firstOrCreate(['name' => $validated['brand']]);
+        $model = CarModel::firstOrCreate([
+            'name' => $validated['model'],
+            'car_brand_id' => $brand->id,
+        ]);
+        $type = CarType::firstOrCreate(['name' => $validated['type']]);
+        $color = CarColor::firstOrCreate(['name' => $validated['color']]);
+        $fuel = CarFuelType::firstOrCreate(['name' => $validated['fuel']]);
+        $transmission = CarTransmission::firstOrCreate(['name' => $validated['transmission']]);
+
+        $car = Car::create([
+            'user_id'            => $userId,
+            'plate_number'       => $validated['plateNumber'],
+            'car_brand_id'       => $brand->id,
+            'car_model_id'       => $model->id,
+            'car_type_id'        => $type->id,
+            'car_color_id'       => $color->id,
+            'car_fuel_type_id'   => $fuel->id,
+            'car_transmission_id' => $transmission->id,
+            'capacity'           => $validated['seat'],
+            'year'               => $validated['year'],
+            'price_per_day'      => $validated['price'],
+            'driver_fee_on_day'  => $validated['driverFee'] ?? 0,
+            'overtime_fee_on_hour' => $validated['overtimeFee'] ?? 0,
+            'rule_before_booking' => $validated['beforeBooking'] ?? null,
+            'rule_after_booking' => $validated['afterBooking'] ?? null,
+            'rule_during_pickup' => $validated['duringPickUp'] ?? null,
+            'rule_before_pickup' => $validated['beforePickup'] ?? null,
+            'rule_at_pickup'     => $validated['atPickup'] ?? null,
+            'rule_usage'         => $validated['usage'] ?? null,
+            'rule_return'        => $validated['return'] ?? null,
+            'rule_overtime'      => $validated['overtime'] ?? null,
+        ]);
+
+        // dd($car);
+
+        // simpan gambar
+        if ($request->hasFile('carImage')) {
+            foreach ($request->file('carImage') as $file) {
+                $path = $file->store('cars', 'public');
+                $car->imagePath()->create([
+                    'image_path' => $path,
+                ]);
+            }
+
+            if (!$car->main_image && $car->imagePath()->exists()) {
+                $car->update(['main_image' => $car->imagePath()->first()->image_path]);
+            }
+        }
+
+        return redirect()
+            ->route('owner.cars.management')
+            ->with('success', 'Car added successfully.');
+
+        // return id baru agar frontend bisa pakai untuk step berikutnya
+        // return response()->json([
+        //     'success' => true,
+        //     'car_id' => $car->id,
+        // ]);
     }
 }

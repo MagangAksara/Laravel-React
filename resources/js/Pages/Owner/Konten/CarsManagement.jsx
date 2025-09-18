@@ -150,11 +150,29 @@ const CarsManagement = () => {
                                                 {i + 1}
                                             </td>
                                             <td className="border p-2">
-                                                <img
-                                                    src={car.photo}
-                                                    alt={car.brand}
-                                                    className="max-w-20 h-auto mx-auto rounded-md"
-                                                />
+                                                {/* Cek apakah photo adalah url langsung atau file di public */}
+                                                {(() => {
+                                                    // Regex sederhana untuk cek apakah string adalah url
+                                                    const isUrl = /^(https?:)?\/\//i.test(car.photo);
+                                                    // Regex untuk cek ekstensi gambar
+                                                    const isImage = /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(car.photo);
+
+                                                    let src = "";
+                                                    if (isUrl) {
+                                                        src = car.photo;
+                                                    } else if (isImage) {
+                                                        src = `/storage/${car.photo}`;
+                                                    } else {
+                                                        src = car.photo; // fallback
+                                                    }
+                                                    return (
+                                                        <img
+                                                            src={src}
+                                                            alt={car.brand}
+                                                            className="max-w-20 h-auto mx-auto rounded-md"
+                                                        />
+                                                    );
+                                                })()}
                                             </td>
                                             <td className="border p-2">
                                                 {car.plate_number}
@@ -205,7 +223,7 @@ const CarsManagement = () => {
                         onDelete={handleConfirmDelete}
                     />
                 </Card>
-            </Layout>
+            </Layout >
         </>
     );
 };

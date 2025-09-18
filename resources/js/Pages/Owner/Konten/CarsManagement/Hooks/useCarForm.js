@@ -3,6 +3,16 @@ import { useState, useEffect } from "react";
 
 export default function useCarForm(car) {
     const [isAvailable, setIsAvailable] = useState(true);
+
+    const formatRupiah = (value) => {
+        if (!value) return "";
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+        }).format(value);
+    };
+
     const [formData, setFormData] = useState({
         plateNumber: "",
         brand: "",
@@ -29,15 +39,6 @@ export default function useCarForm(car) {
         address: "",
     });
 
-    const formatRupiah = (value) => {
-        if (!value) return "";
-        return new Intl.NumberFormat("id-ID", {
-            style: "currency",
-            currency: "IDR",
-            minimumFractionDigits: 0,
-        }).format(value);
-    };
-
     useEffect(() => {
         if (car) {
             setFormData({
@@ -56,7 +57,10 @@ export default function useCarForm(car) {
                 availableStatus: car.availability ?? "Available",
                 driverFee: car.driver_fee ?? "",
                 overtimeFee: car.overtime_fee ?? "",
-                carImage: car.photo ? [car.photo] : [],
+                carImage: [
+                    ...(car.photo ? [car.photo] : []), // main image
+                    ...(car.image_paths || []), // 🔥 tambahan image_path
+                ],
                 beforeBooking: car.before_booking ?? "",
                 afterBooking: car.after_booking ?? "",
                 duringPickup: car.during_pickup ?? "",
@@ -74,7 +78,8 @@ export default function useCarForm(car) {
         const { name, value, type } = e.target;
         setFormData((prev) => {
             if (type === "radio") {
-                if (name === "hasDriver") return { ...prev, hasDriver: value === "withDriver" };
+                if (name === "hasDriver")
+                    return { ...prev, hasDriver: value === "withDriver" };
                 if (name === "availableStatus") {
                     setIsAvailable(value === "Available");
                     return { ...prev, availableStatus: value };
@@ -101,5 +106,13 @@ export default function useCarForm(car) {
         }));
     };
 
-    return { isAvailable, formatRupiah, formData, setFormData, handleInputChange, handleImageChange, handleRemoveImage };
+    return {
+        isAvailable,
+        formatRupiah,
+        formData,
+        setFormData,
+        handleInputChange,
+        handleImageChange,
+        handleRemoveImage,
+    };
 }

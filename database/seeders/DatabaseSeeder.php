@@ -22,19 +22,17 @@ class DatabaseSeeder extends Seeder
 
         // You can call other seeders here
         $this->call([
-            // RolePermissionSeeder::class,
-            
-            // UserSeeder::class,
-            // UserAddressSeeder::class,
-            
-            // CarBrandSeeder::class,
-            // CarModelSeeder::class,
-            // CarTypeSeeder::class,
-            // CarColorSeeder::class,
-            // CarFuelTypeSeeder::class,
-            // CarTransmissionSeeder::class,
-            CarSeeder::class,
-            CarSeeder::class,
+            RolePermissionSeeder::class,
+
+            UserSeeder::class,
+            UserAddressSeeder::class,
+
+            CarBrandSeeder::class,
+            CarModelSeeder::class,
+            CarTypeSeeder::class,
+            CarColorSeeder::class,
+            CarFuelTypeSeeder::class,
+            CarTransmissionSeeder::class,
             CarSeeder::class,
             // CarImageSeeder::class,
             // RentalSeeder::class,

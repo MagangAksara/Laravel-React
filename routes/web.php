@@ -59,6 +59,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:owner'])->group(function () {
+    Route::post('/cars/store-step-basic', [CarManagementController::class, 'storeStepBasic'])->name('owner.cars.storeStepBasic');
     Route::get('/orders', [OrderManagementController::class, 'index'])->name('owner.orders.management');
     Route::patch('/orders/{id}/status', [OrderManagementController::class, 'updateStatus'])->name('rentals.updateStatus');
 
@@ -67,6 +68,7 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
     Route::get('/cars/{id}', [CarManagementController::class, 'show'])->name('owner.cars.detail');
     Route::post('/cars/{id}', [CarManagementController::class, 'update'])->name('owner.cars.update');
     Route::delete('/cars/{id}', [CarManagementController::class, 'destroy'])->name('owner.cars.destroy');
+
 
     Route::post('/brands', [CarManagementController::class, 'store'])->name('owner.brands.store');
     Route::post('/models', [CarManagementController::class, 'modelsStore'])->name('owner.models.store');

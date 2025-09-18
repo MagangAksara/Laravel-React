@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { usePage } from "@inertiajs/react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 const BasicInformation = ({
     formData,
@@ -10,9 +11,17 @@ const BasicInformation = ({
     handleRemoveImage,
     isAvailable,
     formatRupiah
+    
 }) => {
+     const {
+        brands = [],
+        models = [],
+        fuels = [],
+        transmissions = [],
+        colors = [],
+    } = usePage().props;
 
-    const { brands, models } = usePage().props;
+    // const { brands, models } = usePage().props;
 
     const selectedBrand = brands.find((b) => b.name === formData.brand);
     const filteredModels = models.filter(
@@ -104,14 +113,21 @@ const BasicInformation = ({
                 <div className="flex-1">
                     <div className="flex-1">
                         <Label htmlFor="fuel">Fuel</Label>
-                        <Input
-                            id="fuel"
-                            name="fuel"
-                            value={formData.fuel}
-                            onChange={handleInputChange}
-                            placeholder="Enter fuel type"
-                            disabled={!isAvailable}
-                        />
+                        <select
+                        id="fuel"
+                        name="fuel"
+                        value={formData.fuel}
+                        onChange={handleInputChange}
+                        className="w-full border border-gray-300 rounded-md p-2 "
+                    >
+                        <option value="">Select a Fuel</option>
+                        {fuels &&
+                            fuels.map((fuel, index) => (
+                                <option key={index} value={fuel.name}>
+                                    {fuel.name}
+                                </option>
+                            ))}
+                    </select>
                     </div>
                 </div>
             </div>
@@ -122,14 +138,21 @@ const BasicInformation = ({
                     <Label htmlFor="transmission">
                         Transmission
                     </Label>
-                    <Input
+                     <select
                         id="transmission"
                         name="transmission"
                         value={formData.transmission}
-                        disabled={!isAvailable}
                         onChange={handleInputChange}
-                        placeholder="Enter transmission"
-                    />
+                        className="w-full border border-gray-300 rounded-md p-2 "
+                    >
+                        <option value="">Select a Transmission</option>
+                        {transmissions &&
+                            transmissions.map((transmission, index) => (
+                                <option key={index} value={transmission.name}>
+                                    {transmission.name}
+                                </option>
+                            ))}
+                    </select>
                 </div>
                 <div className="flex-1">
                     <Label htmlFor="seat">Seat</Label>
@@ -169,14 +192,21 @@ const BasicInformation = ({
             <div className="flex gap-4 mt-1">
                 <div className="flex-1">
                     <Label htmlFor="color">Color</Label>
-                    <Input
+                    <select
                         id="color"
                         name="color"
                         value={formData.color}
                         onChange={handleInputChange}
-                        placeholder="Enter color"
-                    // className="w-[32%]"
-                    />
+                        className="w-full border border-gray-300 rounded-md p-2 "
+                    >
+                        <option value="">Select a color</option>
+                        {colors &&
+                            colors.map((color, index) => (
+                                <option key={index} value={color.name}>
+                                    {color.name}
+                                </option>
+                            ))}
+                    </select>
                 </div>
                 <div className="flex-1">
                     <Label htmlFor="price">Price / Day</Label>
@@ -217,7 +247,7 @@ const BasicInformation = ({
                         id="driverFee"
                         name="driverFee"
                         disabled={!isAvailable}
-                        value={formatRupiah(formData.driverFee)}
+                        value={formatRupiah(formData.driverFee) || "0"}
                         onChange={(e) => {
                             const raw = e.target.value.replace(
                                 /\D/g,
@@ -246,7 +276,7 @@ const BasicInformation = ({
                         id="overtimeFee"
                         name="overtimeFee"
                         disabled={!isAvailable}
-                        value={formatRupiah(formData.overtimeFee)} // Gunakan formatRupiah di sini
+                        value={formatRupiah(formData.overtimeFee) || "0"} // Gunakan formatRupiah di sini
                         onChange={(e) => {
                             const raw = e.target.value.replace(
                                 /\D/g,
@@ -279,15 +309,17 @@ const BasicInformation = ({
                         {formData.carImage.map((img, i) => {
                             let previewUrl;
 
-                            // kalau img adalah File (baru diupload user)
-                            if (img instanceof File) {
+                            if (img instanceof File) { // kalau img adalah File (baru diupload user)
                                 previewUrl = URL.createObjectURL(img);
-                            }
-                            // kalau img string (misalnya dari database / backend)
-                            else if (typeof img === "string") {
-                                previewUrl = img; // langsung pakai URL dari backend
-                            }
-                            else {
+                            } else if (typeof img === "string") {
+                                if (img.startsWith("http") || img.startsWith("/storage")) {
+                                    // kalau sudah URL penuh atau sudah mengandung /storage
+                                    previewUrl = img;
+                                } else {
+                                    // kalau masih path relatif dari DB
+                                    previewUrl = `/storage/${img}`;
+                                }
+                            } else {
                                 return null; // skip kalau bukan keduanya
                             }
 
