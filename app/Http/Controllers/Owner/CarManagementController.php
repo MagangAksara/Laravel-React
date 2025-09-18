@@ -51,7 +51,7 @@ class CarManagementController extends Controller
                 'driver_fee' => $car->user->is_driver ? $car->user->driver_fee : 0,
                 'city' => $car->user->firstAddress->city ?? '-',
             ];
-        });
+        })->sortByDesc('id')->values()->all();
 
         //  ambil semua brand untuk dropdown
         $brands = CarBrand::query()
