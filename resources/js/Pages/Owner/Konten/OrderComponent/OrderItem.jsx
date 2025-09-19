@@ -46,7 +46,7 @@ const OrderItem = ({ order, onOpenDetail, onOpenFinishNow, onOpenExtraPayment })
                 : `/storage/${order.car.image}`
             }
             alt={order.car?.model}
-            className="w-10 h-10 md:w-20 md:h-20 object-cover rounded-full self-center"
+            className="w-[100px] h-auto md:w-[150px] object-cover rounded-md self-center"
           />
           <div>
             <p className="text-sm md:text-md lg:text-lg font-semibold">
