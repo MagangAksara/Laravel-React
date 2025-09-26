@@ -88,11 +88,12 @@ class BookingController extends Controller
             'car' => [
                 'id'            => $car->id,
                 'owner_id'      => $car->user_id,
-                'owner_pict'    => $ownerPict,
+                'owner_picture'    => $ownerPict,
                 'owner_name'    => $ownerName,
                 'owner_phone'   => $ownerPhone,
                 'customer_name' => $customerName,
                 'customer_phone' => $customerPhone,
+                'plate'         => $car->plate_number,
                 'brand'         => $car->brand->name ?? '-',
                 'model'         => $car->model->name ?? '-',
                 'type'          => $car->type->name ?? '-',

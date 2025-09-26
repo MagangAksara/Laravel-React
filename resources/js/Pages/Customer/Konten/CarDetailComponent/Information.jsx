@@ -17,9 +17,9 @@ const Information = () => {
                     }).format(car.price_per_day)}/day
                 </p>
                 <div className="flex items-center gap-2 mt-2 text-gray-600">
-                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+                    {/* <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
                         {car.is_available ? "Available" : "Not Available"}
-                    </span>
+                    </span> */}
                     <div className="flex items-center gap-1 text-sm">
                         <MapPin size={16} />
                         {car.owner_city}

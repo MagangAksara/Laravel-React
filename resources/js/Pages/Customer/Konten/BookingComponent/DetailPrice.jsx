@@ -63,19 +63,25 @@ const DetailPrice = ({ car, startDate, endDate, ownerAddress, customerAddress, d
             {/* <Card> */}
             <CardHeader>
                 <CardTitle className="mb-0 pb-0">
-                    <OwnerInformation car={car} />
-                    <div className="flex text-lg">
-                        <p>{car.brand} {car.model} {car.type}</p>
-                        <p className="ml-1"> -- Rp {car.price_per_day.toLocaleString()}</p>
+                    {/* <div className="grid grid-cols-1 justify-items-center justify-center items-center pb-3">
+                        <OwnerInformation car={car} />
+                    </div> */}
+                    <div className="text-gray-500 text-ms font-light">{car.plate}</div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 text-lg">
+                        <p className="grid grid-cols-1 items-center">{car.brand} {car.model} {car.type}</p>
+                        <p className="grid grid-cols-1 justify-items-end items-center ml-1">Rp {car.price_per_day.toLocaleString()}</p>
                     </div>
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 mt-0">
-                <p>Duration Rental: {duration ? duration.text : "-"}</p>
+                <div className="grid grid-cols-2">
+                    <p>Duration Rental</p>
+                    <p className="text-end">{duration ? duration.text : "-"}</p>
+                </div>
                 <Separator />
                 <div className="flex justify-between">
-                    <span>Biaya Sewa</span>
-                    <span>Rp {rentalFee.toLocaleString()}</span>
+                    <span>Biaya Sewa (Rp)</span>
+                    <span>{rentalFee.toLocaleString()}</span>
                     {/* <span>Rp {Math.round(rentalFee / 100) * 100000 .toLocaleString()}</span> */}
                 </div>
                 <div className="flex justify-between">
@@ -84,14 +90,14 @@ const DetailPrice = ({ car, startDate, endDate, ownerAddress, customerAddress, d
                     {/* <span>Rp {Math.round(driverFee / 100) * 100000 .toLocaleString()}</span> */}
                 </div>
                 <div className="flex justify-between">
-                    <span>Pick Up Location</span>
-                    <span>Rp {pickupFee.toLocaleString()}</span>
+                    <span>Pick Up Location (Rp)</span>
+                    <span>{pickupFee.toLocaleString()}</span>
                     {/* <span>Rp {Math.round(pickupFee / 100) * 100000 .toLocaleString()}</span> */}
                 </div>
                 <Separator />
                 <div className="flex justify-between font-bold">
-                    <span>Total Payment</span>
-                    <span>Rp {totalPayment.toLocaleString()}</span>
+                    <span>Total Payment (Rp)</span>
+                    <span>{totalPayment.toLocaleString()}</span>
                     {/* <span>Rp {Math.round(totalPayment / 100) * 100000 .toLocaleString()}</span> */}
                 </div>
                 <p className="text-xs text-gray-500">

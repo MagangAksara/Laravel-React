@@ -98,7 +98,7 @@ const DateTime = ({ startDate, setStartDate, endDate, setEndDate, blockedRange }
                   selected={startDate}
                   onSelect={handleDateSelect(startDate, setStartDate)}
                   initialFocus
-                  disabled={(date) => isBlockedDate(date) || date < new Date()}
+                  disabled={(date) => isBlockedDate(date) || date <= new Date()}
                 />
                 <input
                   type="time"

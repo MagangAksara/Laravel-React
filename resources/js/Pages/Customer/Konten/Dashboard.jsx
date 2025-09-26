@@ -33,10 +33,9 @@ const Dashboard = () => {
 
           {/* Sidebar */}
           <aside
-            className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-md transform transition-transform duration-300 md:relative md:translate-x-0 md:shadow-none ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-              }`}
+            className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-md transform transition-transform duration-300 md:relative md:translate-x-0 md:shadow-none ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
           >
-            <div className="overflow-y-auto">
+            <div className="top-0 overflow-y-auto">
               <FilterSidebar
                 {...filterOptions}
                 setFilters={setFilters}

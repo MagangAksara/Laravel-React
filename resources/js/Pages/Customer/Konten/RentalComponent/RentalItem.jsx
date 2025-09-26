@@ -43,7 +43,7 @@ const RentalItem = ({ order, onOpenDetail, onOpenUpload, onOpenCancelled, onOpen
                                 : `/storage/${order.car.image}`
                         }
                         alt={order.car?.model}
-                        className="w-20 h-20 object-cover rounded-full self-center"
+                        className="w-auto h-10 md:h-20 object-cover rounded-md self-center"
                     />
                     <div>
                         <p className="font-semibold">
@@ -51,10 +51,10 @@ const RentalItem = ({ order, onOpenDetail, onOpenUpload, onOpenCancelled, onOpen
                             {order.car?.type}
                         </p>
                         <p className="text-sm text-gray-500">
-                            Duration Rental: {order.duration}
+                            Duration: {order.duration}
                         </p>
                         <p className="text-sm text-gray-500">
-                            Price per day: Rp {order.price.toLocaleString()}
+                            Price/day: Rp {order.price.toLocaleString()}
                         </p>
                     </div>
                 </div>
@@ -100,14 +100,14 @@ const RentalItem = ({ order, onOpenDetail, onOpenUpload, onOpenCancelled, onOpen
                         </>
                     )}
                     {/* masih belum fungsi di bagian refund */}
-                    {order.status === "confirmed_payment" && (
+                    {/* {order.status === "confirmed_payment" && (
                         <Button
                             variant="destructive"
                             onClick={() => onOpenCancelAndRefund(order)}
                         >
                             Cancel and Refund
                         </Button>
-                    )}
+                    )} */}
                     {order.status === "on_rent" && (
                         <Button
                             className="bg-green-500 hover:bg-green-600 text-white hover:text-black"

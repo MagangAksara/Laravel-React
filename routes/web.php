@@ -48,7 +48,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     
     Route::get('/search', [SearchController::class, 'search'])->name('search');
     
-    Route::get('/cars-card/{id}', [CarController::class, 'show'])->name('cars.show');
+    Route::get('/car-details/{id}', [CarController::class, 'show'])->name('cars.show');
 
     Route::get('rental/booking/{id}', [BookingController::class, 'show'])->name('booking');
 
@@ -56,9 +56,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/rental/success', [RentalController::class, 'show'])->name('rental.success');
     Route::get('/rental/failed', [RentalController::class, 'show'])->name('rental.failed');
     Route::patch('/rental/cancelled/{id}', [RentalController::class, 'cancel'])->name('rental.cancelled');
+    Route::post('/rental/{id}/uploadFineImages', [RentalController::class, 'uploadImgWhileStatusOnRent'])->name('rental.uploadRentalImages');
 
     Route::patch('/rental/{id}/updateForFine', [RentalController::class, 'updateForFine'])->name('forRentalandFine.updateForFine');
-
 });
 
 Route::middleware(['auth', 'role:owner'])->group(function () {

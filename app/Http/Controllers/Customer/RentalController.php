@@ -47,6 +47,7 @@ class RentalController extends Controller
             'user.firstAddress',
             'pickupLocation',
             'fine',
+            'fine.images',
         ])
             ->where('user_id', $request->user()->id)
             ->orderBy('created_at', 'desc')
@@ -143,6 +144,8 @@ class RentalController extends Controller
                     'damage_type' => $rental->fine->damage_type ?? null,
                     'damage_amount' => $rental->fine->damage_amount ?? 0,
                     'total_fine' => ($rental->fine->late_amount ?? 0) + ($rental->fine->damage_amount ?? 0),
+                    'methodFinePayment' => $rental->fine->payment->payment_method ?? 'HAVE NOT MADE PAYMENT',
+                    'imgFine_path' => $rental->fine?->images?->pluck('image_path')->toArray() ?? [],
                 ];
             });
 
@@ -216,6 +219,34 @@ class RentalController extends Controller
         Log::info("Rental ID: {$rental->id}, Payment ID: {$rental->fine->payment_id}, New Status: {$rental->status}, Fine Status: {$rental->fine->status}");
 
         return response()->json(['message' => 'Status updated successfully']);
+    }
+
+    public function uploadImgWhileStatusOnRent(Request $request, $id)
+    {
+        Log::info('Upload images request received', $request->all());
+
+        $rental = Rental::with('rentalImages')->findOrFail($id);
+
+        if ($rental->status !== Rental::STATUS_ON_RENT) {
+            return response()->json(['message' => 'Can only upload images when status is on_rent'], 400);
+        }
+
+        if ($request->hasFile('images')) {
+            $uploadedPaths = [];
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('rental_images', 'public');
+                $uploadedPaths[] = $path;
+
+                // Simpan ke rentalImages
+                $rental->rentalImages()->create([
+                    'image_path' => $path,
+                ]);
+            }
+
+            return response()->json(['message' => 'Images uploaded successfully', 'paths' => $uploadedPaths]);
+        }
+
+        return response()->json(['message' => 'No images uploaded'], 400);
     }
 
     public function success()

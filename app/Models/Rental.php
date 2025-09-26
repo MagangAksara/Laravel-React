@@ -71,4 +71,9 @@ class Rental extends Model
     {
         return $this->belongsTo(Fine::class);
     }
+
+    public function rentalImages()
+    {
+        return $this->hasMany(RentalImage::class);
+    }
 }

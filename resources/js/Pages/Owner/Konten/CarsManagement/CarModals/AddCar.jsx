@@ -209,7 +209,7 @@ const AddCarForm = ({ isOpen, onClose }) => {
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-3xl w-full max-h-[80vh] overflow-y-auto p-6">
+            <DialogContent className="max-w-3xl w-full max-h-[95vh] overflow-y-auto p-6" style={{ scrollbarWidth: 'none' }}>
                 <DialogHeader>
                     <DialogTitle className="text-xl font-semibold">
                         Add New Car

@@ -52,7 +52,7 @@ class PaymentController extends Controller
             'description' => $request->description,
             'payer_email' => $request->payer_email,
             'invoice_duration' => 86400, // 24 jam dalam detik
-            'success_redirect_url' => url('/rental/success'), // halaman sukses
+            'success_redirect_url' => url('/rental'), // halaman sukses
             'failure_redirect_url' => url('/rental/failed'),  // halaman gagal
             // 'payment_methods' => [
             //     'credit_card',

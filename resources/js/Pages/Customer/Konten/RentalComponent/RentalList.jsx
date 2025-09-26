@@ -44,7 +44,8 @@ const RentalList = ({ rentals }) => {
         setOpenPayExtra(true);
     }
 
-    // lakukan pembayaran denda
+
+    const [selectedImage, setSelectedImage] = useState(null);
 
     return (
         <div className="space-y-4">
@@ -67,7 +68,13 @@ const RentalList = ({ rentals }) => {
             )}
 
             {/* Modal dipanggil di bawah */}
-            <RentalDetailModal open={openDetail} onClose={() => setOpenDetail(false)} order={selectedOrder} />
+            <RentalDetailModal
+                open={openDetail}
+                onClose={() => setOpenDetail(false)}
+                order={selectedOrder}
+                selectedImage={selectedImage}
+                setSelectedImage={setSelectedImage}
+            />
             <UploadImageModal
                 open={openUpload}
                 onClose={() => setOpenUpload(false)}
