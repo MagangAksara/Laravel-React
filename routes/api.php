@@ -17,7 +17,7 @@ Route::middleware(['throttle:api'])->group(function () {
         
         Route::post('/payment/create', [PaymentController::class, 'store'])->name('payment.create');
 
-        Route::post('/calculatePickupFee', [DistanceController::class, 'calculate'])->name('calculate');
+        Route::post('/calculatePickupFee/{id}', [DistanceController::class, 'calculate'])->name('calculate');
 
         Route::post('/rental/store', [RentalController::class, 'store'])->name('rental.store');
         // Route::post('/fine/store', [FineController::class, 'update'])->name('fine.store');

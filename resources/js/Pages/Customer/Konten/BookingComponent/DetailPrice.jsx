@@ -9,16 +9,20 @@ const DetailPrice = ({ car, startDate, endDate, ownerAddress, customerAddress, d
     const duration = calculateDuration(startDate, endDate);
 
     const [pickupFee, setPickupFee] = useState(0);
+    
+    const [loadingPickup, setLoadingPickup] = useState(false);
 
     // Hitung pickup fee hanya jika with-driver dan pickupOption === "other"
     useEffect(() => {
         const fetchDistance = async () => {
             if (car.is_driver && driverOption === "with-driver" && pickupOption === "other" && selectedAddress) {
                 try {
+                    setLoadingPickup(true);
+
                     const customerAddr = customerAddress.find(addr => addr.id.toString() === selectedAddress);
                     if (!customerAddr || !ownerAddress) return;
 
-                    const res = await axios.post("/api/calculatePickupFee", {
+                    const res = await axios.post(`/api/calculatePickupFee/${car.id}`, {
                         start_lat: ownerAddress.latitude,
                         start_lon: ownerAddress.longitude,
                         end_lat: customerAddr.latitude,
@@ -82,23 +86,23 @@ const DetailPrice = ({ car, startDate, endDate, ownerAddress, customerAddress, d
                 <div className="flex justify-between">
                     <span>Biaya Sewa (Rp)</span>
                     <span>{rentalFee.toLocaleString()}</span>
-                    {/* <span>Rp {Math.round(rentalFee / 100) * 100000 .toLocaleString()}</span> */}
+                    {/* <span>{Math.round(rentalFee).toLocaleString()}</span> */}
                 </div>
                 <div className="flex justify-between">
-                    <span>Driver Fee</span>
-                    <span>Rp {driverFee.toLocaleString()}</span>
-                    {/* <span>Rp {Math.round(driverFee / 100) * 100000 .toLocaleString()}</span> */}
+                    <span>Driver Fee (Rp)</span>
+                    <span>{driverFee.toLocaleString()}</span>
+                    {/* <span>{Math.round(driverFee) .toLocaleString()}</span> */}
                 </div>
                 <div className="flex justify-between">
                     <span>Pick Up Location (Rp)</span>
                     <span>{pickupFee.toLocaleString()}</span>
-                    {/* <span>Rp {Math.round(pickupFee / 100) * 100000 .toLocaleString()}</span> */}
+                    {/* <span>{Math.round(pickupFee / 100) * 100000 .toLocaleString()}</span> */}
                 </div>
                 <Separator />
                 <div className="flex justify-between font-bold">
                     <span>Total Payment (Rp)</span>
                     <span>{totalPayment.toLocaleString()}</span>
-                    {/* <span>Rp {Math.round(totalPayment / 100) * 100000 .toLocaleString()}</span> */}
+                    {/* <span>{Math.round(totalPayment / 100) * 100000 .toLocaleString()}</span> */}
                 </div>
                 <p className="text-xs text-gray-500">
                     With driver bookings, meals, fuel, tolls, etc. are counted as additional costs not included in the system.
