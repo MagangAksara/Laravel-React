@@ -1,5 +1,6 @@
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
+import { Label } from '@/Components/ui/label';
 import { Textarea } from '@/Components/ui/textarea';
 import { useForm } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
@@ -32,6 +33,13 @@ export default function AddressModal({ show, onClose, address = null }) {
             });
         }
     }, [address]);
+
+    // clear form setiap kali modal ditutup
+    useEffect(() => {
+        if (!show) {
+            reset();
+        }
+    }, [show, reset]);
 
     const getCurrentLocation = () => {
         if (!navigator.geolocation) {
@@ -71,19 +79,22 @@ export default function AddressModal({ show, onClose, address = null }) {
                 </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-3">
+                    <Label className="block text-gray-500">City</Label>
                     <Input
                         type="text"
-                        placeholder="Kota"
+                        placeholder="City"
                         value={data.city}
                         onChange={(e) => {
                             const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
                             setData('city', value);
                         }}
-                        className="w-full border rounded p-2"
+                        className="w-full border rounded pb-2"
                     />
+
+                    <Label className="block text-gray-500">District</Label>
                     <Input
                         type="text"
-                        placeholder="Kecamatan"
+                        placeholder="District"
                         value={data.district}
                         onChange={(e) => {
                             const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
@@ -91,9 +102,11 @@ export default function AddressModal({ show, onClose, address = null }) {
                         }}
                         className="w-full border rounded p-2"
                     />
+
+                    <Label className="block text-gray-500">Regency</Label>
                     <Input
                         type="text"
-                        placeholder="Kabupaten"
+                        placeholder="Regency"
                         value={data.regency}
                         onChange={(e) => {
                             const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
@@ -101,41 +114,54 @@ export default function AddressModal({ show, onClose, address = null }) {
                         }}
                         className="w-full border rounded p-2"
                     />
+
                     <div className='justify-between flex gap-2'>
-                        <Input
-                            type="text"
-                            placeholder="Provinsi"
-                            value={data.province}
-                            onChange={(e) => {
-                                const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
-                                setData('province', value);
-                            }}
-                            className="w-full border rounded p-2"
-                        />
-                        <Input
-                            type="text"
-                            placeholder="Postal Code"
-                            value={data.postal_code}
-                            onChange={(e) => {
-                                const value = e.target.value.replace(/[^0-9]/g, '');
-                                setData('postal_code', value);
-                            }}
-                            className="w-full border rounded p-2"
-                        />
+                        <div>
+                            <Label className="block text-gray-500">Province</Label>
+                            <Input
+                                type="text"
+                                placeholder="Province"
+                                value={data.province}
+                                onChange={(e) => {
+                                    const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                                    setData('province', value);
+                                }}
+                                className="w-full border rounded p-2"
+                            />
+                        </div>
+                        <div>
+                            <Label className="block text-gray-500">Postal Code</Label>
+                            <Input
+                                type="text"
+                                placeholder="Postal Code"
+                                value={data.postal_code}
+                                onChange={(e) => {
+                                    const value = e.target.value.replace(/[^0-9]/g, '');
+                                    setData('postal_code', value);
+                                }}
+                                className="w-full border rounded p-2"
+                            />
+                        </div>
                     </div>
-                    <div className='justify-between flex gap-1'>
-                        <Input
-                            type="text"
-                            value={data.latitude}
-                            readOnly
-                            className="w-full border rounded p-2 text-center"
-                        />
-                        <Input
-                            type="text"
-                            value={data.longitude}
-                            readOnly
-                            className="w-full border rounded p-2 text-center"
-                        />
+                    <div className='justify-between items-end flex gap-1'>
+                        <div>
+                            <Label className="block text-gray-500">Latitude</Label>
+                            <Input
+                                type="text"
+                                value={data.latitude}
+                                readOnly
+                                className="w-full border rounded p-2 text-center"
+                            />
+                        </div>
+                        <div>
+                            <Label className="block text-gray-500">Longitude</Label>
+                            <Input
+                                type="text"
+                                value={data.longitude}
+                                readOnly
+                                className="w-full border rounded p-2 text-center"
+                            />
+                        </div>
                         <Button
                             onClick={getCurrentLocation}
                             className="bg-blue-500 text-white"
@@ -143,18 +169,19 @@ export default function AddressModal({ show, onClose, address = null }) {
                             {loadingLocation ? "..." : "Cari"}
                         </Button>
                     </div>
+                    <Label className="block text-gray-500">Details</Label>
                     <Textarea
                         type="text"
-                        placeholder="detail"
+                        placeholder="Details"
                         value={data.detail}
                         onChange={(e) => setData('detail', e.target.value)}
                         className="w-full border rounded p-2"
                     />
 
                     {/* Map Preview Placeholder */}
-                    <div className="w-full h-32 bg-gray-100 flex items-center justify-center text-gray-400 border rounded">
+                    {/* <div className="w-full h-32 bg-gray-100 flex items-center justify-center text-gray-400 border rounded">
                         Map Preview
-                    </div>
+                    </div> */}
 
                     <div className="flex justify-end gap-2 mt-4">
                         <button type="submit" disabled={processing}>
@@ -162,10 +189,7 @@ export default function AddressModal({ show, onClose, address = null }) {
                         </button>
                         <button
                             type="button"
-                            onClick={() => {
-                                reset();
-                                onClose();
-                            }}
+                            onClick={() => onClose()}
                             className="border border-red-500 text-red-500 px-4 py-2 rounded hover:bg-red-50"
                         >
                             Cancel

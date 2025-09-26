@@ -28,7 +28,7 @@ const RentalDetailModal = ({ open, onClose, order, selectedImage, setSelectedIma
 
                 <div className="mt-2 text-sm space-y-1">
 
-                    {[order.status === "cancelled" || order.status === "expired"] && (
+                    {(order.status === "cancelled" || order.status === "expired") && (
                         <div className="bg-red-100 text-red-700 px-4 py-2 rounded mb-4 text-sm">
                             Your order has been cancelled or expired
                         </div>

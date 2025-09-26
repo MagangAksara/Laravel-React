@@ -17,6 +17,8 @@ const StatusTabs = ({ status, setStatus }) => {
                             { value: "waiting_for_check", label: "Waiting for Check" },
                             { value: "waiting_for_fines_payment", label: "Waiting for Fines Payment" },
                             { value: "completed", label: "Completed" },
+                            { value: "cancelled", label: "Cancelled" },
+                            { value: "expired", label: "Expired" },
                         ].map((tab) => (
                             <TabsTrigger
                                 key={tab.value}

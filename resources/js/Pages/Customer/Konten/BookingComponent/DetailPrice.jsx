@@ -9,7 +9,7 @@ const DetailPrice = ({ car, startDate, endDate, ownerAddress, customerAddress, d
     const duration = calculateDuration(startDate, endDate);
 
     const [pickupFee, setPickupFee] = useState(0);
-    
+
     const [loadingPickup, setLoadingPickup] = useState(false);
 
     // Hitung pickup fee hanya jika with-driver dan pickupOption === "other"
@@ -36,6 +36,8 @@ const DetailPrice = ({ car, startDate, endDate, ownerAddress, customerAddress, d
                     }
                 } catch (err) {
                     console.error("Error fetching pickup fee:", err);
+                } finally {
+                    setLoadingPickup(false);
                 }
             } else {
                 setPickupFee(0);
@@ -95,7 +97,14 @@ const DetailPrice = ({ car, startDate, endDate, ownerAddress, customerAddress, d
                 </div>
                 <div className="flex justify-between">
                     <span>Pick Up Location (Rp)</span>
-                    <span>{pickupFee.toLocaleString()}</span>
+                    {/* <span>{pickupFee.toLocaleString()}</span> */}
+                    <span>
+                        {loadingPickup ? (
+                            <span className="text-gray-400 italic">Loading...</span>
+                        ) : (
+                            pickupFee.toLocaleString()
+                        )}
+                    </span>
                     {/* <span>{Math.round(pickupFee / 100) * 100000 .toLocaleString()}</span> */}
                 </div>
                 <Separator />
