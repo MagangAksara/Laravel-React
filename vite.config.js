@@ -14,20 +14,27 @@ export default defineConfig({
         react(),
         svgr(),
     ],
-    // server: {
-    //     host: '0.0.0.0',
-    //     port: 5173,
-    //     origin: 'https://040495e9f4ad.ngrok-free.app:5173', // domain ngrok kamu
-    //     hmr: {
-    //         host: '040495e9f4ad.ngrok-free.app',
-    //         protocol: 'wss',
-    //         port: 5173,
-    //         clientPort: 443,
-    //     },
-    // },
+    server: {
+        host: '0.0.0.0',
+        port: 5173,
+        origin: 'http://127.0.0.1:5173',
+        hmr: {
+            host: '127.0.0.1',
+            protocol: 'ws',
+            port: 5173,
+        },
+    },
+    build: {
+        outDir: 'public/build',
+        manifest: true,
+        rollupOptions: {
+            input: 'resources/js/app.jsx',
+        },
+    },
     resolve: {
         alias: {
             '@': path.resolve(__dirname, 'resources/js'),
         },
     },
+    base: '/'
 });
